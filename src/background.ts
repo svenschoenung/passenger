@@ -5,6 +5,8 @@ import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
+import store from './store'
+
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -87,3 +89,8 @@ if (isDevelopment) {
     })
   }
 }
+
+
+setInterval(() => {
+  store.dispatch('INCREMENT')
+}, 5000)

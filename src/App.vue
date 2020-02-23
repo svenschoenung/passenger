@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
+    {{count}}
     <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
   </div>
 </template>
@@ -13,6 +14,11 @@ import HelloWorld from './components/HelloWorld.vue';
   components: {
     HelloWorld,
   },
+  computed: {
+    count() {
+      return this.$store.state.count;
+    }
+  }
 })
 export default class App extends Vue {}
 </script>
