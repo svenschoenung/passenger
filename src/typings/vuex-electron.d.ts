@@ -1,6 +1,14 @@
+
 declare module 'vuex-electron' {
     import * as vuex from 'vuex'
+    import ElectronStore from 'electron-store';
 
-    export function createPersistedState<T>(): vuex.Plugin<T>;
+    export interface CreatePersistedStateOptions {
+        whitelist?: string[];
+        blacklist?: string[];
+        store?: ElectronStore;
+    }
+
+    export function createPersistedState<T>(options?: CreatePersistedStateOptions): vuex.Plugin<T>;
     export function createSharedMutations<T>(): vuex.Plugin<T>;
 }
