@@ -26,6 +26,8 @@ import ConfigPage from './pages/ConfigPage'
 
 import MenuBar from './components/MenuBar'
 
+import { UIModule } from './store'
+
 @Component({
   components: {
     PasswordsPage,
@@ -37,7 +39,7 @@ import MenuBar from './components/MenuBar'
 })
 export default class App extends Vue {
   get pageComponent() {
-    return this.$store.state.page + '-page'
+    return UIModule.page + '-page'
   }
 }
 </script>

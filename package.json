@@ -40,7 +40,8 @@
     "typescript": "~3.7.5",
     "vue-cli-plugin-electron-builder": "~1.4.5",
     "vue-cli-plugin-quasar": "~2.0.0",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "vuex-module-decorators": "^0.16.1"
   },
   "eslintConfig": {
     "root": true,

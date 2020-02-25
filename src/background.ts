@@ -5,7 +5,7 @@ import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
-import store from './store'
+import { store } from './store'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -90,4 +90,8 @@ if (isDevelopment) {
   }
 }
 
-store.subscribeAction(action => { })
+store.subscribe(action => {
+  if (isDevelopment) {
+    console.log(action)
+  }
+})

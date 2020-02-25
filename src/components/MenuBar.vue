@@ -48,6 +48,8 @@ import { ionIosKey } from '@quasar/extras/ionicons-v4'
 import { ionIosGitCompare } from '@quasar/extras/ionicons-v4'
 import { ionIosConstruct } from '@quasar/extras/ionicons-v4'
 
+import { UIModule } from '../store'
+
 @Component({
   components: {
   },
@@ -61,11 +63,11 @@ export default class MenuBar extends Vue {
     }
 
     get page(): string {
-        return this.$store.state.page;
+        return UIModule.page;
     }
 
     changePage(page: string) {
-        this.$store.dispatch('CHANGE_PAGE', page)
+        UIModule.changePageAction(page)
     }
 }
 </script>
