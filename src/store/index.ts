@@ -5,18 +5,18 @@ import { createPersistedState, createSharedMutations } from 'vuex-electron'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-    state: {
-      count: 24
-    },
-    mutations: {
-      increment (state) {
-        state.count++
-      }
-    },
-    actions: {
-      INCREMENT: ({commit}) => {
-        commit('increment')
-      }
-    },
-    plugins: [createPersistedState(), createSharedMutations()]
+  state: {
+    page: 'passwords'
+  },
+  mutations: {
+    changePage(state, payload: string) {
+      state.page = payload
+    }
+  },
+  actions: {
+    CHANGE_PAGE({commit}, payload: string) {
+      commit('changePage', payload)
+    }
+  },
+  plugins: [createPersistedState(), createSharedMutations()]
 })

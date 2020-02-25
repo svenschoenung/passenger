@@ -90,7 +90,4 @@ if (isDevelopment) {
   }
 }
 
-
-setInterval(() => {
-  store.dispatch('INCREMENT')
-}, 5000)
+store.subscribeAction(action => { })

@@ -1,35 +1,51 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    {{count}}
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-  </div>
+    <q-layout view="lHh lpR fFf">
+        <q-drawer elevated
+          :value="true" 
+          :mini="true"
+          :breakpoint="0">
+            <menu-bar/> 
+        </q-drawer> 
+
+        <q-page-container>
+            <component v-bind:is="pageComponent"></component>
+        </q-page-container>
+
+        <q-footer class="status-bar">
+        </q-footer>
+    </q-layout>
 </template>
 
-<script lang="ts">
+<script>
 import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
+
+import PasswordsPage from './pages/PasswordsPage'
+import KeysPage from './pages/KeysPage'
+import RepoPage from './pages/RepoPage'
+import ConfigPage from './pages/ConfigPage'
+
+import MenuBar from './components/MenuBar'
 
 @Component({
   components: {
-    HelloWorld,
+    PasswordsPage,
+    KeysPage,
+    RepoPage,
+    ConfigPage,
+    MenuBar
   },
-  computed: {
-    count() {
-      return this.$store.state.count;
-    }
-  }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  get pageComponent() {
+    return this.$store.state.page + '-page'
+  }
+}
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style lang="scss" scoped>
+.status-bar {
+    height: 30px;
+    padding: 5px;
+    font-weight: bold;
 }
 </style>
