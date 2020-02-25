@@ -11,7 +11,7 @@
             <component v-bind:is="pageComponent"></component>
         </q-page-container>
 
-        <q-footer class="status-bar">
+        <q-footer class="status-bar" v-bind:style="{ height: `${footerHeight}px` }">
         </q-footer>
     </q-layout>
 </template>
@@ -28,6 +28,8 @@ import MenuBar from './components/MenuBar'
 
 import { UIModule } from './store'
 
+import { FOOTER_HEIGHT } from '@/constants'
+
 @Component({
   components: {
     PasswordsPage,
@@ -38,6 +40,8 @@ import { UIModule } from './store'
   },
 })
 export default class App extends Vue {
+  footerHeight = FOOTER_HEIGHT
+
   get pageComponent() {
     return UIModule.page + '-page'
   }
@@ -46,7 +50,6 @@ export default class App extends Vue {
 
 <style lang="scss" scoped>
 .status-bar {
-    height: 30px;
     padding: 5px;
     font-weight: bold;
 }

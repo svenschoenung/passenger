@@ -1,5 +1,5 @@
 <template>
-    <q-splitter v-model="treePaneWidthInPercent" style="height: calc(100vh - 30px)">
+    <q-splitter v-model="treePaneWidthInPercent" v-bind:style="{ height: `calc(100vh - ${footerHeight}px`}">
         <template v-slot:before>
             Tree
         </template>
@@ -11,6 +11,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { FOOTER_HEIGHT } from '@/constants'
 
 @Component({
   name: 'passwords-page',
@@ -18,6 +19,7 @@ import { Component, Vue } from 'vue-property-decorator'
   },
 })
 export default class PasswordsPage extends Vue {
+    footerHeight = FOOTER_HEIGHT
     treePaneWidthInPercent = 30
 }
 </script>
