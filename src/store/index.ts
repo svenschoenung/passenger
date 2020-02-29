@@ -6,13 +6,23 @@ import { getModule } from 'vuex-module-decorators'
 import ElectronStore from 'electron-store'
 import update from 'immutability-helper';
 
-import UIVuexModule from './ui'
+import UIVuexModule from './modules/ui'
+import RepoVuexModule from './modules/repo'
+import PasswordsVuexModule from './modules/passwords'
 
 Vue.use(Vuex)
 
-export const store = new Vuex.Store({
+export interface AppState {
+  ui: UIVuexModule,
+  passwords: PasswordsVuexModule,
+  repo: RepoVuexModule
+}
+
+export const store = new Vuex.Store<AppState>({
   modules: {
-    ui: UIVuexModule
+    ui: UIVuexModule,
+    passwords: PasswordsVuexModule,
+    repo: RepoVuexModule,
   },
   plugins: [
     createPersistedState({
@@ -31,6 +41,8 @@ export const store = new Vuex.Store({
 })
 
 export const UIModule = getModule(UIVuexModule, store)
+export const RepoModule = getModule(RepoVuexModule, store)
+export const PasswordsModule = getModule(PasswordsVuexModule, store)
 
 
 

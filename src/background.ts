@@ -5,7 +5,7 @@ import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
-import { store } from './store'
+import { store, PasswordsModule } from './store'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -70,9 +70,9 @@ app.on('ready', async () => {
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
-
   }
   createWindow()
+  PasswordsModule.loadTree$()
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -90,8 +90,14 @@ if (isDevelopment) {
   }
 }
 
-store.subscribe(action => {
+store.subscribe(mutation => {
   if (isDevelopment) {
-    console.log(action)
+    console.log('mutation', mutation)
+  }
+})
+
+store.subscribeAction(action => {
+  if (isDevelopment) {
+    console.log('action', action)
   }
 })

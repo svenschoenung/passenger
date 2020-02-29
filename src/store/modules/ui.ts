@@ -10,7 +10,7 @@ export default class UIVuexModule extends VuexModule {
   }
 
   @Action({ commit: 'changePage' })
-  changePageAction(page: string) {
+  changePage$(page: string) {
     return page
   }
 }
