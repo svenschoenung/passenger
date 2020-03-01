@@ -1,19 +1,22 @@
-<template>
-    <q-layout view="lHh lpR fFf">
-        <q-drawer elevated
-          :value="true" 
-          :mini="true"
-          :breakpoint="0">
-            <menu-bar/> 
-        </q-drawer> 
+<template> 
+    <div>
+      <setup-dialog :show="!isSetup"/>
+      <q-layout v-if="isSetup" view="lHh lpR fFf">
+          <q-drawer elevated
+            :value="true" 
+            :mini="true"
+            :breakpoint="0">
+              <menu-bar/> 
+          </q-drawer> 
 
-        <q-page-container>
-            <component v-bind:is="pageComponent"></component>
-        </q-page-container>
+          <q-page-container>
+              <component v-bind:is="pageComponent"></component>
+          </q-page-container>
 
-        <q-footer class="status-bar" v-bind:style="{ height: `${footerHeight}px` }">
-        </q-footer>
-    </q-layout>
+          <q-footer class="status-bar" :style="{ height: `${footerHeight}px` }">
+          </q-footer>
+      </q-layout>
+    </div>
 </template>
 
 <script>
@@ -25,8 +28,10 @@ import RepoPage from './pages/RepoPage'
 import ConfigPage from './pages/ConfigPage'
 
 import MenuBar from './components/MenuBar'
+import SetupDialog from './components/SetupDialog'
 
 import { UIModule } from './store'
+import { ConfigModule } from './store'
 
 import { FOOTER_HEIGHT } from '@/constants'
 
@@ -36,7 +41,8 @@ import { FOOTER_HEIGHT } from '@/constants'
     KeysPage,
     RepoPage,
     ConfigPage,
-    MenuBar
+    MenuBar,
+    SetupDialog
   },
 })
 export default class App extends Vue {
@@ -44,6 +50,10 @@ export default class App extends Vue {
 
   get pageComponent() {
     return UIModule.page + '-page'
+  }
+
+  get isSetup() {
+    return !!ConfigModule.repoPath
   }
 }
 </script>

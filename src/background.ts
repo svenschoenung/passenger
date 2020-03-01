@@ -1,11 +1,7 @@
 'use strict'
 
-import { app, protocol, BrowserWindow } from 'electron'
-import {
-  createProtocol,
-  installVueDevtools
-} from 'vue-cli-plugin-electron-builder/lib'
-import { store, PasswordsModule } from './store'
+import { app, protocol, screen, BrowserWindow } from 'electron'
+import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -17,10 +13,19 @@ let win: BrowserWindow | null = null;
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }])
 
 function createWindow () {
-  // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600, webPreferences: {
-    nodeIntegration: true
-  } })
+  const [ minWidth, minHeight ] = [ 640, 480 ]
+  const screenSize = screen.getPrimaryDisplay().workAreaSize
+
+  win = new BrowserWindow({
+    title: 'Passenger',
+    width: Math.round(Math.max(minWidth, screenSize.width * 0.8)),
+    height: Math.round(Math.max(minHeight, screenSize.height * 0.8)),
+    minWidth,
+    minHeight,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -72,7 +77,6 @@ app.on('ready', async () => {
     }
   }
   createWindow()
-  PasswordsModule.loadTree$()
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -89,15 +93,3 @@ if (isDevelopment) {
     })
   }
 }
-
-store.subscribe(mutation => {
-  if (isDevelopment) {
-    console.log('mutation', mutation)
-  }
-})
-
-store.subscribeAction(action => {
-  if (isDevelopment) {
-    console.log('action', action)
-  }
-})

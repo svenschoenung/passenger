@@ -6,7 +6,7 @@ declare module 'vuex-electron' {
     export interface CreatePersistedStateOptions {
         whitelist?: string[];
         blacklist?: string[];
-        store?: ElectronStore;
+        storage?: ElectronStore
     }
 
     export function createPersistedState<T>(options?: CreatePersistedStateOptions): vuex.Plugin<T>;

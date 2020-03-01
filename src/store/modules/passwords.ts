@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { PasswordFolder } from '@/model/tree'
-import { RepoModule } from './../index'
-import { readPasswordTree } from '@/service/repo'
+import { readPasswordTree } from '@/service/passwords'
+import { ConfigModule } from '@/store'
 
 @Module({ name: 'passwords' })
 export default class PasswordsVuexModule extends VuexModule {
@@ -15,7 +15,7 @@ export default class PasswordsVuexModule extends VuexModule {
     @Action({ commit: 'changeTree' })
     async loadTree$() {
         try {
-           return await readPasswordTree(RepoModule.location);
+           return await readPasswordTree(ConfigModule.repoPath as string);
         } catch (e) {
             console.log(e)
         }
