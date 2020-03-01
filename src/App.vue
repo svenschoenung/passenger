@@ -10,7 +10,7 @@
           </q-drawer> 
 
           <q-page-container>
-              <component v-bind:is="pageComponent"></component>
+              <component :is="pageComponent"></component>
           </q-page-container>
 
           <q-footer class="status-bar" :style="{ height: `${footerHeight}px` }">
