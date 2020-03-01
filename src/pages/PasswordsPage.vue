@@ -3,7 +3,7 @@
         <template v-slot:before>
             <q-tree v-if="passwordsTree"
                 :nodes="passwordsTree"
-                :icon="arrow"
+                :icon="icons.arrow"
                 default-expand-all
                 node-key="absPath"
                 label-key="name"
@@ -29,8 +29,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import { FOOTER_HEIGHT } from '@/constants'
 import { PasswordsModule, UIModule } from '../store'
-
-import { ionIosPlay } from '@quasar/extras/ionicons-v4'
+import icons from '@/ui/icons'
 
 @Component({
   name: 'passwords-page',
@@ -50,7 +49,7 @@ export default class PasswordsPage extends Vue {
     }
 
     created() {
-        (this as any).arrow = ionIosPlay;
+        (this as any).icons = icons;
     }
 
     mounted() {

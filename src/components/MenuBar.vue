@@ -7,7 +7,7 @@
               active-class="active-page"
               @click="changePage('passwords')">
                 <q-item-section avatar>
-                    <q-icon :name="iconPasswords" />
+                    <q-icon :name="icons.passwords" />
                 </q-item-section>
             </q-item>
             <q-item clickable v-ripple
@@ -15,7 +15,7 @@
               active-class="active-page"
               @click="changePage('keys')">
                 <q-item-section avatar>
-                    <q-icon :name="iconKeys" />
+                    <q-icon :name="icons.keys" />
                 </q-item-section>
             </q-item>
             <q-item clickable v-ripple
@@ -23,7 +23,7 @@
               active-class="active-page"
               @click="changePage('repo')">
                 <q-item-section avatar>
-                    <q-icon :name="iconRepo" />
+                    <q-icon :name="icons.repo" />
                 </q-item-section>
             </q-item>
             <q-space/>
@@ -33,7 +33,7 @@
               @click="changePage('config')"
               class="justify-end">
                 <q-item-section avatar>
-                    <q-icon :name="iconConfig" />
+                    <q-icon :name="icons.config" />
                 </q-item-section>
             </q-item>
         </q-list>
@@ -43,12 +43,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-import { ionIosLock } from '@quasar/extras/ionicons-v4'
-import { ionIosKey } from '@quasar/extras/ionicons-v4'
-import { ionIosGitCompare } from '@quasar/extras/ionicons-v4'
-import { ionIosConstruct } from '@quasar/extras/ionicons-v4'
-
 import { UIModule } from '../store'
+import icons from '@/ui/icons';
 
 @Component({
   components: {
@@ -56,10 +52,7 @@ import { UIModule } from '../store'
 })
 export default class MenuBar extends Vue {
     created() {
-        (this as any).iconPasswords = ionIosLock;
-        (this as any).iconKeys = ionIosKey;
-        (this as any).iconRepo = ionIosGitCompare;
-        (this as any).iconConfig = ionIosConstruct;
+        (this as any).icons = icons
     }
 
     get page(): string {

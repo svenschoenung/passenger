@@ -4,7 +4,7 @@
       <q-header>
         <q-toolbar>
           <q-toolbar-title>
-            <q-icon :name="iconSetup" />
+            <q-icon :name="icons.config" />
             Setup
           </q-toolbar-title>
         </q-toolbar>
@@ -32,7 +32,7 @@
             <template v-slot:append>
               <q-avatar rounded>
                 <q-btn @click="openRepository">
-                  <q-icon :name="iconFolder" />
+                  <q-icon :name="icons.folder" />
                 </q-btn>
               </q-avatar>
             </template>
@@ -53,11 +53,9 @@ import path from "path"
 import electron from 'electron'
 import { QForm } from 'quasar' //eslint-disable-line no-unused-vars
 
-import { ionIosFolder } from "@quasar/extras/ionicons-v4"
-import { ionIosConstruct } from "@quasar/extras/ionicons-v4"
-
 import { ConfigModule } from '@/store'
 import { validateRepository } from '@/service/repo'
+import icons from '@/ui/icons'
 
 @Component({
   components: {}
@@ -69,8 +67,7 @@ export default class SetupDialog extends Vue {
   repoPath = path.join(os.homedir(), ".password-store")
 
   created() {
-    (this as any).iconFolder = ionIosFolder;
-    (this as any).iconSetup = ionIosConstruct;
+    (this as any).icons = icons
   }
 
   get showDialog() {
