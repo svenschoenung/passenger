@@ -9,6 +9,9 @@
                 <q-item-section avatar>
                     <q-icon :name="icons.passwords" />
                 </q-item-section>
+                <q-tooltip anchor="center right" self="center left" :delay="1000">
+                    Passwords
+                </q-tooltip>
             </q-item>
             <q-item clickable v-ripple
               :active="page === 'keys'"
@@ -17,6 +20,9 @@
                 <q-item-section avatar>
                     <q-icon :name="icons.keys" />
                 </q-item-section>
+                <q-tooltip anchor="center right" self="center left" :delay="1000">
+                    GPG-Keys
+                </q-tooltip>
             </q-item>
             <q-item clickable v-ripple
               :active="page === 'repo'"
@@ -25,6 +31,9 @@
                 <q-item-section avatar>
                     <q-icon :name="icons.repo" />
                 </q-item-section>
+                <q-tooltip anchor="center right" self="center left" :delay="1000">
+                    Version Control
+                </q-tooltip>
             </q-item>
             <q-space/>
             <q-item clickable v-ripple
@@ -35,6 +44,9 @@
                 <q-item-section avatar>
                     <q-icon :name="icons.config" />
                 </q-item-section>
+                <q-tooltip anchor="center right" self="center left" :delay="1000">
+                    Settings
+                </q-tooltip>
             </q-item>
         </q-list>
     </q-scroll-area>
