@@ -1,9 +1,11 @@
 import fs from 'fs'
 import util from 'util'
 
+export type RepositoryValidationResult = { valid: true } | { valid: false, error: string } 
+
 const stat = util.promisify(fs.stat)
 
-export async function validateRepository(repoPath: string) {
+export async function validateRepository(repoPath: string): Promise<RepositoryValidationResult> {
     let repoStats: fs.Stats | null;
     try {
         repoStats = await stat(repoPath)
@@ -11,10 +13,10 @@ export async function validateRepository(repoPath: string) {
         repoStats = null;
     }
     if (!repoStats) {
-        throw new Error('Path does not exist')
+        return { valid: false, error: 'Path does not exist'}
     }
     if (!repoStats.isDirectory()) {
-        throw new Error('Path is not a directory')
+        return { valid: false, error: 'Path is not a directory'}
     }
-    return true
+    return { valid: true }
 }

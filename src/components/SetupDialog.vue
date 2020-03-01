@@ -18,24 +18,7 @@
           class="q-pa-md"
           @submit="setup"
         >
-          <q-input
-            outlined
-            debounce="500"
-            v-model="repoPath"
-            label="Repository"
-            stack-label
-            auto-focus
-            bottom-slots
-            :rules="[validateRepository]"
-          >
-            <template v-slot:append>
-              <q-avatar rounded>
-                <q-btn @click="openRepository">
-                  <q-icon :name="icons.folder" />
-                </q-btn>
-              </q-avatar>
-            </template>
-          </q-input>
+        <repository-path-input v-model="repoPath"/>
           <q-list>
             <q-item tag="label" v-ripple>
               <q-item-section>
@@ -59,15 +42,16 @@
 import { Component, Vue, Prop, Ref } from "vue-property-decorator";
 import os from "os";
 import path from "path";
-import electron from "electron";
 import { QForm, Dark } from "quasar"; //eslint-disable-line no-unused-vars
 
 import { ConfigModule } from "@/store";
-import { validateRepository } from "@/service/repo";
 import icons from "@/ui/icons";
+import RepositoryPathInput from '@/components/RepositoryPathInput.vue'
 
 @Component({
-  components: {}
+  components: {
+    RepositoryPathInput
+  }
 })
 export default class SetupDialog extends Vue {
   @Prop() show!: boolean;
@@ -93,29 +77,6 @@ export default class SetupDialog extends Vue {
     return this.darkModeState
   }
 
-  async validateRepository(repoPath: string) {
-    try {
-      return await validateRepository(repoPath);
-    } catch (e) {
-      return (e as Error).message;
-    }
-  }
-
-  async openRepository() {
-    const folder = await electron.remote.dialog.showOpenDialog(
-      electron.remote.getCurrentWindow(),
-      {
-        title: "Open repository",
-        defaultPath: this.repoPath,
-        buttonLabel: "Open",
-        properties: ["openDirectory", "showHiddenFiles", "createDirectory"]
-      }
-    );
-    if (folder && folder.filePaths && folder.filePaths[0]) {
-      this.repoPath = folder.filePaths[0];
-    }
-  }
-
   setup() {
     ConfigModule.setup$({ repoPath: this.repoPath, darkMode: this.darkMode });
   }
@@ -123,9 +84,4 @@ export default class SetupDialog extends Vue {
 </script>
 
 <style lang="scss">
-@import "src/styles/quasar.variables.scss";
-
-.setup-dialog .q-field__append.q-anchor--skip {
-  display: none;
-}
 </style>

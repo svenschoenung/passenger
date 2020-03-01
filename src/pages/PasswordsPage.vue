@@ -53,14 +53,12 @@ export default class PasswordsPage extends Vue {
     (this as any).icons = icons;
   }
 
-  mounted() {
-    if (!PasswordsModule.tree) {
-      PasswordsModule.loadTree$();
-    }
-  }
-
   get passwordsTree() {
-    return PasswordsModule.tree && PasswordsModule.tree.children;
+    if (!(PasswordsModule.tree && PasswordsModule.tree.children)) {
+        PasswordsModule.loadTree$()
+        return null
+    }
+    return PasswordsModule.tree.children
   }
 }
 </script>

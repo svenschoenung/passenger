@@ -8,8 +8,13 @@ export default class PasswordsVuexModule extends VuexModule {
     tree: PasswordFolder | null = null
 
     @Mutation
-    changeTree(tree: PasswordFolder) {
+    changeTree(tree: PasswordFolder | null) {
         this.tree = tree 
+    }
+
+    @Mutation
+    changeRepoPath() {
+        this.tree = null
     }
 
     @Action({ commit: 'changeTree' })
