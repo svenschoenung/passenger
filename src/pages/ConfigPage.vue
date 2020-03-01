@@ -5,7 +5,7 @@
       <q-list separator>
         <q-item clickable v-ripple
           :active="configPage === 'repo'"
-          active-class="active-config-page"
+          active-class="active-elem"
           @click="changeConfigPage('repo')">
           <q-item-section>
             <q-item-label>Repository</q-item-label>
@@ -13,7 +13,7 @@
         </q-item>
         <q-item clickable v-ripple
           :active="configPage === 'ui'"
-          active-class="active-config-page"
+          active-class="active-elem"
           @click="changeConfigPage('ui')">
           <q-item-section>
             <q-item-label>Appearance</q-item-label>
@@ -64,13 +64,19 @@ export default class ConfigPage extends Vue {
 <style lang="scss">
 @import "src/styles/quasar.variables.scss";
 
-#config-page {
-  .q-drawer__content {
-    background: $grey-1;
+.body--light {
+  #config-page {
+    .q-drawer__content {
+      background: $bg-1-light;
+    }
   }
+}
 
-  .active-config-page {
-    background: rgba($primary, $alpha: .2);
+.body--dark {
+  #config-page {
+    .q-drawer__content {
+      background: $bg-1-dark;
+    }
   }
 }
 </style>

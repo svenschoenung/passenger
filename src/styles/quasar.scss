@@ -1,3 +1,43 @@
 @import './quasar.variables.scss';
 @import '~quasar-styl';
 // @import '~quasar-addon-styl';
+
+body.body--light {
+    .active-elem {
+        color: $primary;
+        background: rgba($primary, $alpha: .2);
+    }
+
+    .bg-0 {
+        background: $bg-0-light;
+    }
+
+    .bg-1 {
+        background: $bg-1-light;
+    }
+}
+
+body.body--dark {
+    background: #333333;
+
+    .active-elem {
+        color: #ffffff;
+        background: rgba($primary, $alpha: .3);
+    }
+
+    .bg-0 {
+        background: $bg-0-dark;
+    }
+
+    .bg-1 {
+        background: $bg-1-dark;
+    }
+}
+
+.cover {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

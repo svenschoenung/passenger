@@ -4,7 +4,7 @@
         <q-list padding class="fit">
             <q-item clickable v-ripple
               :active="page === 'passwords'"
-              active-class="active-page"
+              active-class="active-elem"
               @click="changePage('passwords')">
                 <q-item-section avatar>
                     <q-icon :name="icons.passwords" />
@@ -12,7 +12,7 @@
             </q-item>
             <q-item clickable v-ripple
               :active="page === 'keys'"
-              active-class="active-page"
+              active-class="active-elem"
               @click="changePage('keys')">
                 <q-item-section avatar>
                     <q-icon :name="icons.keys" />
@@ -20,7 +20,7 @@
             </q-item>
             <q-item clickable v-ripple
               :active="page === 'repo'"
-              active-class="active-page"
+              active-class="active-elem"
               @click="changePage('repo')">
                 <q-item-section avatar>
                     <q-icon :name="icons.repo" />
@@ -29,7 +29,7 @@
             <q-space/>
             <q-item clickable v-ripple
               :active="page === 'config'"
-              active-class="active-page"
+              active-class="active-elem"
               @click="changePage('config')"
               class="justify-end">
                 <q-item-section avatar>
@@ -72,8 +72,7 @@ export default class MenuBar extends Vue {
     flex-direction: column;
 }
 
-.active-page {
-    background: rgba($primary, $alpha: .2);
+.active-elem {
     border-right: 2px solid $primary;
 }
 </style>

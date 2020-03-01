@@ -48,6 +48,10 @@ import { FOOTER_HEIGHT } from '@/constants'
 export default class App extends Vue {
   footerHeight = FOOTER_HEIGHT
 
+  created() {
+    this.$q.dark.set(ConfigModule.darkMode)
+  }
+
   get pageComponent() {
     return UIModule.page + '-page'
   }

@@ -28,7 +28,7 @@ export const store = new Store<AppState>({
   },
   plugins: [
     createPersistedState({
-      whitelist: ['setup', 'changeRepoPath'],
+      whitelist: ['setup', 'changeRepoPath', 'changeDarkMode'],
       storage: new ElectronStore<{state: AppState}>({
         name: 'store',
         serialize: (value) => {
