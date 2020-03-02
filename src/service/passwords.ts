@@ -29,30 +29,40 @@ async function readPasswordFolder(parent: PasswordFolder) {
       .filter(f => !isGitFile(f.name))
       .map(f => addPasswordNode(parent, f))
       .filter(f => f.folder || isKeysFile(f.name))
-      .map(f => f.folder ? readPasswordFolder(f as PasswordFolder) : addKeys(parent, f))
+      .map(f => f.folder ? readPasswordFolder(f) : addKeys(parent, f))
     await Promise.all(promises) 
     return parent
 }
 
-function addPasswordNode(parent: PasswordFolder, dirent: fs.Dirent): PasswordFolder | PasswordFile {
-    const isDirectory = dirent.isDirectory();
-    const node: PasswordFolder | PasswordFile = {
-        folder: isDirectory,
-        name: dirent.name,
-        absPath: path.join(parent.absPath, dirent.name),
-        relPath: path.join(parent.relPath, dirent.name)
-    }
-    if (isDirectory) {
-        const folder = node as PasswordFolder
-        folder.children = []
-        folder.keys = []
+function addPasswordNode(parent: PasswordFolder, dirent: fs.Dirent): PasswordNode {
+    const folder = dirent.isDirectory();
+    const name = dirent.name
+    const absPath = path.join(parent.absPath, dirent.name)
+    const relPath = path.join(parent.relPath, dirent.name)
+
+    if (folder) {
+        const folder = {
+            folder: true,
+            name,
+            absPath,
+            relPath,
+            children: [],
+            keys: []
+        }
+        parent.children.push(folder)
+        return folder
     } else {
-        node.name = node.name.replace(/\.gpg$/, '')
+        const file: PasswordFile = {
+            folder: false,
+            name: name.replace(/\.gpg$/, ''),
+            absPath,
+            relPath
+        }
+        if (!isKeysFile(name)) {
+            parent.children.push(file)
+        }
+        return file
     }
-    if (!isKeysFile(node.name)) {
-        parent.children.push(node)
-    }
-    return node
 }
 
 async function addKeys(parent: PasswordFolder, file: PasswordFile) {

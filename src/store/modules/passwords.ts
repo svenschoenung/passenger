@@ -20,7 +20,9 @@ export default class PasswordsVuexModule extends VuexModule {
     @Action({ commit: 'changeTree' })
     async loadTree$() {
         try {
-           return await readPasswordTree(ConfigModule.repoPath as string);
+           const t = await readPasswordTree(ConfigModule.repoPath as string);
+           console.log('t', t)
+           return t;
         } catch (e) {
             console.log(e)
         }

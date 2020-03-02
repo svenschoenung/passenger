@@ -5,6 +5,8 @@ declare module '@quasar/extras/ionicons-v4' {
     export const ionIosConstruct: string
     export const ionIosPlay: string
     export const ionIosFolder: string
+    export const ionIosClose: string
+    export const ionIosArrowDown: string
 }
 
 declare module 'quasar/icon-set/ionicons-v4' {
