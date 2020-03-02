@@ -18,6 +18,7 @@ function createWindow () {
 
   win = new BrowserWindow({
     title: 'Passenger',
+    show: false,
     width: Math.round(Math.max(minWidth, screenSize.width * 0.8)),
     height: Math.round(Math.max(minHeight, screenSize.height * 0.8)),
     minWidth,
@@ -26,6 +27,13 @@ function createWindow () {
       nodeIntegration: true
     }
   })
+
+  win.on('ready-to-show', function() { 
+    if (win) {
+      win.show()
+      win.focus()
+    }
+  });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
