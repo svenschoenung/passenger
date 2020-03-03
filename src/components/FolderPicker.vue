@@ -1,10 +1,10 @@
 <template>
   <q-input
-    class="repository-path-input"
+    class="folder-picker"
     outlined
     debounce="500"
-    v-model="repoPath"
-    label="Repository location:"
+    v-model="folderPath"
+    :label="label"
     stack-label
     auto-focus
     bottom-slots
@@ -21,27 +21,29 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit } from "vue-property-decorator";
-import electron from "electron";
-import { QForm, Dark } from "quasar"; //eslint-disable-line no-unused-vars
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+import electron from 'electron';
 
-import { validateRepository } from "@/service/repo";
-import icons from "@/ui/icons";
+import { FolderValidator } from '@/model/validation';
+import icons from '@/ui/icons';
 
 @Component({
   components: {}
 })
 export default class RepositoryPathInput extends Vue {
+  @Prop({ type: String }) label!: string;
+  @Prop({ type: String }) title!: string;
   @Prop({ type: String }) value!: string;
-  repoPath: string | null = null;
+  @Prop({ type: Function }) validator!: FolderValidator;
+  folderPath: string | null = null;
 
   created() {
     (this as any).icons = icons;
-    this.repoPath = this.value;
+    this.folderPath = this.value;
   }
 
   async validateRepository(repoPath: string) {
-    const result = await validateRepository(repoPath);
+    const result = await this.validator(repoPath);
     if (result.valid) {
       this.updateValue(repoPath);
       return true;
@@ -53,20 +55,19 @@ export default class RepositoryPathInput extends Vue {
     const folder = await electron.remote.dialog.showOpenDialog(
       electron.remote.getCurrentWindow(),
       {
-        title: "Open repository",
+        title: this.title,
         defaultPath: this.value,
         buttonLabel: "Open",
         properties: ["openDirectory", "showHiddenFiles", "createDirectory"]
       }
     );
     if (folder && folder.filePaths && folder.filePaths[0]) {
-      this.repoPath = folder.filePaths[0];
+      this.folderPath = folder.filePaths[0];
     }
   }
 
   @Emit("input")
   updateValue(value: string) {
-    console.log("value", value);
     return value;
   }
 }
@@ -75,7 +76,7 @@ export default class RepositoryPathInput extends Vue {
 <style lang="scss">
 @import "src/styles/quasar.variables.scss";
 
-.repository-path-input .q-field__append.q-anchor--skip {
+.folder-picker .q-field__append.q-anchor--skip {
   display: none;
 }
 </style>

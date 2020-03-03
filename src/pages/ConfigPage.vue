@@ -12,6 +12,14 @@
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple
+          :active="configPage === 'keys'"
+          active-class="active-elem"
+          @click="changeConfigPage('keys')">
+          <q-item-section>
+            <q-item-label>GPG</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-ripple
           :active="configPage === 'ui'"
           active-class="active-elem"
           @click="changeConfigPage('ui')">
@@ -35,12 +43,14 @@ import { Component, Vue } from 'vue-property-decorator'
 import { FOOTER_HEIGHT } from '@/constants'
 import { UIModule } from '@/store'
 import ConfigRepoPage from '@/pages/config/ConfigRepoPage.vue'
+import ConfigKeysPage from '@/pages/config/ConfigKeysPage.vue'
 import ConfigUIPage from '@/pages/config/ConfigUIPage.vue'
 
 @Component({
   name: 'config-page',
   components: {
     'config-repo-page': ConfigRepoPage,
+    'config-keys-page': ConfigKeysPage,
     'config-ui-page': ConfigUIPage
   },
 })

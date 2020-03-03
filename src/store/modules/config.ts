@@ -1,20 +1,28 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { Dark } from 'quasar'
 
+export interface SetupPayload {
+  repoPath: string
+  gpgPath: string
+  darkMode: boolean
+}
+
 @Module({ name: 'config' })
 export default class ConfigVuexModule extends VuexModule {
     repoPath: string | null = null
+    gpgPath: string | null = null
     darkMode = false
 
     @Mutation
-    setup(payload: { repoPath: string, darkMode: boolean }) {
+    setup(payload: SetupPayload) {
         this.repoPath = payload.repoPath;
+        this.gpgPath = payload.gpgPath;
         this.darkMode = payload.darkMode;
         Dark.set(this.darkMode)
     }
 
     @Action({ commit: 'setup' })
-    setup$(payload: { repoPath: string, darkMode: boolean }) {
+    setup$(payload: SetupPayload) {
         return payload
     }
 
@@ -29,6 +37,16 @@ export default class ConfigVuexModule extends VuexModule {
     }
 
     @Mutation
+    changeGPGPath(gpgPath: string) {
+        this.gpgPath = gpgPath 
+    }
+
+    @Action({ commit: 'changeGPGPath' })
+    changeGPGPath$(gpgPath: string) {
+        return gpgPath
+    }
+
+    @Mutation
     changeDarkMode(darkMode: boolean) {
         this.darkMode = darkMode 
         Dark.set(this.darkMode)
@@ -38,4 +56,6 @@ export default class ConfigVuexModule extends VuexModule {
     changeDarkMode$(darkMode: boolean) {
         return darkMode
     }
+
+
 }

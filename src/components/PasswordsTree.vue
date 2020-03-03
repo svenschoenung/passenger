@@ -1,6 +1,6 @@
 <template>
-<div id="passwords-tree" class="cover bg-1 q-pa-sm">
-    <q-input filled square v-model="filter" :dense="true" placeholder="Filter">
+<div id="passwords-tree" class="cover bg-1">
+    <q-input class="q-pa-sm" filled square v-model="filter" :dense="true" placeholder="Filter">
       <template v-slot:append>
         <q-icon v-if="filter" :name="icons.clear" class="cursor-pointer" @click="clearFilter" />
       </template>
@@ -10,7 +10,7 @@
     </q-input>
     <q-tree
         v-if="passwordsTree"
-        class="bg-1"
+        class="q-pa-sm bg-1"
         :nodes="passwordsTree"
         :icon="icons.arrow"
         :filter="filter"
@@ -44,7 +44,9 @@
 import { Component, Vue } from "vue-property-decorator";
 import { PasswordsModule, UIModule, KeysModule } from "../store";
 import { PasswordFolder, PasswordNode } from '@/model/tree';
+import { PublicKey, PrivateKey } from 'gpg-promised';
 import icons from "@/ui/icons";
+import { findMatchingKey } from '@/service/keys';
 
 @Component({
   name: "passwords-tree",
@@ -70,24 +72,27 @@ export default class PasswordsTree extends Vue {
   }
 
   get passwordsTree() {
-    if (!(PasswordsModule.tree && PasswordsModule.tree.children)) {
-        PasswordsModule.loadTree$()
-        return null
+    const tree = PasswordsModule.loadTree;
+    const privateKeys = KeysModule.loadPrivateKeys;
+
+    if (!tree || !privateKeys) {
+      return null
     }
-    let tree: PasswordFolder = PasswordsModule.tree
-    tree = this.markDecryptable(tree, false)
-    return (tree as PasswordFolder).children 
+
+    let passwordsTree: PasswordFolder = tree
+    passwordsTree = this.markDecryptable(tree, privateKeys, false)
+    return (passwordsTree as PasswordFolder).children 
   }
 
-  markDecryptable<T extends PasswordNode>(node: T, inheritedDecryptable: boolean): T {
+  markDecryptable<T extends PasswordNode>(node: T, privateKeys: PrivateKey[], inheritedDecryptable: boolean): T {
       if (node.folder) {
           const folder = node as PasswordFolder
           const decryptable = folder.keys && folder.keys.length > 0 ? 
-            folder.keys.some(key => KeysModule.privateKeys.includes(key)) : inheritedDecryptable
+            folder.keys.some(key => findMatchingKey(key, privateKeys)) : inheritedDecryptable
           return {
               ...node,
               decryptable,
-              children: folder.children.map(child => this.markDecryptable(child, decryptable))
+              children: folder.children.map(child => this.markDecryptable(child, privateKeys, decryptable))
           }
       } else {
           return {

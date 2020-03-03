@@ -8,10 +8,10 @@
     class="q-pa-md"
   >
         <folder-picker
-          label="Repository location:"
-          title="Open repository"
-          :validator="validateRepository"
-          v-model="repoPath"/>
+          label="GPG homedir location:"
+          title="Open GPG homedir"
+          :validator="validateGPGHomedir"
+          v-model="gpgPath"/>
   </q-form>
 </template>
 
@@ -19,24 +19,24 @@
 import { Component, Vue } from "vue-property-decorator";
 import { ConfigModule } from '@/store';
 import FolderPicker from '@/components/FolderPicker.vue';
-import { validateRepository } from '../../service/repo';
+import { validateGPGHomedir } from '../../service/keys';
 
 @Component({
-  name: "config-repo-page",
+  name: "config-keys-page",
   components: {
     FolderPicker
   }
 })
-export default class ConfigRepoPage extends Vue {
-  repoPath = ConfigModule.repoPath as string;
+export default class ConfigKeysPage extends Vue {
+  gpgPath = ConfigModule.gpgPath as string;
 
   created() {
-    (this as any).validateRepository = validateRepository
+    (this as any).validateGPGHomedir = validateGPGHomedir
   }
 
   destroyed() {
-    if (this.repoPath !== ConfigModule.repoPath) {
-      ConfigModule.changeRepoPath$(this.repoPath)
+    if (this.gpgPath !== ConfigModule.gpgPath) {
+      ConfigModule.changeGPGPath$(this.gpgPath)
     }
   }
 }

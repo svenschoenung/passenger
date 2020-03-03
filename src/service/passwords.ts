@@ -2,10 +2,7 @@ import fs from 'fs'
 import util from 'util'
 import path from 'path'
 import { PasswordFile, PasswordFolder, PasswordNode } from '@/model/tree'
-
-const stat = util.promisify(fs.stat)
-const readdir = util.promisify(fs.readdir)
-const readFile = util.promisify(fs.readFile)
+import { stat, readdir, readFile } from '@/util/promisified/fs'
 
 export async function readPasswordTree(repoPath: string) {
     const repo = await stat(repoPath)

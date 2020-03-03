@@ -18,7 +18,16 @@
           class="q-pa-md"
           @submit="setup"
         >
-        <repository-path-input v-model="repoPath"/>
+        <folder-picker
+          label="Repository location:"
+          title="Open repository"
+          :validator="validateRepository"
+          v-model="repoPath"/>
+        <folder-picker
+          label="GPG homedir location:"
+          title="Open GPG homedir"
+          :validator="validateGPGHomedir"
+          v-model="gpgPath"/>
           <q-list>
             <q-item tag="label" v-ripple>
               <q-item-section>
@@ -42,15 +51,17 @@
 import { Component, Vue, Prop, Ref } from "vue-property-decorator";
 import os from "os";
 import path from "path";
-import { QForm, Dark } from "quasar"; //eslint-disable-line no-unused-vars
+import { QForm, Dark } from "quasar";
 
 import { ConfigModule } from "@/store";
+import { validateRepository } from '@/service/repo'
+import { validateGPGHomedir } from '@/service/keys'
 import icons from "@/ui/icons";
-import RepositoryPathInput from '@/components/RepositoryPathInput.vue'
+import FolderPicker from '@/components/FolderPicker.vue'
 
 @Component({
   components: {
-    RepositoryPathInput
+    FolderPicker
   }
 })
 export default class SetupDialog extends Vue {
@@ -58,10 +69,13 @@ export default class SetupDialog extends Vue {
   @Ref() form!: QForm;
 
   repoPath = path.join(os.homedir(), ".password-store");
+  gpgPath = path.join(os.homedir(), ".gnupg");
   darkModeState = false;
 
   created() {
-    (this as any).icons = icons
+    (this as any).icons = icons;
+    (this as any).validateRepository = validateRepository;
+    (this as any).validateGPGHomedir = validateGPGHomedir;
   }
 
   get showDialog() {
@@ -78,7 +92,11 @@ export default class SetupDialog extends Vue {
   }
 
   setup() {
-    ConfigModule.setup$({ repoPath: this.repoPath, darkMode: this.darkMode });
+    ConfigModule.setup$({ 
+      repoPath: this.repoPath, 
+      gpgPath: this.gpgPath,
+      darkMode: this.darkMode
+    });
   }
 }
 </script>
