@@ -1,9 +1,7 @@
 <template>
-  <q-splitter v-model="treePaneWidthInPercent" :style="{ height: `calc(100vh - ${footerHeight}px`}">
+  <q-splitter id="passwords-page" v-model="treePaneWidthInPercent" :style="{ height: `calc(100vh - ${footerHeight}px`}">
     <template v-slot:before>
-      <div class="cover bg-1">
-        <passwords-tree/>
-      </div>
+      <passwords-tree/>
     </template>
     <template v-slot:after>Passwords</template>
   </q-splitter>
@@ -26,5 +24,12 @@ export default class PasswordsPage extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+#passwords-page {
+  .q-splitter__panel.q-splitter__before {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+}
 </style>

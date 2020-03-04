@@ -1,5 +1,5 @@
 <template>
-<div id="passwords-tree" class="cover bg-1">
+<div id="passwords-tree" class="flex direction-column flex-grow bg-1">
     <q-input class="q-pa-sm" filled square v-model="filter" :dense="true" placeholder="Filter">
       <template v-slot:append>
         <q-icon v-if="filter" :name="icons.clear" class="cursor-pointer" @click="clearFilter" />
@@ -8,8 +8,8 @@
         <q-btn size="xs" flat class="menu-button"><q-icon :name="icons.menu" /></q-btn>
       </template>
     </q-input>
+    <q-scroll-area class="flex-grow" v-if="passwordsTree">
     <q-tree
-        v-if="passwordsTree"
         class="q-pa-sm bg-1"
         :nodes="passwordsTree"
         :icon="icons.arrow"
@@ -28,6 +28,7 @@
           </span>
       </template> 
     </q-tree>
+    </q-scroll-area>
     <q-circular-progress
         v-else
         indeterminate
