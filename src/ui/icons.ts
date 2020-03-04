@@ -10,8 +10,9 @@ import { ionIosArrowDown } from '@quasar/extras/ionicons-v4'
 const icons = {
     folder: ionIosFolder,
     password: ionIosLock,
-    config: ionIosConstruct,
     passwords: ionIosLock,
+    config: ionIosConstruct,
+    key: ionIosKey,
     keys: ionIosKey,
     repo: ionIosGitCompare,
     arrow: ionIosPlay,

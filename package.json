@@ -13,6 +13,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@4rk/vue-roving-tabindex": "^1.2.0",
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.4",
     "electron-store": "^5.1.1",
@@ -60,7 +61,9 @@
       "parser": "@typescript-eslint/parser"
     },
     "rules": {
-      "no-unused-vars": ["off"]
+      "no-unused-vars": [
+        "off"
+      ]
     }
   },
   "browserslist": [

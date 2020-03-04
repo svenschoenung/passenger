@@ -35,6 +35,7 @@ import { ConfigModule } from './store'
 
 import { FOOTER_HEIGHT } from '@/constants'
 
+
 @Component({
   components: {
     PasswordsPage,
@@ -60,6 +61,7 @@ export default class App extends Vue {
     return !!ConfigModule.repoPath
   }
 }
+
 </script>
 
 <style lang="scss" scoped>

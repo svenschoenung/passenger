@@ -2,8 +2,8 @@
   <q-layout id="config-page" container view="lhr Lpr lfr" :style="{ height: `calc(100vh - ${footerHeight}px`}">
 
     <q-drawer bordered show-if-above :breakpoint="0" :width="200" class="bg-grey-4">
-      <q-list separator>
-        <q-item clickable v-ripple
+      <q-list separator v-roving-tabindex-container>
+        <q-item clickable v-ripple v-roving-tabindex
           :active="configPage === 'repo'"
           active-class="active-elem"
           @click="changeConfigPage('repo')">
@@ -11,7 +11,7 @@
             <q-item-label>Repository</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable v-ripple
+        <q-item clickable v-ripple v-roving-tabindex
           :active="configPage === 'keys'"
           active-class="active-elem"
           @click="changeConfigPage('keys')">
@@ -19,7 +19,7 @@
             <q-item-label>GPG</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable v-ripple
+        <q-item clickable v-ripple v-roving-tabindex
           :active="configPage === 'ui'"
           active-class="active-elem"
           @click="changeConfigPage('ui')">
@@ -40,6 +40,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { RovingTabindexContainer, RovingTabindex } from '@4rk/vue-roving-tabindex'
 import { FOOTER_HEIGHT } from '@/constants'
 import { UIModule } from '@/store'
 import ConfigRepoPage from '@/pages/config/ConfigRepoPage.vue'
@@ -53,6 +54,10 @@ import ConfigUIPage from '@/pages/config/ConfigUIPage.vue'
     'config-keys-page': ConfigKeysPage,
     'config-ui-page': ConfigUIPage
   },
+  directives: {
+    RovingTabindexContainer,
+    RovingTabindex
+  }
 })
 export default class ConfigPage extends Vue {
   footerHeight = FOOTER_HEIGHT

@@ -1,8 +1,8 @@
 <template>
     <q-scroll-area class="fit text-primary"
       :content-style="{ height: '100% !important' }">
-        <q-list padding class="fit">
-            <q-item clickable v-ripple
+        <q-list padding class="fit" v-roving-tabindex-container>
+            <q-item clickable v-ripple v-roving-tabindex
               :active="page === 'passwords'"
               active-class="active-elem"
               @click="changePage('passwords')">
@@ -13,7 +13,7 @@
                     Passwords
                 </q-tooltip>
             </q-item>
-            <q-item clickable v-ripple
+            <q-item clickable v-ripple v-roving-tabindex
               :active="page === 'keys'"
               active-class="active-elem"
               @click="changePage('keys')">
@@ -24,7 +24,7 @@
                     GPG-Keys
                 </q-tooltip>
             </q-item>
-            <q-item clickable v-ripple
+            <q-item clickable v-ripple v-roving-tabindex
               :active="page === 'repo'"
               active-class="active-elem"
               @click="changePage('repo')">
@@ -36,7 +36,7 @@
                 </q-tooltip>
             </q-item>
             <q-space/>
-            <q-item clickable v-ripple
+            <q-item clickable v-ripple v-roving-tabindex
               :active="page === 'config'"
               active-class="active-elem"
               @click="changePage('config')"
@@ -54,13 +54,16 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { RovingTabindexContainer, RovingTabindex } from '@4rk/vue-roving-tabindex'
 
 import { UIModule } from '../store'
 import icons from '@/ui/icons';
 
 @Component({
-  components: {
-  },
+  directives: {
+      RovingTabindexContainer,
+      RovingTabindex
+  }
 })
 export default class MenuBar extends Vue {
     created() {

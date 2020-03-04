@@ -5,7 +5,7 @@
 body.body--light {
     .active-elem {
         color: $primary;
-        background: rgba($primary, $alpha: .2);
+        background: $bg-primary-light;
     }
 
     .bg-0 {
@@ -22,7 +22,7 @@ body.body--dark {
 
     .active-elem {
         color: #ffffff;
-        background: rgba($primary, $alpha: .3);
+        background: $bg-primary-dark;
     }
 
     .bg-0 {
@@ -40,4 +40,20 @@ body.body--dark {
     bottom: 0;
     left: 0;
     right: 0;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+  
+.direction-column {
+  flex-direction: column;
+}
+
+.direction-row{
+  flex-direction: row;
+}
+
+* {
+  -webkit-user-select:none;
 }

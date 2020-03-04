@@ -2,6 +2,7 @@ declare module "gpg-promised" {
     export interface GPGUser {
         name: string
         email: string
+        user_id: string
     }
     export interface GenericKey {
         type: 'pub' | 'sec'
