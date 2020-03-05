@@ -19,24 +19,9 @@ export interface PasswordFile {
 
 export type PasswordNode = PasswordFolder | PasswordFile
 
-export type DoNothing = null
-export type DeleteNode = { node: null } 
-export type ReplaceNode = { node: PasswordNode, skipChildren?: boolean } 
-export type NodeVisitResult = DoNothing | DeleteNode | ReplaceNode
-
-export function traverseTree(node: PasswordNode, visit: (n: PasswordNode) => NodeVisitResult) {
-    const result = visit(node);
-    if (!result) {
-        return node
+export function traverseTree(node: PasswordNode, visit: (n: PasswordNode) => void) {
+    visit(node);
+    if (node.folder) {
+        node.children.forEach(child => traverseTree(child, visit))
     }
-    if (!result.node) {
-        return null
-    }
-    const newNode = result.node
-    if (newNode.folder && !result.skipChildren) {
-        newNode.children = newNode.children
-          .map(child => traverseTree(child, visit))
-          .filter(child => child !== null) as PasswordNode[]
-    }
-    return newNode
 }

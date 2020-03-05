@@ -9,7 +9,7 @@
       </template>
     </q-input>
     <q-scroll-area class="flex-grow" v-if="passwordsTree">
-    <q-tree
+    <q-tree 
         class="q-pa-sm bg-1"
         :nodes="passwordsTree"
         :icon="icons.arrow"
@@ -17,15 +17,14 @@
         default-expand-all
         node-key="absPath"
         label-key="name"
-        :selected.sync="selected"
-        selected-color="primary">
-   
+        :selected.sync="selected">
       <template v-slot:default-header="props">
-          <span :class="[props.node.decryptable ? 'decryptable' : 'not-decryptable']">
-          <q-icon v-if="props.node.folder" :name="icons.folder" size="xs"/>
-          <q-icon v-else :name="icons.password" />
-          <span class="node-name">{{props.node.name}}</span>
-          </span>
+        <span :class="[props.node.decryptable ? 'decryptable' : 'not-decryptable']">
+          <q-icon v-if="props.node.folder" :name="props.expanded ? icons.folderOpen : icons.folder" size="xs" color="primary"/>
+          <q-icon v-else :name="icons.password" color="primary"/>
+          <span class="node-name" :data-abs-path="props.node.absPath">{{props.node.name}}</span>
+          <q-icon v-if="props.node.folder && props.node.keys.length" :name="icons.key" class="has-keys" size="1.4em" color="grey-8"/>
+        </span>
       </template> 
     </q-tree>
     </q-scroll-area>
@@ -42,12 +41,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { PasswordsModule, UIModule, KeysModule } from "../store";
+import { Component, Vue, Ref } from "vue-property-decorator";
+import { scroll, Scroll } from 'quasar'
+import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
 import { PasswordFolder, PasswordNode } from '@/model/tree';
 import { PublicKey, PrivateKey } from 'gpg-promised';
 import icons from "@/ui/icons";
 import { findMatchingKey } from '@/service/keys';
+import VueScrollTo from 'vue-scrollto';
 
 @Component({
   name: "passwords-tree",
@@ -56,7 +57,35 @@ import { findMatchingKey } from '@/service/keys';
 export default class PasswordsTree extends Vue {
   filter = ''
 
+  created() {
+    (this as any).icons = icons;
+    (this as any).scrollWatcher = new ScrollWatcher(this)
+  }
+
+  scrollTo(absPath: string | null) {
+    let elem: HTMLElement | null = null;
+    if (absPath) {
+      elem = document.querySelector(`[data-abs-path="${CSS.escape(absPath)}"]`)
+    }
+    if (elem) {
+      elem = elem.closest('.q-tree__node-header')
+    }
+    if (elem) {
+      VueScrollTo.scrollTo(elem, 1, {
+        container: scroll.getScrollTarget(elem) as Element,
+        x: false,
+        y: true,
+        cancelable: false
+      })
+    }
+  }
+
+  destroyed() {
+    (this as any).scrollWatcher.unwatch()
+  }
+
   set selected(absPath: string) {
+    (this as any).scrollWatcher.selected = absPath
     UIModule.selectPasswordNode$(absPath);
   }
 
@@ -66,10 +95,6 @@ export default class PasswordsTree extends Vue {
 
   get privateKeys() {
       return KeysModule.privateKeys
-  }
-
-  created() {
-    (this as any).icons = icons;
   }
 
   get passwordsTree() {
@@ -107,9 +132,28 @@ export default class PasswordsTree extends Vue {
       this.filter = ''
   }
 }
+
+class ScrollWatcher {
+  selected!: string | null
+  unwatch: any;
+
+  constructor(component: PasswordsTree) {
+    this.selected = UIModule.selectedPasswordNode
+    this.unwatch = component.$store.watch(
+      (state: AppState) => state.ui.selectedPasswordNode,
+      (selected: string | null) => {
+        if (this.selected !== selected) {
+          component.scrollTo(selected)
+        }
+        this.selected = selected;
+      })
+  }
+}
 </script>
 
 <style lang="scss">
+@import "src/styles/quasar.variables.scss";
+
 #passwords-tree {
     .centered-progress {
         position: absolute;
@@ -123,11 +167,41 @@ export default class PasswordsTree extends Vue {
             padding: 0px 5px;
         }
     }
+
     .not-decryptable {
         opacity: 0.2
     }
+
     .node-name {
         margin-left: 5px;
     }
+
+    .has-keys {
+        margin-left: 5px;
+    }
+}
+
+body.body--light {
+  #passwords-tree {
+    .q-tree__node--selected {
+      background: $bg-primary-light;
+    }
+
+    .node-name {
+      color: $dark;
+    }
+  }
+}
+
+body.body--dark {
+  #passwords-tree {
+    .q-tree__node--selected {
+      background: $bg-primary-dark;
+    }
+
+    .node-name {
+      color: white;
+    }
+  }
 }
 </style>

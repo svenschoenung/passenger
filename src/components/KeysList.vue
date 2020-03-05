@@ -1,7 +1,7 @@
 <template>
-  <div class="flex direction-column keys-list">
-    <q-toolbar>{{title}}</q-toolbar>
-    <q-list bordered class="flex flex-grow" v-roving-tabindex-container>
+  <div :class="`flex direction-column keys-list-container ${disabled ? 'disabled' : ''}`">
+    <q-toolbar>{{title}} <q-chip dense color="primary">{{keys ? keys.length : 0}}</q-chip></q-toolbar>
+    <q-list bordered class="flex flex-grow keys-list" v-roving-tabindex-container :disabled="disabled">
       <q-scroll-area class="flex-grow">
         <q-item v-for="(key, index) in keys" :key="key.keyid"
           class="q-my-sm" clickable v-ripple v-roving-tabindex
@@ -49,6 +49,7 @@ import icons from "@/ui/icons";
 export default class KeysList extends Vue {
   @Prop() title!: string;
   @Prop() keys!: GenericKey[];
+  @Prop() disabled!: boolean;
 
   selectionStart = -1;
   selectionEnd = -1;
@@ -69,10 +70,13 @@ export default class KeysList extends Vue {
   }
 
   isSelecting() {
-    return this.selectionStart >= 0 && this.selectionEnd >= 0;
+    return !this.disabled && this.selectionStart >= 0 && this.selectionEnd >= 0;
   }
 
   get selectedAndSelectingKeys() {
+    if (this.disabled) {
+      return {}
+    }
     if (this.isSelecting()) {
       const start = Math.min(this.selectionStart, this.selectionEnd);
       const end = Math.max(this.selectionStart, this.selectionEnd);
@@ -93,6 +97,9 @@ export default class KeysList extends Vue {
   }
 
   startSelection(index: number, editSelection: boolean) {
+    if (this.disabled) {
+      return
+    }
     if (!editSelection) {
       this.selectedKeys = {};
     }
@@ -101,12 +108,18 @@ export default class KeysList extends Vue {
   }
 
   endSelection(index: number) {
+    if (this.disabled) {
+      return
+    }
     if (this.isSelecting()) {
       this.selectionEnd = index;
     }
   }
 
   finishSelecting() {
+    if (this.disabled) {
+      return
+    }
     this.selectedKeys = this.selectedAndSelectingKeys;
     this.selectionStart = -1;
     this.selectionEnd = -1;
@@ -117,15 +130,23 @@ export default class KeysList extends Vue {
 <style lang="scss">
 @import "src/styles/quasar.variables.scss";
 
-.keys-list {
+.keys-list-container {
   .q-my-sm {
     margin-top: 0px;
     margin-bottom: 0px;
   }
+
+  &.disabled .q-toolbar {
+    opacity: 0.4;
+  }
 }
 
 body.body--light {
-  .keys-list {
+  .keys-list-container {
+    .keys-list {
+      background: $bg-1-light;
+    }
+
     .highlighted-key {
       background: $bg-primary-light;
     }
@@ -133,7 +154,11 @@ body.body--light {
 }
 
 body.body--dark {
-  .keys-list {
+  .keys-list-container {
+    .keys-list {
+      background: $bg-1-dark;
+    }
+
     .highlighted-key {
       background: $bg-primary-dark;
     }

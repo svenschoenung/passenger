@@ -55,7 +55,7 @@ function addPasswordNode(parent: PasswordFolder, dirent: fs.Dirent): PasswordNod
             absPath,
             relPath
         }
-        if (!isKeysFile(name)) {
+        if (isGPGFile(name)) {
             parent.children.push(file)
         }
         return file
@@ -76,3 +76,8 @@ function isKeysFile(name: string) {
 function isGitFile(name: string) {
     return name.indexOf('.git') === 0
 }
+
+function isGPGFile(name: string) {
+    return name.match(/\.gpg$/)
+}
+
