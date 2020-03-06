@@ -60,6 +60,7 @@ import icons from "@/ui/icons";
 import FolderPicker from '@/components/FolderPicker.vue'
 
 @Component({
+  name: 'setup-dialog',
   components: {
     FolderPicker
   }

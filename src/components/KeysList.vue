@@ -40,7 +40,6 @@ import icons from "@/ui/icons";
 
 @Component({
   name: "keys-page",
-  components: {},
   directives: {
       RovingTabindexContainer,
       RovingTabindex

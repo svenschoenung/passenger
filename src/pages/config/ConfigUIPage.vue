@@ -18,11 +18,9 @@ import { Component, Vue } from 'vue-property-decorator'
 import { ConfigModule } from '../../store'
 
 @Component({
-  name: 'config-ui-page',
-  components: {
-  },
+  name: 'config-ui-page'
 })
-export default class ConfigUIIage extends Vue {
+export default class ConfigUIPage extends Vue {
 
   set darkMode(darkMode: boolean) {
     ConfigModule.changeDarkMode$(darkMode)

@@ -9,6 +9,7 @@ declare module '@quasar/extras/ionicons-v4' {
     export const ionIosClose: string
     export const ionIosArrowDown: string
     export const ionIosArrowForward: string
+    export const ionIosCloseCircleOutline: string
 }
 
 declare module 'quasar/icon-set/ionicons-v4' {

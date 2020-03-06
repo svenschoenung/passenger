@@ -32,6 +32,7 @@ import { PublicKey } from 'gpg-promised'
 import icons from '@/ui/icons';
 
 @Component({
+  name: 'password-folder-details',
   components: {
     FolderBreadcrumbs,
     KeysList,

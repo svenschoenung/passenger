@@ -6,9 +6,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
-  name: 'repo-page',
-  components: {
-  },
+  name: 'repo-page'
 })
 export default class RepoPage extends Vue {
 }

@@ -17,8 +17,7 @@ import icons from '@/ui/icons';
 import { PasswordsModule, UIModule } from '../store';
 
 @Component({
-  components: {
-  },
+  name: 'folder-breadcrumbs',
   directives: {
     RovingTabindexContainer,
     RovingTabindex

@@ -28,7 +28,7 @@ import { FolderValidator } from '@/model/validation';
 import icons from '@/ui/icons';
 
 @Component({
-  components: {}
+  name: 'repository-path-input'
 })
 export default class RepositoryPathInput extends Vue {
   @Prop({ type: String }) label!: string;

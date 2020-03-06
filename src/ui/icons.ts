@@ -8,6 +8,7 @@ import { ionIosPlay } from '@quasar/extras/ionicons-v4'
 import { ionIosClose } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowDown } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowForward } from '@quasar/extras/ionicons-v4'
+import { ionIosCloseCircleOutline } from '@quasar/extras/ionicons-v4'
 
 const icons = {
     folder: ionIosFolder,
@@ -21,7 +22,8 @@ const icons = {
     arrow: ionIosPlay,
     clear: ionIosClose,
     menu: ionIosArrowDown,
-    separator: ionIosArrowForward
+    separator: ionIosArrowForward,
+    error: ionIosCloseCircleOutline	
 }
 
 export default icons

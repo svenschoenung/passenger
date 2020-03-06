@@ -23,7 +23,8 @@
           <q-icon v-if="props.node.folder" :name="props.expanded ? icons.folderOpen : icons.folder" size="xs" color="primary"/>
           <q-icon v-else :name="icons.password" color="primary"/>
           <span class="node-name" :data-abs-path="props.node.absPath">{{props.node.name}}</span>
-          <q-icon v-if="props.node.folder && props.node.keys.length" :name="icons.key" class="has-keys" size="1.4em" color="grey-8"/>
+          <q-icon v-if="props.node.folder && props.node.keys.length" :name="icons.key" class="node-marker" size="1.4em" color="grey-8"/>
+          <q-icon v-if="!props.node.encryptable" :name="icons.error" class="node-marker" size="1.4em" color="negative"/>
         </span>
       </template> 
     </q-tree>
@@ -51,10 +52,10 @@ import { findMatchingKey } from '@/service/keys';
 import VueScrollTo from 'vue-scrollto';
 
 @Component({
-  name: "passwords-tree",
-  components: {}
+  name: "passwords-tree"
 })
 export default class PasswordsTree extends Vue {
+
   filter = ''
 
   created() {
@@ -100,13 +101,21 @@ export default class PasswordsTree extends Vue {
   get passwordsTree() {
     const tree = PasswordsModule.loadTree;
     const privateKeys = KeysModule.loadPrivateKeys;
+    const publicKeys = KeysModule.loadPublicKeys;
 
-    if (!tree || !privateKeys) {
+    if (!tree) {
       return null
     }
 
     let passwordsTree: PasswordFolder = tree
-    passwordsTree = this.markDecryptable(tree, privateKeys, false)
+
+    if (privateKeys) {
+      passwordsTree = this.markDecryptable(passwordsTree, privateKeys, false)
+    }
+    if (publicKeys) {
+      passwordsTree = this.markEncryptable(passwordsTree, publicKeys, true)
+    }
+
     return (passwordsTree as PasswordFolder).children 
   }
 
@@ -126,6 +135,24 @@ export default class PasswordsTree extends Vue {
               decryptable: inheritedDecryptable
           }
       }
+  }
+
+  markEncryptable<T extends PasswordNode>(node: T, publicKeys: PublicKey[], inhertedEncryptable: boolean): T {
+    if (node.folder) {
+          const folder = node as PasswordFolder
+          const encryptable = folder.keys && folder.keys.length > 0 ? 
+            !folder.keys.find(key => !findMatchingKey(key, publicKeys)) : inhertedEncryptable
+          return {
+              ...node,
+              encryptable,
+              children: folder.children.map(child => this.markEncryptable(child, publicKeys, encryptable))
+          }
+    } else {
+          return {
+              ...node,
+              encryptable: inhertedEncryptable
+          }
+    }
   }
 
   clearFilter() {
@@ -176,7 +203,7 @@ class ScrollWatcher {
         margin-left: 5px;
     }
 
-    .has-keys {
+    .node-marker {
         margin-left: 5px;
     }
 }

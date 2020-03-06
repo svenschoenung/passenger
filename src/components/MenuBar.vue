@@ -60,6 +60,7 @@ import { UIModule } from '../store'
 import icons from '@/ui/icons';
 
 @Component({
+  name: 'menu-bar',
   directives: {
       RovingTabindexContainer,
       RovingTabindex
