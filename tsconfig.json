@@ -9,15 +9,10 @@
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "allowJs": true,
     "sourceMap": true,
     "baseUrl": ".",
     "types": [
       "webpack-env"
-    ],
-    "typeRoots": [
-      "src/typings",
-      "node_modules/@types"
     ],
     "paths": {
       "@/*": [

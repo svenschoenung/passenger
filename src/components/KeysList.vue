@@ -56,16 +56,39 @@ export default class KeysList extends Vue {
 
   created() {
     (this as any).icons = icons;
-    (this as any).mouseupListener = (e: MouseEvent) => {
-      if (this.isSelecting()) {
-        this.finishSelecting();
-      }
-    };
-    window.addEventListener("mouseup", (this as any).mouseupListener);
+    this.registerListener()
+  }
+
+  activated() {
+    this.registerListener()
+  }
+
+  deactivated() {
+    this.unregisterListener()
   }
 
   destroyed() {
-    window.removeEventListener("mouseup", (this as any).mouseupListener);
+    this.unregisterListener()
+  }
+
+  registerListener() {
+    const self = this as any
+    if (!self.mouseupListener) {
+      self.mouseupListener = (e: MouseEvent) => {
+        if (this.isSelecting()) {
+          this.finishSelecting();
+        }
+      };
+      window.addEventListener("mouseup", self.mouseupListener);
+    }
+  }
+  
+  unregisterListener() {
+    const self = this as any
+    if (self.mouseupListener) {
+      self.mouseupListener = null
+      window.removeEventListener("mouseup", (this as any).mouseupListener);
+    }
   }
 
   isSelecting() {

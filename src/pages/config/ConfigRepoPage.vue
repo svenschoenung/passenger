@@ -34,7 +34,15 @@ export default class ConfigRepoPage extends Vue {
     (this as any).validateRepository = validateRepository
   }
 
+  deactivated() {
+    this.changeRepoPath()
+  }
+
   destroyed() {
+    this.changeRepoPath()
+  }
+
+  changeRepoPath() {
     if (this.repoPath !== ConfigModule.repoPath) {
       ConfigModule.changeRepoPath$(this.repoPath)
     }

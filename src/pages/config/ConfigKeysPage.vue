@@ -34,7 +34,15 @@ export default class ConfigKeysPage extends Vue {
     (this as any).validateGPGHomedir = validateGPGHomedir
   }
 
+  deactivated() {
+    this.changeGPGPath()
+  }
+
   destroyed() {
+    this.changeGPGPath()
+  }
+
+  changeGPGPath() {
     if (this.gpgPath !== ConfigModule.gpgPath) {
       ConfigModule.changeGPGPath$(this.gpgPath)
     }

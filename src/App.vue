@@ -10,7 +10,9 @@
           </q-drawer> 
 
           <q-page-container>
+            <keep-alive>
               <component :is="pageComponent"></component>
+            </keep-alive>
           </q-page-container>
 
           <q-footer class="status-bar" :style="{ height: `${footerHeight}px` }">

@@ -60,7 +60,36 @@ export default class PasswordsTree extends Vue {
 
   created() {
     (this as any).icons = icons;
-    (this as any).scrollWatcher = new ScrollWatcher(this)
+    this.scrollTo(UIModule.selectedPasswordNode);
+    this.registerWatcher()
+  }
+
+  activated() {
+    this.scrollTo(UIModule.selectedPasswordNode);
+    this.registerWatcher()
+  }
+
+  deactivated() {
+    this.unregisterWatcher()
+  }
+
+  destroyed() {
+    this.unregisterWatcher()
+  }
+
+  registerWatcher() {
+    const self = this as any
+    if (!self.scrollWatcher) {
+      self.scrollWatcher = new ScrollWatcher(this)
+    }
+  }
+
+  unregisterWatcher() {
+    const self = this as any
+    if (self.scrollWatcher) {
+      self.scrollWatcher.unwatch()
+      self.scrollWatcher = null
+    }
   }
 
   scrollTo(absPath: string | null) {
@@ -79,10 +108,6 @@ export default class PasswordsTree extends Vue {
         cancelable: false
       })
     }
-  }
-
-  destroyed() {
-    (this as any).scrollWatcher.unwatch()
   }
 
   set selected(absPath: string) {
