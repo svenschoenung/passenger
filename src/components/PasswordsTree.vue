@@ -49,7 +49,7 @@ import { PasswordFolder, PasswordNode } from '@/model/tree';
 import { PublicKey, PrivateKey } from 'gpg-promised';
 import icons from "@/ui/icons";
 import { findMatchingKey } from '@/service/keys';
-import VueScrollTo from 'vue-scrollto';
+import scrollIntoView from 'scroll-into-view-if-needed'
 
 @Component({
   name: "passwords-tree"
@@ -98,6 +98,13 @@ export default class PasswordsTree extends Vue {
       elem = document.querySelector(`[data-abs-path="${CSS.escape(absPath)}"]`)
     }
     if (elem) {
+      scrollIntoView(elem, {
+        scrollMode: 'if-needed',
+        block: 'center'
+      })
+    }
+    /*
+    if (elem) {
       elem = elem.closest('.q-tree__node-header')
     }
     if (elem) {
@@ -108,6 +115,7 @@ export default class PasswordsTree extends Vue {
         cancelable: false
       })
     }
+    */
   }
 
   set selected(absPath: string) {
