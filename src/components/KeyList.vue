@@ -35,7 +35,10 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { GenericKey } from "gpg-promised";
+import { nonReactiveProps, nonReactiveProp } from '../util/props';
 import icons from "@/ui/icons";
+
+export type MouseEventListener = (this: Window, ev: MouseEvent) => any 
 
 @Component({})
 export default class KeyList extends Vue {
@@ -48,7 +51,7 @@ export default class KeyList extends Vue {
   selectedKeys: { [keyid: string]: boolean } = {};
 
   created() {
-    (this as any).icons = icons;
+    nonReactiveProps(this, { icons })
     this.registerListener()
   }
 
@@ -65,22 +68,23 @@ export default class KeyList extends Vue {
   }
 
   registerListener() {
-    const self = this as any
-    if (!self.mouseupListener) {
-      self.mouseupListener = (e: MouseEvent) => {
+    const mouseupListener: MouseEventListener = nonReactiveProp(this, 'mouseupListener')
+    if (!mouseupListener) {
+      const mouseupListener = (e: MouseEvent) => {
         if (this.isSelecting()) {
           this.finishSelecting();
         }
       };
-      window.addEventListener("mouseup", self.mouseupListener);
+      nonReactiveProps(this, { mouseupListener })
+      window.addEventListener("mouseup", mouseupListener);
     }
   }
   
   unregisterListener() {
-    const self = this as any
-    if (self.mouseupListener) {
-      self.mouseupListener = null
-      window.removeEventListener("mouseup", (this as any).mouseupListener);
+    const mouseupListener: MouseEventListener = nonReactiveProp(this, 'mouseupListener')
+    if (mouseupListener) {
+      nonReactiveProps(this, { mouseupListener: null })
+      window.removeEventListener("mouseup", mouseupListener);
     }
   }
 

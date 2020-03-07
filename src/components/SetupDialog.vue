@@ -54,6 +54,7 @@ import path from "path";
 import { QForm, Dark } from "quasar";
 
 import { ConfigModule } from "@/store";
+import { nonReactiveProps } from '@/util/props'
 import { validateRepository } from '@/service/repo'
 import { validateGPGHomedir } from '@/service/keys'
 import icons from "@/ui/icons";
@@ -68,9 +69,7 @@ export default class SetupDialog extends Vue {
   darkModeState = false;
 
   created() {
-    (this as any).icons = icons;
-    (this as any).validateRepository = validateRepository;
-    (this as any).validateGPGHomedir = validateGPGHomedir;
+    nonReactiveProps(this, { icons, validateRepository, validateGPGHomedir })
   }
 
   get showDialog() {

@@ -19,13 +19,14 @@
 import { Component, Vue } from "vue-property-decorator";
 import { ConfigModule } from '@/store';
 import { validateGPGHomedir } from '@/service/keys';
+import { nonReactiveProps } from '@/util/props';
 
 @Component({})
 export default class ConfigKeysPage extends Vue {
   gpgPath = ConfigModule.gpgPath as string;
 
   created() {
-    (this as any).validateGPGHomedir = validateGPGHomedir
+    nonReactiveProps(this, { validateGPGHomedir })
   }
 
   deactivated() {

@@ -55,12 +55,13 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { UIModule } from '@/store'
+import { nonReactiveProps } from '../util/props';
 import icons from '@/ui/icons';
 
 @Component({})
 export default class MenuBar extends Vue {
     created() {
-        (this as any).icons = icons
+        nonReactiveProps(this, { icons })
     }
 
     get page(): string {

@@ -27,6 +27,7 @@ import { PasswordFolder, PasswordNode } from '@/model/tree';
 import { KeysModule, PasswordsModule } from '@/store';
 import { findMatchingKey } from '@/service/keys';
 import { PublicKey } from 'gpg-promised'
+import { nonReactiveProps } from '../util/props';
 import icons from '@/ui/icons';
 
 @Component({})
@@ -34,7 +35,7 @@ export default class PasswordFolderDetails extends Vue {
   @Prop({ type: Object }) folder!: PasswordFolder;
 
   created() {
-    (this as any).icons = icons;
+    nonReactiveProps(this, { icons })
   }
 
   get assignedKeys(): PublicKey[] | null {

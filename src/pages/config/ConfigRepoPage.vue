@@ -19,13 +19,14 @@
 import { Component, Vue } from "vue-property-decorator";
 import { ConfigModule } from '@/store';
 import { validateRepository } from '@/service/repo';
+import { nonReactiveProps } from '@/util/props';
 
 @Component({})
 export default class ConfigRepoPage extends Vue {
   repoPath = ConfigModule.repoPath as string;
 
   created() {
-    (this as any).validateRepository = validateRepository
+    nonReactiveProps(this, { validateRepository })
   }
 
   deactivated() {

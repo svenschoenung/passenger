@@ -12,15 +12,16 @@
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 import { PasswordFolder } from '@/model/tree';
-import icons from '@/ui/icons';
 import { PasswordsModule, UIModule } from '../store';
+import { nonReactiveProps } from '../util/props';
+import icons from '@/ui/icons';
 
 @Component({})
 export default class FolderBreadcrumbs extends Vue {
   @Prop({ type: Array }) folders!: PasswordFolder[];
 
   created() {
-    (this as any).icons = icons;
+    nonReactiveProps(this, { icons })
   }
 
   folderClicked(folder: PasswordFolder) {

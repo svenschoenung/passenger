@@ -49,8 +49,9 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 
 import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
 import { PasswordFolder, PasswordNode } from '@/model/tree';
-import icons from "@/ui/icons";
 import { findMatchingKey } from '@/service/keys';
+import { nonReactiveProps, nonReactiveProp } from '../util/props';
+import icons from "@/ui/icons";
 
 @Component({})
 export default class PasswordTree extends Vue {
@@ -58,7 +59,7 @@ export default class PasswordTree extends Vue {
   filter = ''
 
   created() {
-    (this as any).icons = icons;
+    nonReactiveProps(this, { icons })
     this.scrollTo(UIModule.selectedPasswordNode);
     this.registerWatcher()
   }
@@ -77,17 +78,17 @@ export default class PasswordTree extends Vue {
   }
 
   registerWatcher() {
-    const self = this as any
-    if (!self.scrollWatcher) {
-      self.scrollWatcher = new ScrollWatcher(this)
+    const scrollWatcher: ScrollWatcher = nonReactiveProp(this, 'scrollWatcher')
+    if (!scrollWatcher) {
+      nonReactiveProps(this, { scrollWatcher: new ScrollWatcher(this) })
     }
   }
 
   unregisterWatcher() {
-    const self = this as any
-    if (self.scrollWatcher) {
-      self.scrollWatcher.unwatch()
-      self.scrollWatcher = null
+    const scrollWatcher: ScrollWatcher = nonReactiveProp(this, 'scrollWatcher')
+    if (scrollWatcher) {
+      scrollWatcher.unwatch()
+      nonReactiveProps(this, { scrollWatcher: null })
     }
   }
 
@@ -105,7 +106,8 @@ export default class PasswordTree extends Vue {
   }
 
   set selected(absPath: string) {
-    (this as any).scrollWatcher.selected = absPath
+    const scrollWatcher: ScrollWatcher = nonReactiveProp(this, 'scrollWatcher');
+    scrollWatcher.selected = absPath
     UIModule.selectPasswordNode$(absPath);
   }
 
