@@ -18,15 +18,9 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { ConfigModule } from '@/store';
-import FolderPicker from '@/components/FolderPicker.vue';
-import { validateRepository } from '../../service/repo';
+import { validateRepository } from '@/service/repo';
 
-@Component({
-  name: "config-repo-page",
-  components: {
-    FolderPicker
-  }
-})
+@Component({})
 export default class ConfigRepoPage extends Vue {
   repoPath = ConfigModule.repoPath as string;
 

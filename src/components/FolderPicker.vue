@@ -27,10 +27,8 @@ import electron from 'electron';
 import { FolderValidator } from '@/model/validation';
 import icons from '@/ui/icons';
 
-@Component({
-  name: 'repository-path-input'
-})
-export default class RepositoryPathInput extends Vue {
+@Component({})
+export default class FolderPicker extends Vue {
   @Prop({ type: String }) label!: string;
   @Prop({ type: String }) title!: string;
   @Prop({ type: String }) value!: string;

@@ -1,7 +1,7 @@
 <template>
-  <div :class="`flex direction-column keys-list-container ${disabled ? 'disabled' : ''}`">
+  <div :class="`flex direction-column key-list-container ${disabled ? 'disabled' : ''}`">
     <q-toolbar>{{title}} <q-chip dense color="primary">{{keys ? keys.length : 0}}</q-chip></q-toolbar>
-    <q-list bordered class="flex flex-grow keys-list" v-roving-tabindex-container :disabled="disabled">
+    <q-list bordered class="flex flex-grow key-list" v-roving-tabindex-container :disabled="disabled">
       <q-scroll-area class="flex-grow">
         <q-item v-for="(key, index) in keys" :key="key.keyid"
           class="q-my-sm" clickable v-ripple v-roving-tabindex
@@ -35,17 +35,10 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { GenericKey } from "gpg-promised";
-import { RovingTabindexContainer, RovingTabindex } from '@4rk/vue-roving-tabindex'
 import icons from "@/ui/icons";
 
-@Component({
-  name: "keys-page",
-  directives: {
-      RovingTabindexContainer,
-      RovingTabindex
-  }
-})
-export default class KeysList extends Vue {
+@Component({})
+export default class KeyList extends Vue {
   @Prop() title!: string;
   @Prop() keys!: GenericKey[];
   @Prop() disabled!: boolean;
@@ -152,7 +145,7 @@ export default class KeysList extends Vue {
 <style lang="scss">
 @import "src/styles/quasar.variables.scss";
 
-.keys-list-container {
+.key-list-container {
   .q-my-sm {
     margin-top: 0px;
     margin-bottom: 0px;
@@ -164,8 +157,8 @@ export default class KeysList extends Vue {
 }
 
 body.body--light {
-  .keys-list-container {
-    .keys-list {
+  .key-list-container {
+    .key-list {
       background: $bg-1-light;
     }
 
@@ -176,8 +169,8 @@ body.body--light {
 }
 
 body.body--dark {
-  .keys-list-container {
-    .keys-list {
+  .key-list-container {
+    .key-list {
       background: $bg-1-dark;
     }
 

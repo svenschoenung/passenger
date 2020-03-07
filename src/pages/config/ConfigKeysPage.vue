@@ -18,15 +18,9 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { ConfigModule } from '@/store';
-import FolderPicker from '@/components/FolderPicker.vue';
-import { validateGPGHomedir } from '../../service/keys';
+import { validateGPGHomedir } from '@/service/keys';
 
-@Component({
-  name: "config-keys-page",
-  components: {
-    FolderPicker
-  }
-})
+@Component({})
 export default class ConfigKeysPage extends Vue {
   gpgPath = ConfigModule.gpgPath as string;
 

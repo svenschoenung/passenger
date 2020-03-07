@@ -1,8 +1,8 @@
-import { ConfigModule } from '@/store';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { KeysModule } from '..';
-import { loadPrivateKeys, loadPublicKeys } from '@/service/keys';
 import { PublicKey, PrivateKey } from 'gpg-promised';
+
+import { ConfigModule, KeysModule } from '@/store';
+import { loadPrivateKeys, loadPublicKeys } from '@/service/keys';
 
 @Module({ name: 'keys' })
 export default class KeysVuexModule extends VuexModule {

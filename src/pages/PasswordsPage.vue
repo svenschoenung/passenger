@@ -1,7 +1,7 @@
 <template>
   <q-splitter id="passwords-page" v-model="treePaneWidthInPercent" :style="{ height: `calc(100vh - ${footerHeight}px`}">
     <template v-slot:before>
-      <passwords-tree/>
+      <password-tree/>
     </template>
     <template v-slot:after>
       <password-folder-details v-if="selectedPasswordNode && selectedPasswordNode.folder"
@@ -13,18 +13,10 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { FOOTER_HEIGHT } from "@/constants";
-import PasswordsTree from '@/components/PasswordsTree.vue'
-import PasswordFolderDetails from '@/components/PasswordFolderDetails.vue'
 import { PasswordsModule, UIModule } from '@/store';
+import { FOOTER_HEIGHT } from "@/constants";
 
-@Component({
-  name: "passwords-page",
-  components: {
-    PasswordsTree,
-    PasswordFolderDetails,
-  }
-})
+@Component({})
 export default class PasswordsPage extends Vue {
   footerHeight = FOOTER_HEIGHT;
   treePaneWidthInPercent = 30;

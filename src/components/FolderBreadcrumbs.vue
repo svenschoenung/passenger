@@ -11,18 +11,11 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
-import { RovingTabindexContainer, RovingTabindex } from '@4rk/vue-roving-tabindex'
 import { PasswordFolder } from '@/model/tree';
 import icons from '@/ui/icons';
 import { PasswordsModule, UIModule } from '../store';
 
-@Component({
-  name: 'folder-breadcrumbs',
-  directives: {
-    RovingTabindexContainer,
-    RovingTabindex
-  }
-})
+@Component({})
 export default class FolderBreadcrumbs extends Vue {
   @Prop({ type: Array }) folders!: PasswordFolder[];
 

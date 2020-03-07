@@ -1,5 +1,5 @@
 <template>
-<div id="passwords-tree" class="flex direction-column flex-grow bg-1">
+<div id="password-tree" class="flex direction-column flex-grow bg-1">
     <q-input class="q-pa-sm" filled square v-model="filter" :dense="true" placeholder="Filter">
       <template v-slot:append>
         <q-icon v-if="filter" :name="icons.clear" class="cursor-pointer" @click="clearFilter" />
@@ -8,10 +8,10 @@
         <q-btn size="xs" flat class="menu-button"><q-icon :name="icons.menu" /></q-btn>
       </template>
     </q-input>
-    <q-scroll-area class="flex-grow" v-if="passwordsTree">
+    <q-scroll-area class="flex-grow" v-if="passwordTree">
     <q-tree 
         class="q-pa-sm bg-1"
-        :nodes="passwordsTree"
+        :nodes="passwordTree"
         :icon="icons.arrow"
         :filter="filter"
         default-expand-all
@@ -43,18 +43,17 @@
 
 <script lang="ts">
 import { Component, Vue, Ref } from "vue-property-decorator";
-import { scroll, Scroll } from 'quasar'
-import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
-import { PasswordFolder, PasswordNode } from '@/model/tree';
 import { PublicKey, PrivateKey } from 'gpg-promised';
-import icons from "@/ui/icons";
-import { findMatchingKey } from '@/service/keys';
+import { scroll } from 'quasar'
 import scrollIntoView from 'scroll-into-view-if-needed'
 
-@Component({
-  name: "passwords-tree"
-})
-export default class PasswordsTree extends Vue {
+import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
+import { PasswordFolder, PasswordNode } from '@/model/tree';
+import icons from "@/ui/icons";
+import { findMatchingKey } from '@/service/keys';
+
+@Component({})
+export default class PasswordTree extends Vue {
 
   filter = ''
 
@@ -103,19 +102,6 @@ export default class PasswordsTree extends Vue {
         block: 'center'
       })
     }
-    /*
-    if (elem) {
-      elem = elem.closest('.q-tree__node-header')
-    }
-    if (elem) {
-      VueScrollTo.scrollTo(elem, 1, {
-        container: scroll.getScrollTarget(elem) as Element,
-        x: false,
-        y: true,
-        cancelable: false
-      })
-    }
-    */
   }
 
   set selected(absPath: string) {
@@ -131,7 +117,7 @@ export default class PasswordsTree extends Vue {
       return KeysModule.privateKeys
   }
 
-  get passwordsTree() {
+  get passwordTree() {
     const tree = PasswordsModule.loadTree;
     const privateKeys = KeysModule.loadPrivateKeys;
     const publicKeys = KeysModule.loadPublicKeys;
@@ -140,16 +126,16 @@ export default class PasswordsTree extends Vue {
       return null
     }
 
-    let passwordsTree: PasswordFolder = tree
+    let passwordTree: PasswordFolder = tree
 
     if (privateKeys) {
-      passwordsTree = this.markDecryptable(passwordsTree, privateKeys, false)
+      passwordTree = this.markDecryptable(passwordTree, privateKeys, false)
     }
     if (publicKeys) {
-      passwordsTree = this.markEncryptable(passwordsTree, publicKeys, true)
+      passwordTree = this.markEncryptable(passwordTree, publicKeys, true)
     }
 
-    return (passwordsTree as PasswordFolder).children 
+    return (passwordTree as PasswordFolder).children 
   }
 
   markDecryptable<T extends PasswordNode>(node: T, privateKeys: PrivateKey[], inheritedDecryptable: boolean): T {
@@ -197,7 +183,7 @@ class ScrollWatcher {
   selected!: string | null
   unwatch: any;
 
-  constructor(component: PasswordsTree) {
+  constructor(component: PasswordTree) {
     this.selected = UIModule.selectedPasswordNode
     this.unwatch = component.$store.watch(
       (state: AppState) => state.ui.selectedPasswordNode,
@@ -214,7 +200,7 @@ class ScrollWatcher {
 <style lang="scss">
 @import "src/styles/quasar.variables.scss";
 
-#passwords-tree {
+#password-tree {
     .centered-progress {
         position: absolute;
         top: calc(50% - 25px);
@@ -242,7 +228,7 @@ class ScrollWatcher {
 }
 
 body.body--light {
-  #passwords-tree {
+  #password-tree {
     .q-tree__node--selected {
       background: $bg-primary-light;
     }
@@ -254,7 +240,7 @@ body.body--light {
 }
 
 body.body--dark {
-  #passwords-tree {
+  #password-tree {
     .q-tree__node--selected {
       background: $bg-primary-dark;
     }

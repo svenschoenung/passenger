@@ -24,30 +24,11 @@
 <script>
 import { Component, Vue } from 'vue-property-decorator';
 
-import PasswordsPage from './pages/PasswordsPage'
-import KeysPage from './pages/KeysPage'
-import RepoPage from './pages/RepoPage'
-import ConfigPage from './pages/ConfigPage'
-
-import MenuBar from './components/MenuBar'
-import SetupDialog from './components/SetupDialog'
-
-import { UIModule } from './store'
-import { ConfigModule } from './store'
-
+import { UIModule, ConfigModule } from '@/store'
 import { FOOTER_HEIGHT } from '@/constants'
 
 
-@Component({
-  components: {
-    PasswordsPage,
-    KeysPage,
-    RepoPage,
-    ConfigPage,
-    MenuBar,
-    SetupDialog
-  },
-})
+@Component({})
 export default class App extends Vue {
   footerHeight = FOOTER_HEIGHT
 

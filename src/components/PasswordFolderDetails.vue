@@ -3,16 +3,16 @@
         <folder-breadcrumbs :folders="breadcrumb"/>
         <h3 class="folderName q-pa-md"><q-icon :name="icons.folderOpen" color="primary"/> {{folder.name}}</h3>
         <div class="row flex-grow">
-            <keys-list v-if="!assignedKeys || assignedKeys.length > 0"
+            <key-list v-if="!assignedKeys || assignedKeys.length > 0"
                class="col q-pa-md"
                title="Assigned Keys"
                :keys="assignedKeys" />
-            <keys-list v-else
+            <key-list v-else
                class="col q-pa-md"
                title="Inherited Keys"
                :keys="inheritedKeys"
                :disabled="true"/>
-            <keys-list
+            <key-list
                class="col q-pa-md"
                title="Available keys"
                :keys="publicKeys"/>
@@ -24,20 +24,12 @@
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 
 import { PasswordFolder, PasswordNode } from '@/model/tree';
-import FolderBreadcrumbs from '@/components/FolderBreadcrumbs.vue';
-import KeysList from '@/components/KeysList.vue';
 import { KeysModule, PasswordsModule } from '@/store';
 import { findMatchingKey } from '@/service/keys';
 import { PublicKey } from 'gpg-promised'
 import icons from '@/ui/icons';
 
-@Component({
-  name: 'password-folder-details',
-  components: {
-    FolderBreadcrumbs,
-    KeysList,
-  }
-})
+@Component({})
 export default class PasswordFolderDetails extends Vue {
   @Prop({ type: Object }) folder!: PasswordFolder;
 

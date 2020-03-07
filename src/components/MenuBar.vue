@@ -54,18 +54,10 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { RovingTabindexContainer, RovingTabindex } from '@4rk/vue-roving-tabindex'
-
-import { UIModule } from '../store'
+import { UIModule } from '@/store'
 import icons from '@/ui/icons';
 
-@Component({
-  name: 'menu-bar',
-  directives: {
-      RovingTabindexContainer,
-      RovingTabindex
-  }
-})
+@Component({})
 export default class MenuBar extends Vue {
     created() {
         (this as any).icons = icons

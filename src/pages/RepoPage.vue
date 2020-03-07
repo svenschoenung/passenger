@@ -5,9 +5,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-@Component({
-  name: 'repo-page'
-})
+@Component({})
 export default class RepoPage extends Vue {
 }
 </script>

@@ -57,14 +57,8 @@ import { ConfigModule } from "@/store";
 import { validateRepository } from '@/service/repo'
 import { validateGPGHomedir } from '@/service/keys'
 import icons from "@/ui/icons";
-import FolderPicker from '@/components/FolderPicker.vue'
 
-@Component({
-  name: 'setup-dialog',
-  components: {
-    FolderPicker
-  }
-})
+@Component({})
 export default class SetupDialog extends Vue {
   @Prop() show!: boolean;
   @Ref() form!: QForm;
