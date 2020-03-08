@@ -1,5 +1,6 @@
-import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
+
 import { Dark } from 'quasar'
+import { Module, VuexModule, Mutation, Action } from '@/store/decorators'
 
 export interface SetupPayload {
   repoPath: string
@@ -13,7 +14,7 @@ export default class ConfigVuexModule extends VuexModule {
     gpgPath: string | null = null
     darkMode = false
 
-    @Mutation
+    @Mutation({ name: 'config|setup' })
     setup(payload: SetupPayload) {
         this.repoPath = payload.repoPath;
         this.gpgPath = payload.gpgPath;
@@ -21,41 +22,39 @@ export default class ConfigVuexModule extends VuexModule {
         Dark.set(this.darkMode)
     }
 
-    @Action({ commit: 'setup' })
+    @Action({ commit: 'config|setup' })
     setup$(payload: SetupPayload) {
         return payload
     }
 
-    @Mutation
-    changeRepoPath(repoPath: string) {
+    @Mutation({ name: 'config|setRepoPath' })
+    setRepoPath(repoPath: string) {
         this.repoPath = repoPath 
     }
 
-    @Action({ commit: 'changeRepoPath' })
-    changeRepoPath$(repoPath: string) {
+    @Action({ commit: 'config|setRepoPath' })
+    setRepoPath$(repoPath: string) {
         return repoPath
     }
 
-    @Mutation
-    changeGPGPath(gpgPath: string) {
+    @Mutation({ name: 'config|setGPGPath' })
+    setGPGPath(gpgPath: string) {
         this.gpgPath = gpgPath 
     }
 
-    @Action({ commit: 'changeGPGPath' })
-    changeGPGPath$(gpgPath: string) {
+    @Action({ commit: 'config|setGPGPath' })
+    setGPGPath$(gpgPath: string) {
         return gpgPath
     }
 
-    @Mutation
-    changeDarkMode(darkMode: boolean) {
+    @Mutation({ name: 'config|setDarkMode' })
+    setDarkMode(darkMode: boolean) {
         this.darkMode = darkMode 
         Dark.set(this.darkMode)
     }
 
-    @Action({ commit: 'changeDarkMode' })
-    changeDarkMode$(darkMode: boolean) {
+    @Action({ commit: 'config|setDarkMode' })
+    setDarkMode$(darkMode: boolean) {
         return darkMode
     }
-
-
 }

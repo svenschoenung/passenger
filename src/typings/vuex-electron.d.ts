@@ -3,9 +3,14 @@ declare module 'vuex-electron' {
     import * as vuex from 'vuex'
     import ElectronStore from 'electron-store';
 
+    export interface Mutation {
+        type: string,
+        payload: any
+    }
+
     export interface CreatePersistedStateOptions {
-        whitelist?: string[];
-        blacklist?: string[];
+        whitelist?: string[] | ((mutation: Mutation) => boolean)
+        blacklist?: string[] | ((mutation: Mutation) => boolean)
         storage?: ElectronStore
     }
 

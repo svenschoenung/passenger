@@ -69,7 +69,7 @@ export default class MenuBar extends Vue {
     }
 
     changePage(page: string) {
-        UIModule.changePage$(page)
+        UIModule.setPage$(page)
     }
 }
 </script>

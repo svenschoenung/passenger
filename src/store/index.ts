@@ -31,13 +31,17 @@ export const store = new Store<AppState>({
   },
   plugins: [
     createPersistedState({
-      whitelist: ['setup', 'changeRepoPath', 'changeDarkMode'],
+      whitelist: mutation => (
+        mutation.type.indexOf('ui|') === 0 ||
+        mutation.type.indexOf('config|') === 0
+      ),
       storage: new ElectronStore<{state: AppState}>({
         name: 'store',
         serialize: (value) => {
           if (value && value.state && value.state.config) {
             return JSON.stringify({
               state: {
+                ui: value.state.ui,
                 config: value.state.config
               }
             }, null, '\t')

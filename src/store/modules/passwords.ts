@@ -1,4 +1,4 @@
-import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
+import { Module, VuexModule, Mutation, Action } from '@/store/decorators'
 import { PasswordFolder, traverseTree, PasswordNode } from '@/model/tree'
 import { readPasswordTree } from '@/service/passwords'
 import { ConfigModule, PasswordsModule } from '@/store'
@@ -7,17 +7,17 @@ import { ConfigModule, PasswordsModule } from '@/store'
 export default class PasswordsVuexModule extends VuexModule {
     tree: PasswordFolder | null = null
 
-    @Mutation
-    changeTree(tree: PasswordFolder | null) {
-        this.tree = tree 
-    }
-
-    @Mutation
-    changeRepoPath() {
+    @Mutation({ name: 'config|setRepoPath' })
+    repoPathChanged() {
         this.tree = null
     }
 
-    @Action({ commit: 'changeTree' })
+    @Mutation({ name: 'passwords|setTree' })
+    setTree(tree: PasswordFolder | null) {
+        this.tree = tree 
+    }
+
+    @Action({ commit: 'passwords|setTree' })
     async loadTree$() {
         try {
            return await readPasswordTree(ConfigModule.repoPath as string);

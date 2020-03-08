@@ -39,7 +39,7 @@ export default class ConfigKeysPage extends Vue {
 
   changeGPGPath() {
     if (this.gpgPath !== ConfigModule.gpgPath) {
-      ConfigModule.changeGPGPath$(this.gpgPath)
+      ConfigModule.setGPGPath$(this.gpgPath)
     }
   }
 }

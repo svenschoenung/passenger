@@ -1,7 +1,7 @@
-import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { PublicKey, PrivateKey } from 'gpg-promised';
 
 import { ConfigModule, KeysModule } from '@/store';
+import { Module, VuexModule, Mutation, Action } from '@/store/decorators'
 import { loadPrivateKeys, loadPublicKeys } from '@/service/keys';
 
 @Module({ name: 'keys' })
@@ -9,22 +9,22 @@ export default class KeysVuexModule extends VuexModule {
     publicKeys: PublicKey[] | null = null
     privateKeys: PrivateKey[] | null = null
 
-    @Mutation
+    @Mutation({ name: 'keys|setPublicKeys' })
     setPublicKeys(publicKeys: PublicKey[]) {
         this.publicKeys = publicKeys
     }
 
-    @Action({ commit: 'setPublicKeys' })
+    @Action({ commit: 'keys|setPublicKeys' })
     async loadPublicKeys$() {
         return await loadPublicKeys(ConfigModule.gpgPath as string)
     }
 
-    @Mutation
+    @Mutation({ name: 'keys|setPrivateKeys' })
     setPrivateKeys(privateKeys: PrivateKey[]) {
         this.privateKeys = privateKeys
     }
 
-    @Action({ commit: 'setPrivateKeys' })
+    @Action({ commit: 'keys|setPrivateKeys' })
     async loadPrivateKeys$() {
         return await loadPrivateKeys(ConfigModule.gpgPath as string)
     }
