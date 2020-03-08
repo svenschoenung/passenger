@@ -14,6 +14,7 @@
         :nodes="passwordTree"
         :icon="icons.arrow"
         :filter="filter"
+        :no-connectors="true"
         default-expand-all
         node-key="absPath"
         label-key="name"
@@ -50,7 +51,7 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
 import { PasswordFolder, PasswordNode } from '@/model/tree';
 import { findMatchingKey } from '@/service/keys';
-import { nonReactiveProps, nonReactiveProp } from '../util/props';
+import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
 import icons from "@/ui/icons";
 
 @Component({})
@@ -59,7 +60,7 @@ export default class PasswordTree extends Vue {
   filter = ''
 
   created() {
-    nonReactiveProps(this, { icons })
+    setNonReactiveProps(this, { icons })
     this.scrollTo(UIModule.selectedPasswordNode);
     this.registerWatcher()
   }
@@ -78,18 +79,11 @@ export default class PasswordTree extends Vue {
   }
 
   registerWatcher() {
-    const scrollWatcher: ScrollWatcher = nonReactiveProp(this, 'scrollWatcher')
-    if (!scrollWatcher) {
-      nonReactiveProps(this, { scrollWatcher: new ScrollWatcher(this) })
-    }
+    initNonReactiveProp(this, 'scrollWatcher', () => new ScrollWatcher(this))
   }
 
   unregisterWatcher() {
-    const scrollWatcher: ScrollWatcher = nonReactiveProp(this, 'scrollWatcher')
-    if (scrollWatcher) {
-      scrollWatcher.unwatch()
-      nonReactiveProps(this, { scrollWatcher: null })
-    }
+    removeNonReactiveProp(this, 'scrollWatcher', (scrollWatcher: ScrollWatcher) => scrollWatcher.unwatch())
   }
 
   scrollTo(absPath: string | null) {
@@ -106,7 +100,7 @@ export default class PasswordTree extends Vue {
   }
 
   set selected(absPath: string) {
-    const scrollWatcher: ScrollWatcher = nonReactiveProp(this, 'scrollWatcher');
+    const scrollWatcher: ScrollWatcher = getNonReactiveProp(this, 'scrollWatcher');
     scrollWatcher.selected = absPath
     UIModule.selectPasswordNode$(absPath);
   }
@@ -200,7 +194,7 @@ class ScrollWatcher {
 </script>
 
 <style lang="scss">
-@import "src/styles/quasar.variables.scss";
+@import "src/styles/style.variables.scss";
 
 #password-tree {
     .centered-progress {

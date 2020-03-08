@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import '@/styles/quasar.scss'
+import '@/styles/style.scss'
 import {
   Quasar, QIcon, QChip, QList, QItem, QToolbar, QToolbarTitle, QMenu,
   QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput, QBreadcrumbs, QBreadcrumbsEl,

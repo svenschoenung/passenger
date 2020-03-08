@@ -54,14 +54,15 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+
 import { UIModule } from '@/store'
-import { nonReactiveProps } from '../util/props';
+import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 
 @Component({})
 export default class MenuBar extends Vue {
     created() {
-        nonReactiveProps(this, { icons })
+        setNonReactiveProps(this, { icons })
     }
 
     get page(): string {
@@ -75,7 +76,7 @@ export default class MenuBar extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import "src/styles/quasar.variables.scss";
+@import "src/styles/style.variables.scss";
 .q-list {
     display: flex;
     flex-direction: column;

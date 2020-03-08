@@ -15,6 +15,7 @@ export default class UIVuexModule extends VuexModule {
     maximized: false,
     bounds: electron.remote.getCurrentWindow().getBounds()
   }
+  passwordOverviewWidthInPx = 300
 
   @Mutation({ name: 'ui|setPage' })
   setPage(page: string) {
@@ -54,5 +55,15 @@ export default class UIVuexModule extends VuexModule {
   @Action({ commit: 'ui|setWindowState' })
   setWindowState$(windowState: WindowState) {
     return windowState
+  }
+
+  @Mutation({ name: 'ui|setPasswordOverviewWidthInPx' })
+  setPasswordOverviewWidthInPx(passwordOverviewWidthInPx: number) {
+    this.passwordOverviewWidthInPx = passwordOverviewWidthInPx
+  }
+
+  @Action({ commit: 'ui|setPasswordOverviewWidthInPx' })
+  setPasswordOverviewWidthInPx$(passwordOverviewWidthInPx: number) {
+    return passwordOverviewWidthInPx
   }
 }

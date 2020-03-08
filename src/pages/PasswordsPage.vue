@@ -1,26 +1,25 @@
 <template>
-  <q-splitter id="passwords-page" v-model="treePaneWidthInPercent" :style="{ height: `calc(100vh - ${footerHeight}px`}">
+  <q-splitter id="passwords-page" class="content-height"
+     v-model="overviewWidthInPx" unit="px">
     <template v-slot:before>
       <password-tree/>
     </template>
     <template v-slot:after>
       <password-folder-details v-if="selectedPasswordNode && selectedPasswordNode.folder"
-        :folder="selectedPasswordNode"
+        :folder="selectedPasswordNode" :key="selectedPasswordNode.absPath"
       />
     </template>
   </q-splitter>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Ref } from "vue-property-decorator";
+
 import { PasswordsModule, UIModule } from '@/store';
-import { FOOTER_HEIGHT } from "@/constants";
+import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from '@/util/props';
 
 @Component({})
 export default class PasswordsPage extends Vue {
-  footerHeight = FOOTER_HEIGHT;
-  treePaneWidthInPercent = 30;
-
   get selectedPasswordNode() {
     const selectedPasswordNode = UIModule.selectedPasswordNode
     if (!selectedPasswordNode) {
@@ -31,6 +30,14 @@ export default class PasswordsPage extends Vue {
       return null
     }
     return nodes[selectedPasswordNode]
+  }
+
+  get overviewWidthInPx() {
+    return UIModule.passwordOverviewWidthInPx
+  }
+
+  set overviewWidthInPx(overviewWidthInPx: number) {
+    UIModule.setPasswordOverviewWidthInPx$(overviewWidthInPx)
   }
 }
 </script>

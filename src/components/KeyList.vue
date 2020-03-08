@@ -35,7 +35,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { GenericKey } from "gpg-promised";
-import { nonReactiveProps, nonReactiveProp } from '../util/props';
+import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from '@/util/props';
 import icons from "@/ui/icons";
 
 export type MouseEventListener = (this: Window, ev: MouseEvent) => any 
@@ -51,7 +51,7 @@ export default class KeyList extends Vue {
   selectedKeys: { [keyid: string]: boolean } = {};
 
   created() {
-    nonReactiveProps(this, { icons })
+    setNonReactiveProps(this, { icons })
     this.registerListener()
   }
 
@@ -68,24 +68,21 @@ export default class KeyList extends Vue {
   }
 
   registerListener() {
-    const mouseupListener: MouseEventListener = nonReactiveProp(this, 'mouseupListener')
-    if (!mouseupListener) {
+    initNonReactiveProp(this, 'mouseupListener', () => {
       const mouseupListener = (e: MouseEvent) => {
         if (this.isSelecting()) {
           this.finishSelecting();
         }
       };
-      nonReactiveProps(this, { mouseupListener })
       window.addEventListener("mouseup", mouseupListener);
-    }
+      return mouseupListener
+    })
   }
   
   unregisterListener() {
-    const mouseupListener: MouseEventListener = nonReactiveProp(this, 'mouseupListener')
-    if (mouseupListener) {
-      nonReactiveProps(this, { mouseupListener: null })
+    removeNonReactiveProp(this, 'mouseupListener', (mouseupListener) => {
       window.removeEventListener("mouseup", mouseupListener);
-    }
+    })
   }
 
   isSelecting() {
@@ -142,12 +139,15 @@ export default class KeyList extends Vue {
     this.selectedKeys = this.selectedAndSelectingKeys;
     this.selectionStart = -1;
     this.selectionEnd = -1;
+    if (document.activeElement && (document.activeElement as HTMLElement).blur) {
+      (document.activeElement as HTMLElement).blur()
+    }
   }
 }
 </script>
 
 <style lang="scss">
-@import "src/styles/quasar.variables.scss";
+@import "src/styles/style.variables.scss";
 
 .key-list-container {
   .q-my-sm {

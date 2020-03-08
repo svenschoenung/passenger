@@ -1,6 +1,5 @@
-@import './quasar.variables.scss';
-@import '~quasar-styl';
-// @import '~quasar-addon-styl';
+@import './style.variables.scss';
+@import '~quasar/src/css/index.sass';
 
 body.body--light {
     .active-elem {
@@ -34,14 +33,6 @@ body.body--dark {
     }
 }
 
-.cover {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
 .flex-grow {
   flex-grow: 1;
 }
@@ -52,6 +43,15 @@ body.body--dark {
 
 .direction-row{
   flex-direction: row;
+}
+
+$footer-height: 25px;
+
+.footer-height {
+    height: $footer-height
+}
+.content-height {
+    height: calc(100vh - #{$footer-height}) 
 }
 
 * {

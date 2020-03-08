@@ -25,7 +25,7 @@ import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 import electron from 'electron';
 
 import { FolderValidator } from '@/model/validation';
-import { nonReactiveProps } from '../util/props';
+import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 
 @Component({})
@@ -37,7 +37,7 @@ export default class FolderPicker extends Vue {
   folderPath: string | null = null;
 
   created() {
-    nonReactiveProps(this, { icons })
+    setNonReactiveProps(this, { icons })
     this.folderPath = this.value;
   }
 
@@ -73,7 +73,7 @@ export default class FolderPicker extends Vue {
 </script>
 
 <style lang="scss">
-@import "src/styles/quasar.variables.scss";
+@import "src/styles/style.variables.scss";
 
 .folder-picker .q-field__append.q-anchor--skip {
   display: none;

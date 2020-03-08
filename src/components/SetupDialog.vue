@@ -1,5 +1,5 @@
 <template>
-  <q-dialog :value="showDialog" :persistent="true">
+  <q-dialog :value="true" :persistent="true">
     <q-layout view="hhh lpr fff" container class="bg-0 setup-dialog">
       <q-header>
         <q-toolbar>
@@ -54,14 +54,13 @@ import path from "path";
 import { QForm, Dark } from "quasar";
 
 import { ConfigModule } from "@/store";
-import { nonReactiveProps } from '@/util/props'
+import { setNonReactiveProps } from '@/util/props'
 import { validateRepository } from '@/service/repo'
 import { validateGPGHomedir } from '@/service/keys'
 import icons from "@/ui/icons";
 
 @Component({})
 export default class SetupDialog extends Vue {
-  @Prop() show!: boolean;
   @Ref() form!: QForm;
 
   repoPath = path.join(os.homedir(), ".password-store");
@@ -69,11 +68,7 @@ export default class SetupDialog extends Vue {
   darkModeState = false;
 
   created() {
-    nonReactiveProps(this, { icons, validateRepository, validateGPGHomedir })
-  }
-
-  get showDialog() {
-    return this.show;
+    setNonReactiveProps(this, { icons, validateRepository, validateGPGHomedir })
   }
 
   set darkMode(darkMode: boolean) {

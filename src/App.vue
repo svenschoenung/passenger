@@ -1,7 +1,7 @@
 <template> 
     <div>
-      <setup-dialog :show="!isSetup"/>
-      <q-layout v-if="isSetup" view="lHh lpR fFf">
+      <setup-dialog v-if="needsSetup"/>
+      <q-layout v-else view="lHh lpR fFf">
           <q-drawer elevated
             :value="true" 
             :mini="true"
@@ -15,7 +15,7 @@
             </keep-alive>
           </q-page-container>
 
-          <q-footer class="status-bar" :style="{ height: `${footerHeight}px` }">
+          <q-footer class="status-bar footer-height">
           </q-footer>
       </q-layout>
     </div>
@@ -27,12 +27,9 @@ import electron, { BrowserWindow } from 'electron'
 import { debounce } from 'quasar'
 
 import { UIModule, ConfigModule } from '@/store'
-import { FOOTER_HEIGHT } from '@/constants'
 
 @Component({})
 export default class App extends Vue {
-  footerHeight = FOOTER_HEIGHT
-
   created() {
     const win = electron.remote.getCurrentWindow()
     this.initWindowState(win)
@@ -67,8 +64,8 @@ export default class App extends Vue {
     return UIModule.page + '-page'
   }
 
-  get isSetup() {
-    return !!ConfigModule.repoPath
+  get needsSetup() {
+    return !ConfigModule.repoPath || !ConfigModule.gpgPath
   }
 }
 

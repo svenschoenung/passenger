@@ -11,9 +11,10 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+
 import { PasswordFolder } from '@/model/tree';
-import { PasswordsModule, UIModule } from '../store';
-import { nonReactiveProps } from '../util/props';
+import { PasswordsModule, UIModule } from '@/store';
+import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 
 @Component({})
@@ -21,7 +22,7 @@ export default class FolderBreadcrumbs extends Vue {
   @Prop({ type: Array }) folders!: PasswordFolder[];
 
   created() {
-    nonReactiveProps(this, { icons })
+    setNonReactiveProps(this, { icons })
   }
 
   folderClicked(folder: PasswordFolder) {
@@ -31,7 +32,8 @@ export default class FolderBreadcrumbs extends Vue {
 </script>
 
 <style lang="scss">
-@import "src/styles/quasar.variables.scss";
+@import "src/styles/style.variables.scss";
+
 .folder-breadcrumbs {
     svg {
       margin-right:5px;

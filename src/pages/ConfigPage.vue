@@ -1,5 +1,5 @@
 <template>
-  <q-layout id="config-page" container view="lhr Lpr lfr" :style="{ height: `calc(100vh - ${footerHeight}px`}">
+  <q-layout id="config-page" class="content-height" container view="lhr Lpr lfr">
 
     <q-drawer bordered show-if-above :breakpoint="0" :width="200" class="bg-grey-4">
       <q-list separator v-roving-tabindex-container>
@@ -40,13 +40,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { FOOTER_HEIGHT } from '@/constants'
+
 import { UIModule } from '@/store'
 
 @Component({ })
 export default class ConfigPage extends Vue {
-  footerHeight = FOOTER_HEIGHT
-
   get configPage() {
     return UIModule.configPage
   }
@@ -62,7 +60,7 @@ export default class ConfigPage extends Vue {
 </script>
 
 <style lang="scss">
-@import "src/styles/quasar.variables.scss";
+@import "src/styles/style.variables.scss";
 
 .body--light {
   #config-page {

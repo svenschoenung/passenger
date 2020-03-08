@@ -22,12 +22,12 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
+import { PublicKey } from 'gpg-promised'
 
 import { PasswordFolder, PasswordNode } from '@/model/tree';
 import { KeysModule, PasswordsModule } from '@/store';
 import { findMatchingKey } from '@/service/keys';
-import { PublicKey } from 'gpg-promised'
-import { nonReactiveProps } from '../util/props';
+import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 
 @Component({})
@@ -35,7 +35,7 @@ export default class PasswordFolderDetails extends Vue {
   @Prop({ type: Object }) folder!: PasswordFolder;
 
   created() {
-    nonReactiveProps(this, { icons })
+    setNonReactiveProps(this, { icons })
   }
 
   get assignedKeys(): PublicKey[] | null {
@@ -92,7 +92,7 @@ export default class PasswordFolderDetails extends Vue {
 </script>
 
 <style lang="scss" scoped>
-@import "src/styles/quasar.variables.scss";
+@import "src/styles/style.variables.scss";
 .folderName {
     margin: 0px;
 }
