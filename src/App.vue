@@ -21,19 +21,46 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import electron, { BrowserWindow } from 'electron'
+import { debounce } from 'quasar'
 
 import { UIModule, ConfigModule } from '@/store'
 import { FOOTER_HEIGHT } from '@/constants'
-
 
 @Component({})
 export default class App extends Vue {
   footerHeight = FOOTER_HEIGHT
 
   created() {
+    const win = electron.remote.getCurrentWindow()
+    this.initWindowState(win)
+    this.watchWindowState(win)
     this.$q.dark.set(ConfigModule.darkMode)
+  }
+
+  initWindowState(win: BrowserWindow) {
+    if (UIModule.windowState.maximized) {
+      win.maximize()
+    }
+    win.setBounds(UIModule.windowState.bounds);
+  }
+
+  watchWindowState(win: BrowserWindow) {
+    const windowStateChanged = (e: Event) => {
+      UIModule.setWindowState$({
+        maximized: win.isMaximized(),
+        bounds: win.getBounds()
+      })
+    }
+    const windowStateChangedDebounced = debounce(windowStateChanged, 250);
+    [ 'close' ].forEach(e => {
+      win.on(e as any, windowStateChanged)
+    }); 
+    [ 'resize', 'move', 'moved', 'maximize', 'unmaximize' ].forEach(e => {
+      win.on(e as any, windowStateChangedDebounced)
+    }); 
   }
 
   get pageComponent() {
