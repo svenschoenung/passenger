@@ -1,6 +1,6 @@
 <template>
   <div :class="`flex direction-column key-list-container ${disabled ? 'disabled' : ''}`">
-    <q-toolbar>{{title}} <q-chip dense color="primary">{{keys ? keys.length : 0}}</q-chip></q-toolbar>
+    <q-toolbar>{{title}} <q-chip dense color="primary" style="color: white;">{{keys ? keys.length : 0}}</q-chip></q-toolbar>
     <q-list bordered class="flex flex-grow key-list" v-roving-tabindex-container :disabled="disabled">
       <q-scroll-area class="flex-grow">
         <q-item v-for="(key, index) in keys" :key="key.keyid"
@@ -11,15 +11,20 @@
           @mouseover="endSelection(index)"
           :class="selectedAndSelectingKeys[key.keyid] ? 'highlighted-key' : ''"
         >
-          <q-item-section avatar>
+          <q-item-section avatar v-if="key.missing">
+            <q-avatar color="negative" text-color="white">
+              <q-icon :name="icons.missing" size="lg"/>
+            </q-avatar>
+          </q-item-section>
+          <q-item-section avatar v-else>
             <q-avatar color="primary" text-color="white">
               <q-icon :name="icons.key" />
             </q-avatar>
           </q-item-section>
 
-          <q-item-section>
+          <q-item-section :class="{ 'text-negative': key.missing }">
             <q-item-label>{{ key.keyid }}</q-item-label>
-            <q-item-label
+            <q-item-label :class="{ 'text-negative': key.missing, 'text-italic': key.missing }"
               caption
               lines="1"
               v-for="uid in key.uid"

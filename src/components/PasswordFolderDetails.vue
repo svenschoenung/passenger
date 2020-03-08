@@ -30,6 +30,10 @@ import { findMatchingKey } from '@/service/keys';
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 
+export interface MissingPublicKey extends PublicKey {
+  missing: true
+}
+
 @Component({})
 export default class PasswordFolderDetails extends Vue {
   @Prop({ type: Object }) folder!: PasswordFolder;
@@ -65,7 +69,7 @@ export default class PasswordFolderDetails extends Vue {
     }
     const matchingPublicKeys = keys
       .map(key => findMatchingKey(key, publicKeys) || key)
-      .map(key => typeof key === 'string' ? { keyid: key, uid: [{ user_id: 'Missing' }] } as PublicKey: key)
+      .map(key => typeof key === 'string' ? { keyid: key, uid: [{ user_id: 'Missing' }], missing: true } as MissingPublicKey: key)
     return matchingPublicKeys
   }
 

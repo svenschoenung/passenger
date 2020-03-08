@@ -20,12 +20,20 @@
         label-key="name"
         :selected.sync="selected">
       <template v-slot:default-header="props">
-        <span :class="[props.node.decryptable ? 'decryptable' : 'not-decryptable']">
-          <q-icon v-if="props.node.folder" :name="props.expanded ? icons.folderOpen : icons.folder" size="xs" color="primary"/>
-          <q-icon v-else :name="icons.password" color="primary"/>
+        <span :class="{ 'not-decryptable': !props.node.decryptable, 'not-encryptable': props.node.notEncryptable }">
+          <q-icon v-if="props.node.folder" size="xs"
+            :name="props.expanded ? icons.folderOpen : icons.folder"
+            :color="props.node.notEncryptable ? 'negative' : 'primary'"/>
+          <q-icon v-else 
+            :name="icons.password"
+            :color="props.node.notEncryptable ? 'negative' : 'primary'"/>
           <span class="node-name" :data-abs-path="props.node.absPath">{{props.node.name}}</span>
-          <q-icon v-if="props.node.folder && props.node.keys.length" :name="icons.key" class="node-marker" size="1.4em" color="grey-8"/>
-          <q-icon v-if="!props.node.encryptable" :name="icons.error" class="node-marker" size="1.4em" color="negative"/>
+          <q-icon v-if="props.node.folder && props.node.keys.length" size="1.4em"
+            :name="icons.key" class="node-marker"
+            :color="props.node.notEncryptable ? 'negative' : 'grey-8'"/>
+          <q-icon v-if="props.node.notEncryptable" size="1.4em" class="node-marker"
+            :name="icons.error"
+            color="negative"/>
         </span>
       </template> 
     </q-tree>
@@ -128,7 +136,7 @@ export default class PasswordTree extends Vue {
       passwordTree = this.markDecryptable(passwordTree, privateKeys, false)
     }
     if (publicKeys) {
-      passwordTree = this.markEncryptable(passwordTree, publicKeys, true)
+      passwordTree = this.markNotEncryptable(passwordTree, publicKeys, false)
     }
 
     return (passwordTree as PasswordFolder).children 
@@ -152,20 +160,20 @@ export default class PasswordTree extends Vue {
       }
   }
 
-  markEncryptable<T extends PasswordNode>(node: T, publicKeys: PublicKey[], inhertedEncryptable: boolean): T {
+  markNotEncryptable<T extends PasswordNode>(node: T, publicKeys: PublicKey[], inhertedNotEncryptable: boolean): T {
     if (node.folder) {
           const folder = node as PasswordFolder
-          const encryptable = folder.keys && folder.keys.length > 0 ? 
-            !folder.keys.find(key => !findMatchingKey(key, publicKeys)) : inhertedEncryptable
+          const notEncryptable = folder.keys && folder.keys.length > 0 ? 
+            !!folder.keys.find(key => !findMatchingKey(key, publicKeys)) : inhertedNotEncryptable
           return {
               ...node,
-              encryptable,
-              children: folder.children.map(child => this.markEncryptable(child, publicKeys, encryptable))
+              notEncryptable,
+              children: folder.children.map(child => this.markNotEncryptable(child, publicKeys, notEncryptable))
           }
     } else {
           return {
               ...node,
-              encryptable: inhertedEncryptable
+              notEncryptable: inhertedNotEncryptable
           }
     }
   }
@@ -232,6 +240,10 @@ body.body--light {
     .node-name {
       color: $dark;
     }
+
+    .not-encryptable .node-name {
+      color: $negative;
+    }
   }
 }
 
@@ -243,6 +255,10 @@ body.body--dark {
 
     .node-name {
       color: white;
+    }
+
+    .not-encryptable .node-name {
+      color: $negative;
     }
   }
 }

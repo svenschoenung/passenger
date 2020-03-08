@@ -23,7 +23,8 @@ const icons = {
     clear: ionIosClose,
     menu: ionIosArrowDown,
     separator: ionIosArrowForward,
-    error: ionIosCloseCircleOutline	
+    error: ionIosCloseCircleOutline,
+    missing: ionIosClose 
 }
 
 export default icons
