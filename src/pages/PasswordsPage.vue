@@ -2,11 +2,12 @@
   <q-splitter id="passwords-page" class="content-height"
      v-model="overviewWidthInPx" unit="px">
     <template v-slot:before>
-      <password-tree/>
+      <password-overview/>
     </template>
     <template v-slot:after>
-      <password-folder-details v-if="selectedPasswordNode && selectedPasswordNode.folder"
-        :folder="selectedPasswordNode" :key="selectedPasswordNode.absPath"
+      <centered-progress v-if="selectedPasswordNode.resolving"/>
+      <password-folder-details v-else-if="selectedPasswordNode.value && selectedPasswordNode.value.folder"
+        :folder="selectedPasswordNode.value" :key="selectedPasswordNode.value.relPath"
       />
     </template>
   </q-splitter>
@@ -20,16 +21,9 @@ import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from 
 
 @Component({})
 export default class PasswordsPage extends Vue {
+
   get selectedPasswordNode() {
-    const selectedPasswordNode = UIModule.selectedPasswordNode
-    if (!selectedPasswordNode) {
-      return null
-    }
-    const nodes = PasswordsModule.loadNodes
-    if (!nodes) {
-      return null
-    }
-    return nodes[selectedPasswordNode]
+    return PasswordsModule.selectedPasswordNode
   }
 
   get overviewWidthInPx() {
@@ -37,7 +31,7 @@ export default class PasswordsPage extends Vue {
   }
 
   set overviewWidthInPx(overviewWidthInPx: number) {
-    UIModule.setPasswordOverviewWidthInPx$(overviewWidthInPx)
+    UIModule.setPasswordOverviewWidthInPx(overviewWidthInPx)
   }
 }
 </script>

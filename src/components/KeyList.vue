@@ -1,9 +1,18 @@
 <template>
-  <div :class="`flex direction-column key-list-container ${disabled ? 'disabled' : ''}`">
-    <q-toolbar>{{title}} <q-chip dense color="primary" style="color: white;">{{keys ? keys.length : 0}}</q-chip></q-toolbar>
+  <div class="flex direction-column key-list-container">
+    <q-toolbar>
+      <span :class="{'disabled': disabled}">
+        {{title}}
+        <q-chip dense color="primary" style="color: white;">{{keys.value ? keys.value.length : 0}}</q-chip>
+      </span>
+      <q-space />
+      <folder-button v-if="ancestor" :folder="ancestor" icon="up"/>
+    </q-toolbar>
     <q-list bordered class="flex flex-grow key-list" v-roving-tabindex-container :disabled="disabled">
-      <q-scroll-area class="flex-grow">
-        <q-item v-for="(key, index) in keys" :key="key.keyid"
+      <centered-progress v-if="keys.resolving" class="flex-grow"/>
+      <centered-error v-if="keys.error" :error="keys.error" class="flex-grow"/>
+      <q-scroll-area v-else-if="keys.success" class="flex-grow">
+        <q-item v-for="(key, index) in keys.value" :key="key.keyid"
           class="q-my-sm" clickable v-ripple v-roving-tabindex
           @mousedown.exact="startSelection(index, false)"
           @mousedown.ctrl="startSelection(index, true)"
@@ -40,7 +49,10 @@
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator";
 import { GenericKey } from "gpg-promised";
+
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from '@/util/props';
+import { PasswordFolder } from '@/model/passwords';
+import { Resolvable } from '@/store/resolvable';
 import icons from "@/ui/icons";
 
 export type MouseEventListener = (this: Window, ev: MouseEvent) => any 
@@ -48,8 +60,9 @@ export type MouseEventListener = (this: Window, ev: MouseEvent) => any
 @Component({})
 export default class KeyList extends Vue {
   @Prop() title!: string;
-  @Prop() keys!: GenericKey[];
+  @Prop() keys!: Resolvable<GenericKey[]>;
   @Prop() disabled!: boolean;
+  @Prop() ancestor!: PasswordFolder
 
   selectionStart = -1;
   selectionEnd = -1;
@@ -95,14 +108,14 @@ export default class KeyList extends Vue {
   }
 
   get selectedAndSelectingKeys() {
-    if (this.disabled) {
+    if (this.disabled || !this.keys.value) {
       return {}
     }
     if (this.isSelecting()) {
       const start = Math.min(this.selectionStart, this.selectionEnd);
       const end = Math.max(this.selectionStart, this.selectionEnd);
       const selectedAndSelectingKeys = { ...this.selectedKeys };
-      const selectingKeys = this.keys.slice(start, end + 1).map(k => k.keyid);
+      const selectingKeys = this.keys.value.slice(start, end + 1).map(k => k.keyid);
       selectingKeys.forEach(selectingKey => {
         const isSelected = selectedAndSelectingKeys[selectingKey];
         if (isSelected) {
@@ -163,6 +176,10 @@ export default class KeyList extends Vue {
   &.disabled .q-toolbar {
     opacity: 0.4;
   }
+}
+
+.key-list {
+  position: relative;
 }
 
 body.body--light {

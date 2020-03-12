@@ -1,60 +1,117 @@
-import { Module, VuexModule, Mutation, Action } from '@/store/decorators'
-import { PasswordFolder, traverseTree, PasswordNode } from '@/model/tree'
+import Vue from 'vue'
+import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
+
+import { PasswordFolder, traverseTree, PasswordNode, annotateDecryptable, annotateNotEncryptable } from '@/model/passwords'
 import { readPasswordTree } from '@/service/passwords'
-import { ConfigModule, PasswordsModule } from '@/store'
+import { ConfigModule, PasswordsModule, UIModule, KeysModule } from '@/store'
+import { Resolvable, unresolved, resolving, resolved, failed, resolvable } from '@/store/resolvable'
+import { delay } from '@/util/dev'
 
-@Module({ name: 'passwords' })
-export default class PasswordsVuexModule extends VuexModule {
-    tree: PasswordFolder | null = null
+export type PasswordMap = { [relPath: string]: PasswordNode }
 
-    @Mutation({ name: 'config|setRepoPath' })
-    repoPathChanged() {
-        this.tree = null
+export interface PasswordsState {
+    tree: Resolvable<PasswordFolder>,
+    map: Resolvable<PasswordMap>,
+    list: Resolvable<PasswordNode[]>
+}
+
+@Module({ name: 'passwords', namespaced: true })
+export default class PasswordsVuexModule extends VuexModule implements PasswordsState {
+    tree: Resolvable<PasswordFolder> = unresolved()
+    map: Resolvable<PasswordMap> = unresolved()
+    list: Resolvable<PasswordNode[]> = unresolved()
+
+    @Mutation
+    loadingPasswordsFromFileSystem() {
+        this.tree = resolving()
+        this.map = resolving()
+        this.list = resolving()
     }
 
-    @Mutation({ name: 'passwords|setTree' })
-    setTree(tree: PasswordFolder | null) {
-        this.tree = tree 
+    @Mutation
+    loadedPasswordsFromFileSystem(state: PasswordsState) {
+        this.tree = state.tree
+        this.map = state.map
+        this.list = state.list
     }
 
-    @Action({ commit: 'passwords|setTree' })
-    async loadTree$() {
+    @Action
+    async loadPasswordsFromFileSystem() {
         try {
-           return await readPasswordTree(ConfigModule.repoPath as string);
-        } catch (e) {
-            console.log(e)
+            this.loadingPasswordsFromFileSystem()
+            const tree = await delay(() => readPasswordTree(ConfigModule.repoPath as string));
+            const map: PasswordMap = {}
+            const list: PasswordNode[] = []
+            traverseTree(tree, (node, depth) => {
+                if (depth < 2 && node.folder) {
+                    node.annotations.expanded = true
+                }
+                map[node.relPath] = node
+                list.push(node)
+            })
+            this.loadedPasswordsFromFileSystem({
+                tree: resolved(tree),
+                map: resolved(map),
+                list: resolved(list)
+            })
+        } catch (error) {
+            this.loadedPasswordsFromFileSystem({
+                tree: failed(error),
+                map: failed(error),
+                list: failed(error)
+            }) 
         }
     }
 
-    get loadTree() {
-        if (this.tree && this.tree.children) {
-            return this.tree;
+    @Mutation
+    annotatePasswordsUsingPrivateKeys() {
+        if (this.tree.value && KeysModule.privateKeys.value) {
+            annotateDecryptable(this.tree.value, KeysModule.privateKeys.value, false)
         }
-        PasswordsModule.loadTree$()
-        return null
     }
 
-    get loadNodes() {
-        const tree = this.loadTree
-        if (!tree) {
-            return null
+    @Mutation
+    annotatePasswordsUsingPublicKeys() {
+        if (this.tree.value && KeysModule.publicKeys.value) {
+            annotateNotEncryptable(this.tree.value, KeysModule.publicKeys.value, false)
         }
-        const nodes: { [absPath: string]: PasswordNode } = {}
-        traverseTree(tree, node => { nodes[node.absPath] = node })
-        return nodes;
     }
 
-    get loadParents() {
-        const tree = this.loadTree
-        if (!tree) {
-            return null
+    @Mutation
+    toggleNodes(relPaths: string[]) {
+        if (this.map.value) {
+            relPaths.forEach(relPath => {
+                const item = this.map.value![relPath]
+                if (item) {
+                     Vue.set(item.annotations, 'expanded', !item.annotations.expanded)
+                }
+            })
         }
-        const parents: { [absPath: string]: PasswordNode } = {}
-        traverseTree(tree, node => { 
-          if (node.folder) {
-            node.children.forEach(child => parents[child.absPath] = node)
-          }
-        })
-        return parents; 
     }
+
+    @Mutation
+    expandNodes(relPaths: string[]) {
+        if (this.map.value) {
+            relPaths.forEach(relPath => {
+                const item = this.map.value![relPath]
+                if (item) {
+                    Vue.set(item.annotations, 'expanded', true)
+                }
+            })
+        }
+    }
+
+    get selectedPasswordNode(): Resolvable<PasswordNode|null> {
+        const map = PasswordsModule.map
+        if (!map.success || !map.value) {
+            return resolvable(map)
+        }
+        const selectedPasswordPath = UIModule.selectedPasswordPath
+        if (selectedPasswordPath === null) {
+            return resolvable(map, null)
+        }
+        return resolvable(map, map.value[selectedPasswordPath])
+    }
+
+
 }

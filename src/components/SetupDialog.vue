@@ -81,7 +81,7 @@ export default class SetupDialog extends Vue {
   }
 
   setup() {
-    ConfigModule.setup$({ 
+    ConfigModule.setup({ 
       repoPath: this.repoPath, 
       gpgPath: this.gpgPath,
       darkMode: this.darkMode

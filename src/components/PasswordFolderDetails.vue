@@ -1,21 +1,26 @@
 <template>
-    <div class="row direction-column flex-grow">
+    <div class="row direction-column flex-grow position-relative">
         <folder-breadcrumbs :folders="breadcrumb"/>
-        <h3 class="folderName q-pa-md"><q-icon :name="icons.folderOpen" color="primary"/> {{folder.name}}</h3>
+        <h3 :class="{ 'folderName': true, 'q-pa-md': true, 'disabled': !folder.annotations.decryptable }">
+          <q-icon :name="icons.folderOpen" color="primary"/> {{folder.name}}
+        </h3>
         <div class="row flex-grow">
-            <key-list v-if="!assignedKeys || assignedKeys.length > 0"
+            <key-list v-if="!assignedKeys.value || assignedKeys.value.length > 0"
                class="col q-pa-md"
-               title="Assigned Keys"
-               :keys="assignedKeys" />
+               title="Assigned keys"
+               :keys="assignedKeys"
+               :disabled="!folder.annotations.decryptable" />
             <key-list v-else
                class="col q-pa-md"
-               title="Inherited Keys"
+               title="Inherited keys"
+               :ancestor="ancestorWithKeys"
                :keys="inheritedKeys"
                :disabled="true"/>
             <key-list
                class="col q-pa-md"
                title="Available keys"
-               :keys="publicKeys"/>
+               :keys="publicKeys"
+               :disabled="!folder.annotations.decryptable" />
         </div>
     </div>
 </template>
@@ -24,15 +29,13 @@
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 import { PublicKey } from 'gpg-promised'
 
-import { PasswordFolder, PasswordNode } from '@/model/tree';
+import { PasswordFolder, PasswordNode, getParents } from '@/model/passwords';
 import { KeysModule, PasswordsModule } from '@/store';
-import { findMatchingKey } from '@/service/keys';
+import { findMatchingPublicKeys } from '@/service/keys';
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
+import { Resolvable, resolvable, resolved } from '@/store/resolvable';
 
-export interface MissingPublicKey extends PublicKey {
-  missing: true
-}
 
 @Component({})
 export default class PasswordFolderDetails extends Vue {
@@ -42,55 +45,40 @@ export default class PasswordFolderDetails extends Vue {
     setNonReactiveProps(this, { icons })
   }
 
-  get assignedKeys(): PublicKey[] | null {
-    if (!this.folder) {
-        return null
+  get assignedKeys(): Resolvable<PublicKey[]> {
+    if (!this.publicKeys.value) {
+      return resolvable(this.publicKeys)
     }
-    return this.findMatchingPublicKeys(this.folder.keys)
+    return resolved(findMatchingPublicKeys(this.folder.keys, this.publicKeys.value))
   }
 
-  get inheritedKeys(): PublicKey[] | null {
-      const parents = this.breadcrumb
-      if (!parents) {
-          return null
-      }
-      for (let i = parents.length - 1; i >= 0; i--) {
-          if (parents[i].keys.length > 0) {
-              return this.findMatchingPublicKeys(parents[i].keys)
-          }
-      }
-      return []
-  }
-
-  findMatchingPublicKeys(keys: string[]): PublicKey[] | null {
-    const publicKeys = KeysModule.loadPublicKeys
-    if (!publicKeys) {
-      return null
+  get inheritedKeys(): Resolvable<PublicKey[]> {
+    if (!this.publicKeys.value) {
+      return resolvable(this.publicKeys)
     }
-    const matchingPublicKeys = keys
-      .map(key => findMatchingKey(key, publicKeys) || key)
-      .map(key => typeof key === 'string' ? { keyid: key, uid: [{ user_id: 'Missing' }], missing: true } as MissingPublicKey: key)
-    return matchingPublicKeys
+    const ancestor = this.ancestorWithKeys
+    if (!ancestor) {
+      return resolved([])
+    }
+    return resolved(findMatchingPublicKeys(ancestor.keys, this.publicKeys.value))
   }
 
   get publicKeys() {
-    return KeysModule.loadPublicKeys
+    return KeysModule.publicKeys
   }
 
   get breadcrumb() {
-    const parents = PasswordsModule.loadParents
-    if (!parents) {
-      return []
+    return getParents(this.folder.relPath) 
+  }
+
+  get ancestorWithKeys() {
+    const breadcrumb = this.breadcrumb
+    for (let i = breadcrumb.length - 1; i >= 0; i--) {
+      if (breadcrumb[i].keys.length > 0) {
+        return breadcrumb[i]
+      }
     }
-    const breadcrumb: PasswordFolder[] = []
-    let node: PasswordNode = this.folder
-    while (node) {
-        node = parents[node.absPath]
-        if (node && node.name && node.folder) {
-            breadcrumb.unshift(node)
-        }
-    }
-    return breadcrumb
+    return null
   }
 }
 </script>

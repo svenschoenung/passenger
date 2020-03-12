@@ -15,11 +15,11 @@ import { KeysModule } from '@/store'
 export default class KeysPage extends Vue {
 
   get publicKeys() {
-    return KeysModule.loadPublicKeys
+    return KeysModule.publicKeys
   }
 
   get privateKeys() {
-    return KeysModule.loadPrivateKeys
+    return KeysModule.privateKeys
   }
 }
 </script>

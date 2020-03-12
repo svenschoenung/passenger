@@ -1,9 +1,7 @@
 <template>
-    <q-breadcrumbs gutter="xs" class="folder-breadcrumbs q-pa-md" v-roving-tabindex-container.horizontal>
-        <q-breadcrumbs-el v-for="f in folders" :key="f.absPath">
-            <q-btn class="q-pa-none" flat @click="folderClicked(f)" v-roving-tabindex>
-              <q-icon :name="icons.folder" size="xs" color="primary"/>{{f.name}}
-            </q-btn>
+    <q-breadcrumbs v-if="folders.length > 0" gutter="xs" class="folder-breadcrumbs q-pa-md" v-roving-tabindex-container.horizontal>
+        <q-breadcrumbs-el v-for="f in folders" :key="f.relPath">
+            <folder-button :folder="f" v-roving-tabindex/>
         </q-breadcrumbs-el>
         <template v-slot:separator><q-icon :name="icons.separator"/></template>
     </q-breadcrumbs>
@@ -12,8 +10,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 
-import { PasswordFolder } from '@/model/tree';
-import { PasswordsModule, UIModule } from '@/store';
+import { PasswordFolder } from '@/model/passwords';
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 
@@ -24,31 +21,11 @@ export default class FolderBreadcrumbs extends Vue {
   created() {
     setNonReactiveProps(this, { icons })
   }
-
-  folderClicked(folder: PasswordFolder) {
-    UIModule.selectPasswordNode$(folder.absPath)
-  }
 }
 </script>
 
 <style lang="scss">
 @import "src/styles/style.variables.scss";
-
-.folder-breadcrumbs {
-    svg {
-      margin-right:5px;
-    }
-
-    .q-btn {
-      text-transform: none;
-      font-weight: normal;
-    }
-
-    .q-btn__wrapper {
-       padding: 0px 4px;
-       min-height: 2em;
-    }
-}
 
 body.body--light{
     .folder-breadcrumbs {

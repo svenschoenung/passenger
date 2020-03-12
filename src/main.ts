@@ -8,7 +8,7 @@ import '@/components'
 import '@/pages'
 
 Vue.config.productionTip = false
- 
+
 Vue.use(VueRovingTabindex);
 
 new Vue({

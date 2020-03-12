@@ -6,6 +6,8 @@ module.exports = {
   },
   transpileDependencies: [
     'quasar',
-    'gpg-promised'
+    'gpg-promised',
+    'vue-clamp',
+    'resize-detector'
   ],
 }

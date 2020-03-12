@@ -54,7 +54,7 @@ export default class ConfigPage extends Vue {
   }
 
   changeConfigPage(configPage: string) {
-    UIModule.setConfigPage$(configPage)
+    UIModule.setConfigPage(configPage)
   }
 }
 </script>

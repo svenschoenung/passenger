@@ -4,11 +4,11 @@ import { ionIosConstruct } from "@quasar/extras/ionicons-v4"
 import { ionIosLock } from '@quasar/extras/ionicons-v4'
 import { ionIosKey } from '@quasar/extras/ionicons-v4'
 import { ionIosGitCompare } from '@quasar/extras/ionicons-v4'
-import { ionIosPlay } from '@quasar/extras/ionicons-v4'
 import { ionIosClose } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowDown } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowForward } from '@quasar/extras/ionicons-v4'
 import { ionIosCloseCircleOutline } from '@quasar/extras/ionicons-v4'
+import { ionEllipsisVertical } from '@/ui/ionicons-v5'
 
 const icons = {
     folder: ionIosFolder,
@@ -19,12 +19,13 @@ const icons = {
     key: ionIosKey,
     keys: ionIosKey,
     repo: ionIosGitCompare,
-    arrow: ionIosPlay,
     clear: ionIosClose,
-    menu: ionIosArrowDown,
+    menu: ionEllipsisVertical,
     separator: ionIosArrowForward,
+    unexpanded: ionIosArrowForward,
+    expanded: ionIosArrowDown,
     error: ionIosCloseCircleOutline,
-    missing: ionIosClose 
+    missing: ionIosClose,
 }
 
 export default icons

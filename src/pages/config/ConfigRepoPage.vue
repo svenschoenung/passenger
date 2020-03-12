@@ -39,7 +39,7 @@ export default class ConfigRepoPage extends Vue {
 
   changeRepoPath() {
     if (this.repoPath !== ConfigModule.repoPath) {
-      ConfigModule.setRepoPath$(this.repoPath)
+      ConfigModule.setRepoPath(this.repoPath)
     }
   }
 }

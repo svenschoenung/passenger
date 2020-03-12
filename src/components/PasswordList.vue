@@ -1,5 +1,5 @@
 <template>
-  <q-virtual-scroll ref="scroll" id="password-tree" class="styled-scrollbar"
+  <q-virtual-scroll ref="scroll" id="password-list" class="styled-scrollbar"
    :items="textFilteredList"
    :virtual-scroll-item-size="ROW_HEIGHT" >
      <template v-slot="{ item }">
@@ -12,21 +12,14 @@
           'not-encryptable': item.annotations.notEncryptable
        }"
        :style="`height: ${ROW_HEIGHT}`">
-      <q-item-section v-for="i in depth(item) + 1" :key="i" avatar>
-        <q-icon v-if="item.folder && i === depth(item) + 1" size="xs"
-          @click.stop="toggle(item.relPath)"
-          :name="icons[item.annotations.expanded ? 'expanded' : 'unexpanded']"
-          />
-      </q-item-section>
       <q-item-section avatar>
         <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
       </q-item-section>
-      <q-item-section>
-        <!--<span v-html="highlight(item)"></span>-->
-        <span class="item-name">
-        {{item.name}}
+      <q-item-section avatar v-if="showItemType === 'files-and-folders'">
         <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
-        </span>
+      </q-item-section>
+      <q-item-section class="item-name">
+        <span v-html="highlight(item)"></span>
       </q-item-section>
       <q-item-section side>
         <q-icon v-if="item.annotations.notEncryptable" size="1.4em" 
@@ -44,7 +37,7 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import Fuse, { FuseResultWithMatches } from 'fuse.js'
 
 import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
-import { PasswordFolder, PasswordNode, depth, traverseTree, getParents } from '@/model/passwords';
+import { PasswordFolder, PasswordNode } from '@/model/passwords';
 import { findMatchingKey } from '@/service/keys';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
 import { highlight } from '@/util/html'
@@ -54,13 +47,13 @@ import { OverviewType } from '../store/modules/ui';
 const ROW_HEIGHT = 32
 
 @Component({ })
-export default class PasswordTree extends Vue {
-  @Prop({ type: Object }) tree!: PasswordNode
+export default class PasswordList extends Vue {
+  @Prop({ type: Array }) list!: PasswordNode[]
   @Prop({ type: String }) filter!: string
   @Ref() scroll!: QVirtualScroll
 
   created() {
-    setNonReactiveProps(this, { icons, highlight, depth, ROW_HEIGHT })
+    setNonReactiveProps(this, { icons, highlight, ROW_HEIGHT })
     this.registerWatcher()
   }
 
@@ -94,34 +87,24 @@ export default class PasswordTree extends Vue {
 
   scrollTo(relPath: string) {
     const items = this.textFilteredItems
-    let item = items[relPath]
-    if (!item) {
-      item = PasswordsModule.map.value![relPath]
-      PasswordsModule.expandNodes(getParents(relPath).map(parent => parent.relPath))
-    }
-    const index = item.annotations.index as number
-    const virtualScroll = document.getElementById('password-tree')
-    if (virtualScroll) {
-      const start = virtualScroll.scrollTop / ROW_HEIGHT
-      const end = start + virtualScroll.offsetHeight / ROW_HEIGHT - 1
-      if (index < Math.ceil(start) || index > Math.floor(end)) {
-        virtualScroll.scrollTop = (index + 1) * ROW_HEIGHT - virtualScroll.offsetHeight / 2
+    if (items) {
+      const index = items[relPath].annotations.index as number
+      const virtualScroll = document.getElementById('password-list')
+      if (virtualScroll) {
+        const start = virtualScroll.scrollTop / ROW_HEIGHT
+        const end = start + virtualScroll.offsetHeight / ROW_HEIGHT - 1
+        if (index < Math.ceil(start) || index > Math.floor(end)) {
+          virtualScroll.scrollTop = (index + 1) * ROW_HEIGHT - virtualScroll.offsetHeight / 2
+        }
       }
     }
+
   }
 
   select(relPath: string) {
     const scrollWatcher: ScrollWatcher = getNonReactiveProp(this, 'scrollWatcher')
-    if (scrollWatcher.selected !== relPath) {
-      scrollWatcher.selected = relPath
-      UIModule.selectPasswordPath(relPath);
-    } else {
-      this.toggle(relPath)
-    }
-  }
-
-  toggle(relPath: string) {
-    PasswordsModule.toggleNodes([relPath])
+    scrollWatcher.selected = relPath
+    UIModule.selectPasswordPath(relPath);
   }
 
   get selected() {
@@ -132,21 +115,12 @@ export default class PasswordTree extends Vue {
     return UIModule.showItemType
   }
 
-  get expansionFilteredList() {
-    const list: PasswordNode[] = []
-    traverseTree(this.tree, (node, depth) => {
-      list.push(node)
-      if (!node.annotations.expanded) {
-        return { skipChildren: true }
-      }
-    })
-    return list
-  }
-
   get menuFilteredList() {
-    const list = this.expansionFilteredList
-    return list && list.filter(item => {
-      if (!UIModule.showNotDecryptable && !(item.annotations.decryptable || item.annotations.decryptableChildren)) {
+    return this.list && this.list.filter(item => {
+      if (UIModule.showItemType === 'files-only' && item.folder) {
+        return false
+      }
+      if (!UIModule.showNotDecryptable && !item.annotations.decryptable) {
         return false
       }
       return true
@@ -198,7 +172,7 @@ class ScrollWatcher {
   selected!: string | null
   unwatch: any;
 
-  constructor(component: PasswordTree) {
+  constructor(component: PasswordList) {
     this.selected = component.selected
     this.unwatch = component.$store.watch(
       (state: AppState) => state.ui.selectedPasswordPath,
@@ -216,7 +190,7 @@ class ScrollWatcher {
 <style lang="scss">
 @import "src/styles/style.variables.scss";
 
-#password-tree {
+#password-list {
     .q-item__section--avatar {
       min-width: 24px;
     }
@@ -236,7 +210,7 @@ class ScrollWatcher {
 
 
 body.body--light {
-  #password-tree {
+  #password-list {
     .item-selected {
       background: $bg-primary-light;
     }
@@ -256,7 +230,7 @@ body.body--light {
 }
 
 body.body--dark {
-  #password-tree {
+  #password-list {
     .item-selected {
       background: $bg-primary-dark;
     }

@@ -17,6 +17,7 @@
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.4",
     "electron-store": "^5.1.1",
+    "fuse.js": "^3.6.1",
     "gpg-promised": "^0.4.12",
     "immutability-helper": "^3.0.1",
     "quasar": "^1.0.0",

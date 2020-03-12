@@ -21,7 +21,7 @@ import { ConfigModule } from '@/store'
 export default class ConfigUIPage extends Vue {
 
   set darkMode(darkMode: boolean) {
-    ConfigModule.setDarkMode$(darkMode)
+    ConfigModule.setDarkMode(darkMode)
   }
 
   get darkMode() {

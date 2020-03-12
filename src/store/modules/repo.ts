@@ -1,5 +1,8 @@
-import { Module, VuexModule, Mutation, Action } from '@/store/decorators'
+import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
-@Module({ name: 'repo' })
-export default class RepoVuexModule extends VuexModule {
+export interface RepoState {
+}
+
+@Module({ name: 'repo', namespaced: true })
+export default class RepoVuexModule extends VuexModule implements RepoState {
 }

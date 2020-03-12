@@ -46,12 +46,63 @@ body.body--dark {
 }
 
 $footer-height: 25px;
+$filter-height: 56px;
 
 .footer-height {
-    height: $footer-height
+    height: $footer-height;
 }
 .content-height {
-    height: calc(100vh - #{$footer-height}) 
+    height: calc(100vh - #{$footer-height});
+}
+
+#password-list, #password-tree {
+    height: calc(100vh - #{$footer-height} - #{$filter-height}) ;
+    width: 100%;
+}
+
+.styled-scrollbar {
+    &::-webkit-scrollbar{
+        display: none;
+        background: transparent;
+        width: 10px;
+    }
+    &:hover::-webkit-scrollbar{
+        display: block;
+    }
+
+    &::-webkit-scrollbar:vertical {
+        width: 10px;
+    }
+
+    &::-webkit-scrollbar:horizontal {
+        height: 10px;
+    }
+
+    &::-webkit-scrollbar-button {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-corner {
+        display: none;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(255,255, 255, 0.2);
+        border-radius: 0px;
+    }
+      
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+}
+
+.q-virtual-scroll__content {
+    min-width: fit-content;
+    width: 100%;
+}
+
+.q-virtual-scroll__padding {
+    background: none;
 }
 
 * {

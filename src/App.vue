@@ -46,7 +46,7 @@ export default class App extends Vue {
 
   watchWindowState(win: BrowserWindow) {
     const windowStateChanged = (e: Event) => {
-      UIModule.setWindowState$({
+      UIModule.setWindowState({
         maximized: win.isMaximized(),
         bounds: win.getBounds()
       })

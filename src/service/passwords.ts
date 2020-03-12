@@ -1,7 +1,6 @@
 import fs from 'fs'
-import util from 'util'
 import path from 'path'
-import { PasswordFile, PasswordFolder, PasswordNode } from '@/model/tree'
+import { PasswordFile, PasswordFolder, PasswordNode } from '@/model/passwords'
 import { stat, readdir, readFile } from '@/util/promisified/fs'
 
 export async function readPasswordTree(repoPath: string) {
@@ -11,11 +10,13 @@ export async function readPasswordTree(repoPath: string) {
     }
     const repoFolder: PasswordFolder = {
         folder: true,
-        name: '',
+        name: '/',
+        fullName: '/',
         absPath: repoPath,
-        relPath: path.relative(repoPath, repoPath),
+        relPath: path.relative(repoPath, repoPath) || '.',
         keys: [],
-        children: []
+        children: [],
+        annotations: {}
     }
     return await readPasswordFolder(repoFolder)
 }
@@ -41,10 +42,12 @@ function addPasswordNode(parent: PasswordFolder, dirent: fs.Dirent): PasswordNod
         const folder = {
             folder: true,
             name,
+            fullName: relPath,
             absPath,
             relPath,
             children: [],
-            keys: []
+            keys: [],
+            annotations: {}
         }
         parent.children.push(folder)
         return folder
@@ -52,8 +55,10 @@ function addPasswordNode(parent: PasswordFolder, dirent: fs.Dirent): PasswordNod
         const file: PasswordFile = {
             folder: false,
             name: name.replace(/\.gpg$/, ''),
+            fullName: relPath.replace(/\.gpg$/, ''),
             absPath,
-            relPath
+            relPath,
+            annotations: {}
         }
         if (isGPGFile(name)) {
             parent.children.push(file)
@@ -80,4 +85,5 @@ function isGitFile(name: string) {
 function isGPGFile(name: string) {
     return name.match(/\.gpg$/)
 }
+
 

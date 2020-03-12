@@ -1,4 +1,4 @@
-import { Module, VuexModule, Mutation, Action,  } from '@/store/decorators'
+import { Module, VuexModule, Mutation, Action,  } from 'vuex-module-decorators'
 import electron, { Rectangle } from 'electron'
 
 export interface WindowState {
@@ -6,64 +6,78 @@ export interface WindowState {
   bounds: Rectangle
 }
 
-@Module({ name: 'ui' })
-export default class UIVuexModule extends VuexModule {
+export type OverviewType = 'tree' | 'list'
+export type ItemType = 'files-and-folders' | 'files-only'
+
+export interface UIState {
+    page: string
+    configPage: string
+    selectedPasswordPath: string | null
+    windowState: WindowState
+    passwordOverviewWidthInPx: number
+    filter: string
+    overviewType: OverviewType
+    showItemType: ItemType
+    showNotDecryptable: boolean
+}
+
+@Module({ name: 'ui', namespaced: true })
+export default class UIVuexModule extends VuexModule implements UIState {
   page = 'passwords'
   configPage = 'repo'
-  selectedPasswordNode: string | null = null
+  selectedPasswordPath: string | null = null
   windowState: WindowState = {
     maximized: false,
     bounds: electron.remote.getCurrentWindow().getBounds()
   }
   passwordOverviewWidthInPx = 300
+  filter: string = ''
+  overviewType: OverviewType = 'tree'
+  showItemType: ItemType = 'files-and-folders' 
+  showNotDecryptable: boolean = true
 
-  @Mutation({ name: 'ui|setPage' })
+  @Mutation
   setPage(page: string) {
     this.page = page 
   }
 
-  @Action({ commit: 'ui|setPage' })
-  setPage$(page: string) {
-    return page
-  }
-
-  @Mutation({ name: 'ui|setConfigPage' })
+  @Mutation
   setConfigPage(configPage: string) {
     this.configPage = configPage 
   }
 
-  @Action({ commit: 'ui|setConfigPage' })
-  setConfigPage$(configPage: string) {
-    return configPage
+  @Mutation
+  selectPasswordPath(relPath: string) {
+    this.selectedPasswordPath = relPath 
   }
 
-  @Mutation({ name: 'ui|selectPasswordNode' })
-  selectPasswordNode(absPath: string) {
-    this.selectedPasswordNode = absPath 
-  }
-
-  @Action({ commit: 'ui|selectPasswordNode' })
-  selectPasswordNode$(absPath: string) {
-    return absPath
-  }
-
-  @Mutation({ name: 'ui|setWindowState' })
+  @Mutation
   setWindowState(windowState: WindowState) {
     this.windowState = windowState 
   }
 
-  @Action({ commit: 'ui|setWindowState' })
-  setWindowState$(windowState: WindowState) {
-    return windowState
-  }
-
-  @Mutation({ name: 'ui|setPasswordOverviewWidthInPx' })
+  @Mutation
   setPasswordOverviewWidthInPx(passwordOverviewWidthInPx: number) {
     this.passwordOverviewWidthInPx = passwordOverviewWidthInPx
   }
 
-  @Action({ commit: 'ui|setPasswordOverviewWidthInPx' })
-  setPasswordOverviewWidthInPx$(passwordOverviewWidthInPx: number) {
-    return passwordOverviewWidthInPx
+  @Mutation
+  setFilter(filter: string) {
+    this.filter = filter
+  }
+
+  @Mutation
+  setOverviewType(overviewType: OverviewType) {
+    this.overviewType = overviewType
+  }
+
+  @Mutation
+  setShowItemType(showItemType: ItemType) {
+    this.showItemType = showItemType
+  }
+
+  @Mutation
+  setShowNotDecryptable(showNotDecryptable: boolean) {
+    this.showNotDecryptable = showNotDecryptable
   }
 }
