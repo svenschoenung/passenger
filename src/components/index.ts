@@ -10,6 +10,7 @@ import PasswordFolderDetails from './PasswordFolderDetails.vue'
 import PasswordList from './PasswordList.vue'
 import PasswordOverview from './PasswordOverview.vue'
 import PasswordTree from './PasswordTree.vue'
+import ProblemsCount from './ProblemsCount.vue'
 import SetupDialog from './SetupDialog.vue'
 import StatusBar from './StatusBar.vue'
 
@@ -24,5 +25,6 @@ Vue.component('password-folder-details', PasswordFolderDetails)
 Vue.component('password-list', PasswordList)
 Vue.component('password-overview', PasswordOverview)
 Vue.component('password-tree', PasswordTree)
+Vue.component('problems-count', ProblemsCount)
 Vue.component('setup-dialog', SetupDialog)
 Vue.component('status-bar', StatusBar)

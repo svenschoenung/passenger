@@ -42,6 +42,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 import { UIModule } from '@/store'
+import { ConfigPageType } from '@/store/modules/ui'
 
 @Component({ })
 export default class ConfigPage extends Vue {
@@ -53,7 +54,7 @@ export default class ConfigPage extends Vue {
     return 'config-' + UIModule.configPage + '-page'
   }
 
-  changeConfigPage(configPage: string) {
+  changeConfigPage(configPage: ConfigPageType) {
     UIModule.setConfigPage(configPage)
   }
 }

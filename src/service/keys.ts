@@ -66,3 +66,10 @@ export function findMatchingPublicKeys(keys: string[], publicKeys: PublicKey[]):
     return matchingPublicKeys
 }
 
+export function findMissingPublicKeys(keys: string[], publicKeys: PublicKey[]): MissingPublicKey[] {
+    return findMatchingPublicKeys(keys, publicKeys)
+      .filter(key => (key as any).missing) as MissingPublicKey[]
+}
+
+
+

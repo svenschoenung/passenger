@@ -10,6 +10,7 @@ declare module '@quasar/extras/ionicons-v4' {
     export const ionIosArrowDown: string
     export const ionIosArrowForward: string
     export const ionIosCloseCircleOutline: string
+    export const ionIosWarning: string
     export const ionIosArchive: string
 }
 

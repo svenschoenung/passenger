@@ -35,6 +35,19 @@
                     Version Control
                 </q-tooltip>
             </q-item>
+            <q-item clickable v-ripple v-roving-tabindex
+              :active="page === 'problems'"
+              active-class="active-elem"
+              @click="changePage('problems')">
+                <q-item-section avatar>
+                    <q-icon :name="icons.problems" size="md"/>
+                    <q-badge v-if="errorCount" color="negative" align="top" class="q-ma-sm floating-top">{{errorCount}}</q-badge>
+                    <q-badge v-if="warningCount" color="warning" align="bottom" class="q-ma-sm floating-bottom">{{warningCount}}</q-badge>
+                </q-item-section>
+                <q-tooltip anchor="center right" self="center left" :delay="1000">
+                    Problems
+                </q-tooltip>
+            </q-item>
             <q-space/>
             <q-item clickable v-ripple v-roving-tabindex
               :active="page === 'config'"
@@ -55,8 +68,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-import { UIModule } from '@/store'
+import { UIModule, ProblemsModule } from '@/store'
 import { setNonReactiveProps } from '@/util/props';
+import { PageType } from '@/store/modules/ui';
 import icons from '@/ui/icons';
 
 @Component({})
@@ -69,9 +83,18 @@ export default class MenuBar extends Vue {
         return UIModule.page;
     }
 
-    changePage(page: string) {
+    get errorCount() {
+        return ProblemsModule.errorCount
+    }
+
+    get warningCount() {
+        return ProblemsModule.warningCount
+    }
+
+    changePage(page: PageType) {
         UIModule.setPage(page)
     }
+
 }
 </script>
 

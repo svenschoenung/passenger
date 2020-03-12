@@ -6,6 +6,7 @@ import { getModule } from 'vuex-module-decorators'
 import ElectronStore from 'electron-store'
 
 import UIVuexModule, { UIState } from './modules/ui'
+import ProblemsVuexModule, { ProblemsState } from './modules/problems'
 import RepoVuexModule, { RepoState } from './modules/repo'
 import PasswordsVuexModule, { PasswordsState } from './modules/passwords'
 import KeysVuexModule, { KeysState } from './modules/keys'
@@ -19,6 +20,7 @@ export interface AppState {
   passwords: PasswordsState,
   repo: RepoState,
   keys: KeysState,
+  problems: ProblemsState,
   config: ConfigState
 }
 
@@ -28,6 +30,7 @@ export const store = new Store<AppState>({
     passwords: PasswordsVuexModule,
     repo: RepoVuexModule,
     keys: KeysVuexModule,
+    problems: ProblemsVuexModule,
     config: ConfigVuexModule,
   },
   plugins: [
@@ -59,6 +62,7 @@ export const RepoModule = getModule(RepoVuexModule, store)
 export const PasswordsModule = getModule(PasswordsVuexModule, store)
 export const KeysModule = getModule(KeysVuexModule, store);
 export const ConfigModule = getModule(ConfigVuexModule, store);
+export const ProblemsModule = getModule(ProblemsVuexModule, store);
 
 if (process.env.NODE_ENV === 'development') {
   store.subscribe((mutation: any) => {

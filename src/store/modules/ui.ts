@@ -8,6 +8,8 @@ export interface WindowState {
 
 export type OverviewType = 'tree' | 'list'
 export type ItemType = 'files-and-folders' | 'files-only'
+export type PageType = 'config' | 'repo' | 'keys' | 'passwords' | 'problems'
+export type ConfigPageType = 'repo' | 'keys' | 'ui'
 
 export interface UIState {
     page: string
@@ -23,8 +25,8 @@ export interface UIState {
 
 @Module({ name: 'ui', namespaced: true })
 export default class UIVuexModule extends VuexModule implements UIState {
-  page = 'passwords'
-  configPage = 'repo'
+  page: PageType = 'passwords'
+  configPage: ConfigPageType = 'repo'
   selectedPasswordPath: string | null = null
   windowState: WindowState = {
     maximized: false,
@@ -37,18 +39,24 @@ export default class UIVuexModule extends VuexModule implements UIState {
   showNotDecryptable: boolean = true
 
   @Mutation
-  setPage(page: string) {
+  setPage(page: PageType) {
     this.page = page 
   }
 
   @Mutation
-  setConfigPage(configPage: string) {
+  setConfigPage(configPage: ConfigPageType) {
     this.configPage = configPage 
   }
 
   @Mutation
   selectPasswordPath(relPath: string) {
     this.selectedPasswordPath = relPath 
+  }
+
+  @Mutation
+  gotoPasswordPath(relPath: string) {
+    this.selectedPasswordPath = relPath 
+    this.page = 'passwords'
   }
 
   @Mutation

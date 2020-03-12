@@ -3,7 +3,7 @@
     <q-toolbar>
       <span :class="{'disabled': disabled}">
         {{title}}
-        <q-chip dense color="primary" style="color: white;">{{keys.value ? keys.value.length : 0}}</q-chip>
+        <q-chip dense color="primary" class="text-white q-px-sm" >{{keys.value ? keys.value.length : 0}}</q-chip>
       </span>
       <q-space />
       <folder-button v-if="ancestor" :folder="ancestor" icon="up"/>

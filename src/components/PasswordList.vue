@@ -87,18 +87,22 @@ export default class PasswordList extends Vue {
 
   scrollTo(relPath: string) {
     const items = this.textFilteredItems
-    if (items) {
-      const index = items[relPath].annotations.index as number
-      const virtualScroll = document.getElementById('password-list')
-      if (virtualScroll) {
-        const start = virtualScroll.scrollTop / ROW_HEIGHT
-        const end = start + virtualScroll.offsetHeight / ROW_HEIGHT - 1
-        if (index < Math.ceil(start) || index > Math.floor(end)) {
-          virtualScroll.scrollTop = (index + 1) * ROW_HEIGHT - virtualScroll.offsetHeight / 2
-        }
+    if (!items) {
+      return;
+    }
+    const item = items[relPath]
+    if (!item) {
+      return;
+    }
+    const index = item.annotations.index as number
+    const virtualScroll = document.getElementById('password-list')
+    if (virtualScroll) {
+      const start = virtualScroll.scrollTop / ROW_HEIGHT
+      const end = start + virtualScroll.offsetHeight / ROW_HEIGHT - 1
+      if (index < Math.ceil(start) || index > Math.floor(end)) {
+        virtualScroll.scrollTop = (index + 1) * ROW_HEIGHT - virtualScroll.offsetHeight / 2
       }
     }
-
   }
 
   select(relPath: string) {

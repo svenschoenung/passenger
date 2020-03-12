@@ -45,9 +45,6 @@ body.body--dark {
   flex-direction: row;
 }
 
-$footer-height: 25px;
-$filter-height: 56px;
-
 .footer-height {
     height: $footer-height;
 }
@@ -107,4 +104,18 @@ $filter-height: 56px;
 
 * {
   -webkit-user-select:none;
+}
+
+.q-badge.floating-top {
+    position: absolute;
+    top: -4px;
+    right: -3px;
+    cursor: inherit;
+}
+
+.q-badge.floating-bottom {
+    position: absolute;
+    bottom: -4px;
+    right: -3px;
+    cursor: inherit;
 }

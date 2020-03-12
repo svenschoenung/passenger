@@ -1,8 +1,15 @@
 <template> 
     <q-footer class="status-bar footer-height">
-        <q-icon :name="icons.repoPath"/> {{repoPath}}
-        <q-icon :name="icons.folder"/> {{folderCount}}
-        <q-icon :name="icons.password"/> {{fileCount}}
+        <div class="clickable" @click="gotoConfigRepoPage()">
+            <q-icon :name="icons.repoPath" size="xs"/> {{repoPath}}
+        </div>
+        <div class="clickable" @click="gotoPasswordsPage()">
+            <q-icon :name="icons.folder" size="xs"/> {{folderCount}}
+            <q-icon :name="icons.password" size="xs"/> {{fileCount}}
+        </div>
+        <div class="clickable" @click="gotoProblemsPage()">
+            <problems-count color="white"/>
+        </div>
         <div class="float-right">
         </div>
     </q-footer>
@@ -35,14 +42,40 @@ export default class App extends Vue {
   get fileCount() {
       return PasswordsModule.fileCount
   }
+
+  gotoConfigRepoPage() {
+      UIModule.setConfigPage('repo')
+      UIModule.setPage('config')
+  }
+
+  gotoPasswordsPage() {
+      UIModule.setPage('passwords')
+  }
+
+  gotoProblemsPage() {
+      UIModule.setPage('problems')
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+@import "src/styles/style.variables.scss";
+
 .status-bar {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 0px 15px;
     font-weight: 500;
     font-size: 14px;
+    line-height: 24px;
+}
+.clickable {
+    margin: 0px 5px;
+    display: inline-block;
+    padding: 0px 5px;
+    box-sizing: border-box;
+    height: $footer-height;
+}
+.clickable:hover {
+    cursor: pointer;
+    background: rgba(white, $alpha: 0.3); 
 }
 </style>
