@@ -15,8 +15,7 @@
             </keep-alive>
           </q-page-container>
 
-          <q-footer class="status-bar footer-height">
-          </q-footer>
+          <status-bar/>
       </q-layout>
     </div>
 </template>
@@ -72,8 +71,4 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.status-bar {
-    padding: 5px;
-    font-weight: bold;
-}
 </style>

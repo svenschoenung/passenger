@@ -8,6 +8,7 @@ import { ionIosClose } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowDown } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowForward } from '@quasar/extras/ionicons-v4'
 import { ionIosCloseCircleOutline } from '@quasar/extras/ionicons-v4'
+import { ionIosArchive } from '@quasar/extras/ionicons-v4'
 import { ionEllipsisVertical } from '@/ui/ionicons-v5'
 
 const icons = {
@@ -19,6 +20,7 @@ const icons = {
     key: ionIosKey,
     keys: ionIosKey,
     repo: ionIosGitCompare,
+    repoPath: ionIosArchive,
     clear: ionIosClose,
     menu: ionEllipsisVertical,
     separator: ionIosArrowForward,

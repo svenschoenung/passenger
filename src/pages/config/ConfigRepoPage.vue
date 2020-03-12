@@ -20,10 +20,11 @@ import { Component, Vue } from "vue-property-decorator";
 import { ConfigModule } from '@/store';
 import { validateRepository } from '@/service/repo';
 import { setNonReactiveProps } from '@/util/props';
+import { tildify, untildify } from '@/util/fs';
 
 @Component({})
 export default class ConfigRepoPage extends Vue {
-  repoPath = ConfigModule.repoPath as string;
+  repoPath = tildify(ConfigModule.repoPath as string);
 
   created() {
     setNonReactiveProps(this, { validateRepository })
@@ -39,7 +40,7 @@ export default class ConfigRepoPage extends Vue {
 
   changeRepoPath() {
     if (this.repoPath !== ConfigModule.repoPath) {
-      ConfigModule.setRepoPath(this.repoPath)
+      ConfigModule.setRepoPath(untildify(this.repoPath))
     }
   }
 }

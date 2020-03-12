@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { PasswordFile, PasswordFolder, PasswordNode } from '@/model/passwords'
-import { stat, readdir, readFile } from '@/util/promisified/fs'
+import { stat, readdir, readFile } from '@/util/fs'
 
 export async function readPasswordTree(repoPath: string) {
     const repo = await stat(repoPath)

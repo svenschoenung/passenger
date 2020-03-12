@@ -9,10 +9,15 @@ import { delay } from '@/util/dev'
 
 export type PasswordMap = { [relPath: string]: PasswordNode }
 
-export interface PasswordsState {
+export interface PasswordsModels {
     tree: Resolvable<PasswordFolder>,
     map: Resolvable<PasswordMap>,
     list: Resolvable<PasswordNode[]>
+}
+
+export interface PasswordsState extends PasswordsModels {
+    folderCount: number
+    fileCount: number
 }
 
 @Module({ name: 'passwords', namespaced: true })
@@ -20,19 +25,39 @@ export default class PasswordsVuexModule extends VuexModule implements Passwords
     tree: Resolvable<PasswordFolder> = unresolved()
     map: Resolvable<PasswordMap> = unresolved()
     list: Resolvable<PasswordNode[]> = unresolved()
+    folderCount: number = 0
+    fileCount: number = 0
 
     @Mutation
     loadingPasswordsFromFileSystem() {
         this.tree = resolving()
         this.map = resolving()
         this.list = resolving()
+        this.folderCount = 0
+        this.fileCount = 0
     }
 
     @Mutation
-    loadedPasswordsFromFileSystem(state: PasswordsState) {
+    loadedPasswordsFromFileSystem(state: PasswordsModels) {
         this.tree = state.tree
         this.map = state.map
         this.list = state.list
+        if (this.list.value) {
+            let folderCount = 0
+            let fileCount = 0
+            this.list.value.forEach(item => {
+                if (item.folder) {
+                    folderCount++
+                } else {
+                    fileCount++
+                }
+            })
+            this.folderCount = folderCount
+            this.fileCount = fileCount
+        } else {
+            this.folderCount = 0
+            this.fileCount = 0
+        }
     }
 
     @Action
