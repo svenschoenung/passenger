@@ -1,10 +1,11 @@
 <template>
   <q-virtual-scroll ref="scroll" id="password-tree" class="styled-scrollbar"
+   tabindex="-1" v-roving-tabindex-container
    :items="textFilteredList"
    :virtual-scroll-item-size="ROW_HEIGHT" >
-     <template v-slot="{ item }">
+    <template v-slot="{ item }">
     <q-item dense :key="item.relPath"
-       clickable v-ripple
+       clickable v-ripple v-roving-tabindex
        @click="select(item.relPath)"
        :class="{
           'item-selected': item.relPath === selected,
@@ -22,9 +23,8 @@
         <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
       </q-item-section>
       <q-item-section>
-        <!--<span v-html="highlight(item)"></span>-->
         <span class="item-name">
-        {{item.name}}
+        <span v-html="highlightTreeNode(item)"></span>
         <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
         </span>
       </q-item-section>
@@ -42,12 +42,13 @@ import { Component, Vue, Ref, Prop } from "vue-property-decorator";
 import { scroll, QVirtualScroll } from 'quasar'
 import scrollIntoView from 'scroll-into-view-if-needed'
 import Fuse, { FuseResultWithMatches } from 'fuse.js'
+import path from 'path'
 
 import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
-import { PasswordFolder, PasswordNode, depth, traverseTree, getParents } from '@/model/passwords';
+import { PasswordFolder, PasswordNode, depth, traverseTree, getParents, traverseParents, getParent, SearchMatches } from '@/model/passwords';
 import { findMatchingKey } from '@/service/keys';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
-import { highlight } from '@/util/html'
+import { highlightTreeNode } from '@/util/html'
 import icons from "@/ui/icons";
 import { OverviewType } from '../store/modules/ui';
 
@@ -60,7 +61,7 @@ export default class PasswordTree extends Vue {
   @Ref() scroll!: QVirtualScroll
 
   created() {
-    setNonReactiveProps(this, { icons, highlight, depth, ROW_HEIGHT })
+    setNonReactiveProps(this, { icons, highlightTreeNode, depth, ROW_HEIGHT })
     this.registerWatcher()
   }
 
@@ -132,18 +133,18 @@ export default class PasswordTree extends Vue {
     return UIModule.showItemType
   }
 
-  get expansionFilteredList() {
+  get expansionFilteredList(): PasswordNode[] {
     const list: PasswordNode[] = []
     traverseTree(this.tree, (node, depth) => {
       list.push(node)
-      if (!node.annotations.expanded) {
+      if (!this.filter && !node.annotations.expanded) {
         return { skipChildren: true }
       }
     })
     return list
   }
 
-  get menuFilteredList() {
+  get menuFilteredList(): PasswordNode[] {
     const list = this.expansionFilteredList
     return list && list.filter(item => {
       if (!UIModule.showNotDecryptable && !(item.annotations.decryptable || item.annotations.decryptableChildren)) {
@@ -162,27 +163,62 @@ export default class PasswordTree extends Vue {
       return list
     }
     var options = {
+      shouldSort: false,
       tokenize: true,
       matchAllTokens: true,
       includeMatches: true,
-      threshold: 0.7,
+      threshold: 0.1,
       location: 0,
-      distance: 100,
+      distance: 1000,
       maxPatternLength: 128,
       minMatchCharLength: 2,
       keys: [ 'fullName' ]
     };
-    var fuse = new Fuse(list, options);
-    const results = fuse.search(this.filter.trim()) as FuseResultWithMatches<PasswordNode>[];
-    return results.map((result: FuseResultWithMatches<PasswordNode>, index) => {
-      return {
-        ...result.item,
-        annotations: {
-          ...result.item.annotations, index,
-          matches: result.matches && result.matches[0] && result.matches[0].indices,
+    const leafList = list.filter(item => {
+      return !item.folder || item.children.length === 0
+    })
+
+    const results = new Fuse(leafList, options).search(this.filter.replace(new RegExp(path.sep, 'g'), ' ').trim()) as FuseResultWithMatches<PasswordNode>[];
+
+    const filteredList: PasswordNode[] = []
+    const included: { [relPath: string]: boolean } = {}
+
+    results.forEach((result: FuseResultWithMatches<PasswordNode>) => {
+      const unincludedParents: PasswordNode[] = []
+      for (let node = getParent(result.item.relPath); node; node = getParent(node.relPath)) {
+        if (!included[node.relPath]) {
+          unincludedParents.unshift(node)
+        } else {
+          break;
         }
       }
+      unincludedParents.forEach(unincludedParent => {
+        filteredList.push(annotateResult({
+          item: unincludedParent,
+          matches: result.matches
+        }))
+        included[unincludedParent.relPath] = true
+      })
+      if (!included[result.item.relPath]) {
+        filteredList.push(annotateResult(result))
+        included[result.item.relPath] = true
+      }
     });
+
+    const expandedResults: PasswordNode[] = []
+    let hideBelowAbsPath: string | null = null
+    filteredList.forEach(item => {
+      if (hideBelowAbsPath && item.absPath.startsWith(hideBelowAbsPath)) {
+         return
+      }
+      if (item.folder && !item.annotations.expanded) {
+        hideBelowAbsPath = item.absPath + path.sep
+      }
+      expandedResults.push(item)
+    })
+    console.log(expandedResults)
+
+    return expandedResults
   }
 
   get textFilteredItems() {
@@ -193,6 +229,21 @@ export default class PasswordTree extends Vue {
   }
 }
 
+function annotateResult(result: FuseResultWithMatches<PasswordNode>) {
+  return {
+    ...result.item,
+    annotations: {
+      ...result.item.annotations, 
+      matches: clipMatches((result.matches && result.matches[0] && result.matches[0].indices) || [], result.item.fullName)
+    }
+  }
+}
+
+function clipMatches(matches: SearchMatches, fullName: string): SearchMatches {
+  return matches
+    .filter(match => match[0] < fullName.length)
+    .map(match => match[1] >= fullName.length ? [match[0], fullName.length - 1] : match)
+}
 
 class ScrollWatcher {
   selected!: string | null

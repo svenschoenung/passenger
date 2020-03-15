@@ -1,13 +1,18 @@
 <template>
   <q-splitter id="passwords-page" class="content-height"
      v-model="overviewWidthInPx" unit="px">
+    <vue-headful :title="`Passenger: Passwords ${selectedPasswordNodeName}`" />
     <template v-slot:before>
       <password-overview/>
     </template>
     <template v-slot:after>
       <centered-progress v-if="selectedPasswordNode.resolving"/>
+      <centered-error v-if="selectedPasswordNode.error" :error="selectedPasswordNode.error"/>
       <password-folder-details v-else-if="selectedPasswordNode.value && selectedPasswordNode.value.folder"
         :folder="selectedPasswordNode.value" :key="selectedPasswordNode.value.relPath"
+      />
+      <password-file-details v-else-if="selectedPasswordNode.value && !selectedPasswordNode.value.folder"
+        :file="selectedPasswordNode.value" :key="selectedPasswordNode.value.relPath"
       />
     </template>
   </q-splitter>
@@ -24,6 +29,13 @@ export default class PasswordsPage extends Vue {
 
   get selectedPasswordNode() {
     return PasswordsModule.selectedPasswordNode
+  }
+
+  get selectedPasswordNodeName() {
+    if (this.selectedPasswordNode.value) {
+      return '- ' + this.selectedPasswordNode.value.fullName
+    }
+    return null
   }
 
   get overviewWidthInPx() {

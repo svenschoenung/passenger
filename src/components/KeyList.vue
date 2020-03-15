@@ -1,6 +1,6 @@
 <template>
   <div class="flex direction-column key-list-container">
-    <q-toolbar>
+    <q-toolbar class="q-pa-none">
       <span :class="{'disabled': disabled}">
         {{title}}
         <q-chip dense color="primary" class="text-white q-px-sm" >{{keys.value ? keys.value.length : 0}}</q-chip>
@@ -11,7 +11,7 @@
     <q-list bordered class="flex flex-grow key-list" v-roving-tabindex-container :disabled="disabled">
       <centered-progress v-if="keys.resolving" class="flex-grow"/>
       <centered-error v-if="keys.error" :error="keys.error" class="flex-grow"/>
-      <q-scroll-area v-else-if="keys.success" class="flex-grow">
+      <styled-scrollbar v-else-if="keys.success">
         <q-item v-for="(key, index) in keys.value" :key="key.keyid"
           class="q-my-sm" clickable v-ripple v-roving-tabindex
           @mousedown.exact="startSelection(index, false)"
@@ -41,7 +41,7 @@
             >{{uid.user_id}}</q-item-label>
           </q-item-section>
         </q-item>
-      </q-scroll-area>
+      </styled-scrollbar>
     </q-list>
   </div>
 </template>

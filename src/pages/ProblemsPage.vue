@@ -1,7 +1,8 @@
 <template>
     <div class="q-pa-md column content-height">
+      <vue-headful title="Passenger: Problems" />
         <problems-count :chip="true" class="q-mb-sm"/>
-        <q-list bordered class="flex flex-grow">
+        <q-list bordered class="flex flex-grow bg-1">
             <q-scroll-area class="flex-grow">
                 <template v-for="problem in problems" >
                 <q-item :class="`problem-${problem.type}`" :key="`item-${problem.id}`">

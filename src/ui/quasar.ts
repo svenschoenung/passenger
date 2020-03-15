@@ -4,7 +4,7 @@ import '@/styles/style.scss'
 import {
   Quasar, QIcon, QChip, QList, QItem, QToolbar, QToolbarTitle, QMenu, QCheckbox, QBadge,
   QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput, QBreadcrumbs, QBreadcrumbsEl,
-  QDrawer, QFooter, QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio,
+  QDrawer, QFooter, QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio, QBtnDropdown,
   QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QSeparator, QVirtualScroll,
   Ripple, ClosePopup
 } from 'quasar'
@@ -15,7 +15,7 @@ Vue.use(Quasar, {
   components: {
     QIcon, QChip, QList, QItem, QToolbar, QToolbarTitle, QMenu, QCheckbox, QBadge,
     QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput, QBreadcrumbs, QBreadcrumbsEl,
-    QDrawer, QFooter, QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio,
+    QDrawer, QFooter, QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio, QBtnDropdown,
     QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QSeparator, QVirtualScroll
   },
   directives: { Ripple, ClosePopup },

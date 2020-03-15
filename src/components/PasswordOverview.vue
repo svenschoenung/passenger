@@ -5,15 +5,15 @@
         <q-icon v-if="filter" :name="icons.clear" class="cursor-pointer" @click="clearFilter" />
       </template>
       <template v-slot:after>
-        <q-btn size="sm" flat class="menu-button"><q-icon :name="icons.menu" />
+        <q-btn size="sm" flat class="menu-button"><q-icon :name="icons.menu" size="sm"/>
           <q-menu anchor="bottom right" self="top right">
-          <q-list dense style="width: 200px">
-            <q-item clickable v-close-popup>
+          <q-list dense style="width: 200px" v-roving-tabindex-container>
+            <q-item clickable v-close-popup v-roving-tabindex>
               <q-item-section>
                 <q-radio dense size="xs" v-model="overviewType" val="tree" label="Tree view"/>
               </q-item-section>
             </q-item>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup v-roving-tabindex>
               <q-item-section>
                 <q-radio dense size="xs" v-model="overviewType" val="list" label="List view"/>
               </q-item-section>
@@ -22,19 +22,19 @@
             </template>
             <template v-if="overviewType === 'list'">
               <q-separator/>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-roving-tabindex>
                 <q-item-section>
                   <q-radio dense size="xs" v-model="showItemType" val="files-and-folders" label="Show files and folders"/>
                 </q-item-section>
               </q-item>
-              <q-item clickable v-close-popup>
+              <q-item clickable v-close-popup v-roving-tabindex>
                 <q-item-section>
                   <q-radio dense size="xs" v-model="showItemType" val="files-only" label="Show files only"/>
                 </q-item-section>
               </q-item>
             </template>
             <q-separator/>
-            <q-item clickable v-close-popup>
+            <q-item clickable v-close-popup v-roving-tabindex>
               <q-item-section>
                 <q-checkbox dense size="xs" v-model="showNotDecryptable" label="Show inaccessible"/>
               </q-item-section>
@@ -140,7 +140,7 @@ export default class PasswordOverview extends Vue {
     .menu-button {
         height: 100%;
         .q-btn__wrapper {
-            padding: 0px 2px;
+            padding: 0px 0px;
         }
     }
 

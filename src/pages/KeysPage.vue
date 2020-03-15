@@ -1,5 +1,6 @@
 <template>
   <div class="column content-height">
+    <vue-headful title="Passenger: GPG-Keys" />
     <div class="row flex-grow">
       <key-list class="col q-pa-md" title="Public keys" :keys="publicKeys"/>
       <key-list class="col q-pa-md" title="Private keys" :keys="privateKeys"/>

@@ -1,5 +1,7 @@
 import fs from 'fs'
 import path from 'path'
+import gpg from 'gpg-promised'
+
 import { PasswordFile, PasswordFolder, PasswordNode } from '@/model/passwords'
 import { stat, readdir, readFile } from '@/util/fs'
 
@@ -86,4 +88,8 @@ function isGPGFile(name: string) {
     return name.match(/\.gpg$/)
 }
 
-
+export async function decryptPasswordFile(gpgPath: string, absPath: string) {
+    const keychain = new gpg.KeyChain(gpgPath)
+    await keychain.open()
+    return (await keychain.call(null, ['--decrypt', absPath], false)).stdout.toString().trimEnd()
+}

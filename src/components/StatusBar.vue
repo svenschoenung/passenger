@@ -26,7 +26,7 @@ import icons from '@/ui/icons'
 import { tildify } from '@/util/fs';
 
 @Component({})
-export default class App extends Vue {
+export default class StatusBar extends Vue {
   created() {
     setNonReactiveProps(this, { icons })
   }

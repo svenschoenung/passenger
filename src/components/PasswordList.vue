@@ -1,10 +1,11 @@
 <template>
   <q-virtual-scroll ref="scroll" id="password-list" class="styled-scrollbar"
+   tabindex="-1" v-roving-tabindex-container
    :items="textFilteredList"
    :virtual-scroll-item-size="ROW_HEIGHT" >
-     <template v-slot="{ item }">
+    <template v-slot="{ item }">
     <q-item dense :key="item.relPath"
-       clickable v-ripple
+       clickable v-ripple v-roving-tabindex
        @click="select(item.relPath)"
        :class="{
           'item-selected': item.relPath === selected,
@@ -120,7 +121,7 @@ export default class PasswordList extends Vue {
   }
 
   get menuFilteredList() {
-    return this.list && this.list.filter(item => {
+    return (this.list || []).filter(item => {
       if (UIModule.showItemType === 'files-only' && item.folder) {
         return false
       }
@@ -140,19 +141,24 @@ export default class PasswordList extends Vue {
       return list
     }
     var options = {
+      shouldSort: false,
       tokenize: true,
       matchAllTokens: true,
       includeMatches: true,
-      threshold: 0.7,
+      threshold: 0.1,
       location: 0,
-      distance: 100,
+      distance: 1000,
       maxPatternLength: 128,
       minMatchCharLength: 2,
       keys: [ 'fullName' ]
     };
     var fuse = new Fuse(list, options);
     const results = fuse.search(this.filter.trim()) as FuseResultWithMatches<PasswordNode>[];
-    return results.map((result: FuseResultWithMatches<PasswordNode>, index) => {
+    return results
+      .filter((result: FuseResultWithMatches<PasswordNode>) => {
+        return result.matches && result.matches.length > 0
+      })
+      .map((result: FuseResultWithMatches<PasswordNode>, index) => {
       return {
         ...result.item,
         annotations: {

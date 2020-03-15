@@ -1,5 +1,8 @@
 <template>
-    <div>Repo</div>
+    <div>
+       <vue-headful title="Passenger: Version Control" />
+       Repo
+    </div>
 </template>
 
 <script lang="ts">

@@ -24,7 +24,7 @@ import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons'
 
 @Component({})
-export default class App extends Vue {
+export default class ProblemsCount extends Vue {
   @Prop() chip!: boolean;
 
   created() {

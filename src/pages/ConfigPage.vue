@@ -1,6 +1,6 @@
 <template>
   <q-layout id="config-page" class="content-height" container view="lhr Lpr lfr">
-
+    <vue-headful title="Passenger: Settings" />
     <q-drawer bordered show-if-above :breakpoint="0" :width="200" class="bg-grey-4">
       <q-list separator v-roving-tabindex-container>
         <q-item clickable v-ripple v-roving-tabindex

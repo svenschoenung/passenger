@@ -5,6 +5,8 @@ import { PrivateKey, PublicKey } from 'gpg-promised';
 import { findMatchingKey } from '@/service/keys';
 import { PasswordsModule } from '@/store';
 
+export type SearchMatches = [number, number][]
+
 export interface PasswordObj {
     name: string
     fullName: string
@@ -15,7 +17,7 @@ export interface PasswordObj {
         decryptableChildren?: boolean,
         expanded?: boolean,
         notEncryptable?: boolean,
-        matches?: [number, number][]
+        matches?: SearchMatches,
         index?: number
     }
 }
@@ -104,4 +106,18 @@ export function getParents(relPath: string): PasswordFolder[] {
         }
     } while (parentNode)
     return parentNodes
-  }
+}
+
+export function traverseParents(relPath: string, visit: (folder: PasswordFolder) => { break: boolean } | void) {
+    let parentNode: PasswordFolder | null = null
+    do {
+        parentNode = getParent(relPath)
+        if (parentNode) {
+            const result = visit(parentNode)
+            if (result && result.break) {
+                return
+            } 
+            relPath = parentNode.relPath
+        }
+    } while (parentNode)
+}

@@ -1,4 +1,5 @@
 @import './style.variables.scss';
+@import './style.mixins.scss';
 @import '~quasar/src/css/index.sass';
 
 body.body--light {
@@ -57,40 +58,10 @@ body.body--dark {
     width: 100%;
 }
 
+
+
 .styled-scrollbar {
-    &::-webkit-scrollbar{
-        display: none;
-        background: transparent;
-        width: 10px;
-    }
-    &:hover::-webkit-scrollbar{
-        display: block;
-    }
-
-    &::-webkit-scrollbar:vertical {
-        width: 10px;
-    }
-
-    &::-webkit-scrollbar:horizontal {
-        height: 10px;
-    }
-
-    &::-webkit-scrollbar-button {
-        display: none;
-    }
-
-    &::-webkit-scrollbar-corner {
-        display: none;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: rgba(255,255, 255, 0.2);
-        border-radius: 0px;
-    }
-      
-    &::-webkit-scrollbar-track {
-        background: transparent;
-    }
+    @include styled-scrollbar
 }
 
 .q-virtual-scroll__content {

@@ -40,7 +40,7 @@
               active-class="active-elem"
               @click="changePage('problems')">
                 <q-item-section avatar>
-                    <q-icon :name="icons.problems" size="md"/>
+                    <q-icon :name="icons.warning" size="md"/>
                     <q-badge v-if="errorCount" color="negative" align="top" class="q-ma-sm floating-top">{{errorCount}}</q-badge>
                     <q-badge v-if="warningCount" color="warning" align="bottom" class="q-ma-sm floating-bottom">{{warningCount}}</q-badge>
                 </q-item-section>

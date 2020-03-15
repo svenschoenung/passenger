@@ -10,6 +10,7 @@ export type OverviewType = 'tree' | 'list'
 export type ItemType = 'files-and-folders' | 'files-only'
 export type PageType = 'config' | 'repo' | 'keys' | 'passwords' | 'problems'
 export type ConfigPageType = 'repo' | 'keys' | 'ui'
+export type ContentViewType = 'text' | 'key-value'
 
 export interface UIState {
     page: string
@@ -21,6 +22,7 @@ export interface UIState {
     overviewType: OverviewType
     showItemType: ItemType
     showNotDecryptable: boolean
+    contentViewType: ContentViewType
 }
 
 @Module({ name: 'ui', namespaced: true })
@@ -37,6 +39,7 @@ export default class UIVuexModule extends VuexModule implements UIState {
   overviewType: OverviewType = 'tree'
   showItemType: ItemType = 'files-and-folders' 
   showNotDecryptable: boolean = true
+  contentViewType: ContentViewType = 'text'
 
   @Mutation
   setPage(page: PageType) {
@@ -87,5 +90,10 @@ export default class UIVuexModule extends VuexModule implements UIState {
   @Mutation
   setShowNotDecryptable(showNotDecryptable: boolean) {
     this.showNotDecryptable = showNotDecryptable
+  }
+
+  @Mutation
+  setContentViewType(contentViewType: ContentViewType) {
+    this.contentViewType = contentViewType 
   }
 }
