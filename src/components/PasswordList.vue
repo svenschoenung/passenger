@@ -1,34 +1,39 @@
 <template>
-  <q-virtual-scroll ref="scroll" id="password-list" class="styled-scrollbar"
-   tabindex="-1" v-roving-tabindex-container
-   :items="textFilteredList"
-   :virtual-scroll-item-size="ROW_HEIGHT" >
+ <RecycleScroller
+    id="password-list"
+    class="styled-scrollbar"
+    :items="textFilteredList"
+    :item-size="ROW_HEIGHT"
+    key-field="relPath"
+    v-roving-tabindex-container>
     <template v-slot="{ item }">
-    <q-item dense :key="item.relPath"
-       clickable v-ripple v-roving-tabindex
-       @click="select(item.relPath)"
-       :class="{
-          'item-selected': item.relPath === selected,
-          'not-decryptable': !item.annotations.decryptable,
-          'not-encryptable': item.annotations.notEncryptable
-       }"
-       :style="`height: ${ROW_HEIGHT}`">
-      <q-item-section avatar>
-        <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
-      </q-item-section>
-      <q-item-section avatar v-if="showItemType === 'files-and-folders'">
-        <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
-      </q-item-section>
-      <q-item-section class="item-name">
-        <span v-html="highlight(item)"></span>
-      </q-item-section>
-      <q-item-section side>
-        <q-icon v-if="item.annotations.notEncryptable" size="1.4em" 
-          :name="icons.error" color="negative"/>
-      </q-item-section>
-    </q-item>
-     </template>
-  </q-virtual-scroll>
+      <q-item dense :key="item.relPath"
+        clickable v-ripple v-roving-tabindex
+        @click="select(item.relPath)"
+        @mouseenter.stop.prevent
+        @mouseleave.stop.prevent
+        :class="{
+            'item-selected': item.relPath === selected,
+            'not-decryptable': !item.annotations.decryptable,
+            'not-encryptable': item.annotations.notEncryptable
+        }"
+        :style="`height: ${ROW_HEIGHT}`">
+        <q-item-section avatar>
+          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
+        </q-item-section>
+        <q-item-section avatar v-if="showItemType === 'files-and-folders'">
+          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
+        </q-item-section>
+        <q-item-section class="item-name">
+          <span v-html="highlight(item)"></span>
+        </q-item-section>
+        <q-item-section side>
+          <q-icon v-if="item.annotations.notEncryptable" size="1.4em" 
+            :name="icons.error" color="negative"/>
+        </q-item-section>
+      </q-item>
+    </template>
+  </RecycleScroller>
 </template>
 
 <script lang="ts">
@@ -59,14 +64,14 @@ export default class PasswordList extends Vue {
   }
 
   mounted() {
-    this.scroll.refresh()
-    this.scrollTo(this.selected)
+    //this.scroll.refresh()
+    //this.scrollTo(this.selected)
     this.registerWatcher()
   }
 
   activated() {
-    this.scroll.refresh()
-    this.scrollTo(this.selected)
+    //this.scroll.refresh()
+    //this.scrollTo(this.selected)
     this.registerWatcher()
   }
 
@@ -87,6 +92,7 @@ export default class PasswordList extends Vue {
   }
 
   scrollTo(relPath: string) {
+    if (Math.random() >= 0) return;
     const items = this.textFilteredItems
     if (!items) {
       return;

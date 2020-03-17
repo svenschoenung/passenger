@@ -54,23 +54,18 @@ body.body--dark {
 }
 
 #password-list, #password-tree {
-    height: calc(100vh - #{$footer-height} - #{$filter-height}) ;
+    height: calc(100vh - #{$footer-height} - #{$filter-height});
     width: 100%;
+    overflow-x: scroll;
 }
-
-
 
 .styled-scrollbar {
     @include styled-scrollbar
 }
 
-.q-virtual-scroll__content {
+.vue-recycle-scroller__item-wrapper {
     min-width: fit-content;
     width: 100%;
-}
-
-.q-virtual-scroll__padding {
-    background: none;
 }
 
 * {

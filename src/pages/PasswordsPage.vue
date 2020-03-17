@@ -35,7 +35,7 @@ export default class PasswordsPage extends Vue {
     if (this.selectedPasswordNode.value) {
       return '- ' + this.selectedPasswordNode.value.fullName
     }
-    return null
+    return ''
   }
 
   get overviewWidthInPx() {

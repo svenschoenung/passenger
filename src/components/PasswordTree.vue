@@ -1,12 +1,17 @@
 <template>
-  <q-virtual-scroll ref="scroll" id="password-tree" class="styled-scrollbar"
-   tabindex="-1" v-roving-tabindex-container
-   :items="textFilteredList"
-   :virtual-scroll-item-size="ROW_HEIGHT" >
+ <RecycleScroller
+    id="password-tree"
+    class="styled-scrollbar"
+    :items="textFilteredList"
+    :item-size="ROW_HEIGHT"
+    key-field="relPath"
+    v-roving-tabindex-container>
     <template v-slot="{ item }">
     <q-item dense :key="item.relPath"
        clickable v-ripple v-roving-tabindex
        @click="select(item.relPath)"
+       @mouseenter.stop.prevent
+       @mouseleave.stop.prevent
        :class="{
           'item-selected': item.relPath === selected,
           'not-decryptable': !item.annotations.decryptable,
@@ -34,7 +39,7 @@
       </q-item-section>
     </q-item>
      </template>
-  </q-virtual-scroll>
+ </RecycleScroller>
 </template>
 
 <script lang="ts">
