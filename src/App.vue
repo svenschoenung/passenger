@@ -25,7 +25,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import electron, { BrowserWindow } from 'electron'
 import { debounce } from 'quasar'
 
-import { UIModule, ConfigModule } from '@/store'
+import { UIModule, SettingsModule, PreferencesModule } from '@/store'
 
 @Component({})
 export default class App extends Vue {
@@ -33,19 +33,19 @@ export default class App extends Vue {
     const win = electron.remote.getCurrentWindow()
     this.initWindowState(win)
     this.watchWindowState(win)
-    this.$q.dark.set(ConfigModule.darkMode)
+    this.$q.dark.set(SettingsModule.darkMode)
   }
 
   initWindowState(win: BrowserWindow) {
-    if (UIModule.windowState.maximized) {
+    if (PreferencesModule.windowState.maximized) {
       win.maximize()
     }
-    win.setBounds(UIModule.windowState.bounds);
+    win.setBounds(PreferencesModule.windowState.bounds);
   }
 
   watchWindowState(win: BrowserWindow) {
     const windowStateChanged = (e: Event) => {
-      UIModule.setWindowState({
+      PreferencesModule.setWindowState({
         maximized: win.isMaximized(),
         bounds: win.getBounds()
       })
@@ -64,7 +64,7 @@ export default class App extends Vue {
   }
 
   get needsSetup() {
-    return !ConfigModule.repoPath || !ConfigModule.gpgPath
+    return !SettingsModule.repoPath || !SettingsModule.gpgPath
   }
 }
 

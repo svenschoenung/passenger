@@ -27,10 +27,10 @@
             <q-item v-for="f in fieldTypeKeys" :key="f.type"
               clickable v-close-popup @click="addField(f.keys[0])">
               <q-item-section>
-                <q-item-label>
-                  <q-icon :name="icons[f.type]" size="xs"/>
+                 <q-item-label class="q-mr-sm">
+                 <q-icon :name="icons[f.type]" size="xs" class="q-mr-sm"/>
                   {{f.keys[0]}}
-                </q-item-label>
+                 </q-item-label>
               </q-item-section>
             </q-item>
           </q-list>
@@ -121,7 +121,6 @@ export default class PasswordKeyValueEditor extends Vue {
       margin-top: 20px;
     }
   }
-
 }
 
 body.body--dark {

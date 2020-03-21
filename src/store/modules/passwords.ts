@@ -4,7 +4,7 @@ import path from 'path'
 
 import { PasswordFolder, traverseTree, PasswordNode, annotateDecryptable, annotateNotEncryptable } from '@/model/passwords'
 import { readPasswordTree, decryptPasswordFile } from '@/service/passwords'
-import { ConfigModule, PasswordsModule, UIModule, KeysModule } from '@/store'
+import { SettingsModule, PasswordsModule, UIModule, KeysModule } from '@/store'
 import { Resolvable, unresolved, resolving, resolved, failed, resolvable } from '@/store/resolvable'
 import { delay } from '@/util/dev'
 
@@ -65,17 +65,14 @@ export default class PasswordsVuexModule extends VuexModule implements Passwords
     async loadPasswordsFromFileSystem() {
         try {
             this.loadingPasswordsFromFileSystem()
-            const repoPath = ConfigModule.repoPath as string
+            const repoPath = SettingsModule.repoPath as string
             const tree = await delay(() => readPasswordTree(repoPath))
-            if (repoPath !== ConfigModule.repoPath) {
+            if (repoPath !== SettingsModule.repoPath) {
                 return
             }
             const map: PasswordMap = {}
             const list: PasswordNode[] = []
-            traverseTree(tree, (node, depth) => {
-                if (depth < 2 && node.folder) {
-                    node.annotations.expanded = true
-                }
+            traverseTree(tree, node => {
                 map[node.relPath] = node
                 list.push(node)
             })
@@ -84,6 +81,7 @@ export default class PasswordsVuexModule extends VuexModule implements Passwords
                 map: resolved(map),
                 list: resolved(list)
             })
+            UIModule.expandFoldersRecursively({ from: this.tree.value!, maxDepth: 2 })
         } catch (error) {
             this.loadedPasswordsFromFileSystem({
                 tree: failed(error),
@@ -104,30 +102,6 @@ export default class PasswordsVuexModule extends VuexModule implements Passwords
     annotatePasswordsUsingPublicKeys() {
         if (this.tree.value && KeysModule.publicKeys.value) {
             annotateNotEncryptable(this.tree.value, KeysModule.publicKeys.value, false)
-        }
-    }
-
-    @Mutation
-    toggleNodes(relPaths: string[]) {
-        if (this.map.value) {
-            relPaths.forEach(relPath => {
-                const item = this.map.value![relPath]
-                if (item) {
-                     Vue.set(item.annotations, 'expanded', !item.annotations.expanded)
-                }
-            })
-        }
-    }
-
-    @Mutation
-    expandNodes(relPaths: string[]) {
-        if (this.map.value) {
-            relPaths.forEach(relPath => {
-                const item = this.map.value![relPath]
-                if (item) {
-                    Vue.set(item.annotations, 'expanded', true)
-                }
-            })
         }
     }
 

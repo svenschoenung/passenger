@@ -1,6 +1,6 @@
 <template> 
     <q-footer class="status-bar footer-height">
-        <div class="clickable" @click="gotoConfigRepoPage()">
+        <div class="clickable" @click="gotoSettingsRepoPage()">
             <q-icon :name="icons.repoPath" size="xs"/> {{repoPath}}
         </div>
         <div class="clickable" @click="gotoPasswordsPage()">
@@ -20,7 +20,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import electron, { BrowserWindow } from 'electron'
 import { debounce } from 'quasar'
 
-import { UIModule, ConfigModule, PasswordsModule } from '@/store'
+import { UIModule, SettingsModule, PasswordsModule } from '@/store'
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons'
 import { tildify } from '@/util/fs';
@@ -32,7 +32,7 @@ export default class StatusBar extends Vue {
   }
 
   get repoPath() {
-      return tildify(ConfigModule.repoPath as string)
+      return tildify(SettingsModule.repoPath as string)
   }
 
   get folderCount() {
@@ -43,9 +43,9 @@ export default class StatusBar extends Vue {
       return PasswordsModule.fileCount
   }
 
-  gotoConfigRepoPage() {
-      UIModule.setConfigPage('repo')
-      UIModule.setPage('config')
+  gotoSettingsRepoPage() {
+      UIModule.setSettingsPage('repo')
+      UIModule.setPage('settings')
   }
 
   gotoPasswordsPage() {

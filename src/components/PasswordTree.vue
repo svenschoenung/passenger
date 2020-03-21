@@ -1,45 +1,53 @@
 <template>
- <RecycleScroller
-    id="password-tree"
-    class="styled-scrollbar"
+  <virtual-scroll ref="virtualScroll" id="password-tree"
     :items="textFilteredList"
-    :item-size="ROW_HEIGHT"
-    key-field="relPath"
+    :includeItemOnNextTick="expandForItem"
     v-roving-tabindex-container>
     <template v-slot="{ item }">
-    <q-item dense :key="item.relPath"
-       clickable v-ripple v-roving-tabindex
-       @click="select(item.relPath)"
-       @mouseenter.stop.prevent
-       @mouseleave.stop.prevent
-       :class="{
-          'item-selected': item.relPath === selected,
-          'not-decryptable': !item.annotations.decryptable,
-          'not-encryptable': item.annotations.notEncryptable
-       }"
-       :style="`height: ${ROW_HEIGHT}`">
-      <q-item-section v-for="i in depth(item) + 1" :key="i" avatar>
-        <q-icon v-if="item.folder && i === depth(item) + 1" size="xs"
-          @click.stop="toggle(item.relPath)"
-          :name="icons[item.annotations.expanded ? 'expanded' : 'unexpanded']"
-          />
-      </q-item-section>
-      <q-item-section avatar>
-        <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
-      </q-item-section>
-      <q-item-section>
-        <span class="item-name">
-        <span v-html="highlightTreeNode(item)"></span>
-        <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
-        </span>
-      </q-item-section>
-      <q-item-section side>
-        <q-icon v-if="item.annotations.notEncryptable" size="1.4em" 
-          :name="icons.error" color="negative"/>
-      </q-item-section>
-    </q-item>
-     </template>
- </RecycleScroller>
+      <q-item dense :key="item.relPath"
+        clickable v-ripple v-roving-tabindex
+        @click="select(item.relPath)"
+        @mouseenter.stop.prevent
+        @mouseleave.stop.prevent
+        :class="{
+            'item-selected': item.relPath === selected,
+            'not-decryptable': !item.annotations.decryptable,
+            'not-encryptable': item.annotations.notEncryptable
+        }">
+        <q-item-section v-for="i in depth(item) + (item.folder && item.children.length > 0 ? 0 : 2)" :key="i" avatar class="indent">
+        </q-item-section>
+        <template v-if="item.folder && item.children.length > 0">
+          <q-item-section avatar>
+            <q-icon size="xs"
+              @click.stop="toggle(item.relPath)"
+              :name="icons[expandedFolders[item.relPath]? 'expanded' : 'unexpanded']"
+              />
+          </q-item-section>
+        </template>
+        <q-item-section avatar>
+          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
+        </q-item-section>
+        <q-item-section>
+          <span class="item-name">
+          <span v-html="highlightTreeNode(item)"></span>
+          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
+          </span>
+        </q-item-section>
+        <q-item-section side>
+          <q-icon v-if="item.annotations.notEncryptable" size="1.4em" 
+            :name="icons.error" color="negative"/>
+        </q-item-section>
+        <q-menu dense context-menu touch-position anchor="top left" self="top left">
+          <q-item dense clickable v-close-popup @click="expandAll(item)">
+            <q-item-section>Expand all</q-item-section>
+          </q-item>
+          <q-item dense clickable v-close-popup @click="collapseAll(item)">
+            <q-item-section>Collapse all</q-item-section>
+          </q-item>
+        </q-menu>
+      </q-item>
+    </template>
+  </virtual-scroll>
 </template>
 
 <script lang="ts">
@@ -49,85 +57,60 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import Fuse, { FuseResultWithMatches } from 'fuse.js'
 import path from 'path'
 
-import { PasswordsModule, UIModule, KeysModule, AppState } from "@/store";
+import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule } from "@/store";
 import { PasswordFolder, PasswordNode, depth, traverseTree, getParents, traverseParents, getParent, SearchMatches } from '@/model/passwords';
 import { findMatchingKey } from '@/service/keys';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
+import { OverviewType } from '@/store/modules/ui';
+import VirtualScroll from '@/components/VirtualScroll.vue';
 import { highlightTreeNode } from '@/util/html'
 import icons from "@/ui/icons";
-import { OverviewType } from '../store/modules/ui';
-
-const ROW_HEIGHT = 32
 
 @Component({ })
 export default class PasswordTree extends Vue {
   @Prop({ type: Object }) tree!: PasswordNode
   @Prop({ type: String }) filter!: string
-  @Ref() scroll!: QVirtualScroll
+  @Ref() virtualScroll!: VirtualScroll
 
   created() {
-    setNonReactiveProps(this, { icons, highlightTreeNode, depth, ROW_HEIGHT })
-    this.registerWatcher()
-  }
-
-  mounted() {
-    this.scroll.refresh()
-    this.scrollTo(this.selected)
-    this.registerWatcher()
-  }
-
-  activated() {
-    this.scroll.refresh()
-    this.scrollTo(this.selected)
-    this.registerWatcher()
-  }
-
-  deactivated() {
-    this.unregisterWatcher()
-  }
-
-  destroyed() {
-    this.unregisterWatcher()
-  }
-
-  registerWatcher() {
-    initNonReactiveProp(this, 'scrollWatcher', () => new ScrollWatcher(this))
-  }
-
-  unregisterWatcher() {
-    removeNonReactiveProp(this, 'scrollWatcher', (scrollWatcher: ScrollWatcher) => scrollWatcher.unwatch())
-  }
-
-  scrollTo(relPath: string) {
-    const items = this.textFilteredItems
-    let item = items[relPath]
-    if (!item) {
-      item = PasswordsModule.map.value![relPath]
-      PasswordsModule.expandNodes(getParents(relPath).map(parent => parent.relPath))
-    }
-    const index = item.annotations.index as number
-    const virtualScroll = document.getElementById('password-tree')
-    if (virtualScroll) {
-      const start = virtualScroll.scrollTop / ROW_HEIGHT
-      const end = start + virtualScroll.offsetHeight / ROW_HEIGHT - 1
-      if (index < Math.ceil(start) || index > Math.floor(end)) {
-        virtualScroll.scrollTop = (index + 1) * ROW_HEIGHT - virtualScroll.offsetHeight / 2
-      }
-    }
+    setNonReactiveProps(this, { icons, depth, highlightTreeNode })
   }
 
   select(relPath: string) {
-    const scrollWatcher: ScrollWatcher = getNonReactiveProp(this, 'scrollWatcher')
-    if (scrollWatcher.selected !== relPath) {
-      scrollWatcher.selected = relPath
-      UIModule.selectPasswordPath(relPath);
-    } else {
+    if (this.selected === relPath) {
       this.toggle(relPath)
+    } else {
+      this.virtualScroll.select(relPath)
+      UIModule.selectPasswordPath(relPath);
     }
   }
 
   toggle(relPath: string) {
-    PasswordsModule.toggleNodes([relPath])
+    UIModule.toggleFolders([relPath])
+  }
+
+  scrollTo(relPath: string) {
+    this.virtualScroll.scrollTo(relPath)
+  }
+
+  expandAll(item: PasswordNode) {
+    UIModule.expandFoldersRecursively({ from: item })
+  }
+
+  collapseAll(item: PasswordNode) {
+    UIModule.collapseFoldersRecursively({ from: item })
+  }
+
+  expandForItem(relPath: string) {
+    if (!PasswordsModule.map.value || !PasswordsModule.map.value[relPath]) {
+      return false
+    }
+    UIModule.expandFolders(getParents(relPath).map(parent => parent.relPath))
+    return true;
+  }
+
+  get expandedFolders() {
+    return UIModule.expandedFolders
   }
 
   get selected() {
@@ -135,14 +118,14 @@ export default class PasswordTree extends Vue {
   }
 
   get showItemType() {
-    return UIModule.showItemType
+    return PreferencesModule.showItemType
   }
 
   get expansionFilteredList(): PasswordNode[] {
     const list: PasswordNode[] = []
     traverseTree(this.tree, (node, depth) => {
       list.push(node)
-      if (!this.filter && !node.annotations.expanded) {
+      if (!this.filter && !UIModule.expandedFolders[node.relPath]) {
         return { skipChildren: true }
       }
     })
@@ -152,7 +135,7 @@ export default class PasswordTree extends Vue {
   get menuFilteredList(): PasswordNode[] {
     const list = this.expansionFilteredList
     return list && list.filter(item => {
-      if (!UIModule.showNotDecryptable && !(item.annotations.decryptable || item.annotations.decryptableChildren)) {
+      if (!PreferencesModule.showNotDecryptable && !(item.annotations.decryptable || item.annotations.decryptableChildren)) {
         return false
       }
       return true
@@ -216,7 +199,7 @@ export default class PasswordTree extends Vue {
       if (hideBelowAbsPath && item.absPath.startsWith(hideBelowAbsPath)) {
          return
       }
-      if (item.folder && !item.annotations.expanded) {
+      if (item.folder && !UIModule.expandedFolders[item.relPath]) {
         hideBelowAbsPath = item.absPath + path.sep
       }
       expandedResults.push(item)
@@ -224,13 +207,6 @@ export default class PasswordTree extends Vue {
     console.log(expandedResults)
 
     return expandedResults
-  }
-
-  get textFilteredItems() {
-    const items: { [relPath: string]: PasswordNode } = {}
-    const list = this.textFilteredList
-    list.forEach(item => items[item.relPath] = item)
-    return items
   }
 }
 
@@ -250,31 +226,21 @@ function clipMatches(matches: SearchMatches, fullName: string): SearchMatches {
     .map(match => match[1] >= fullName.length ? [match[0], fullName.length - 1] : match)
 }
 
-class ScrollWatcher {
-  selected!: string | null
-  unwatch: any;
-
-  constructor(component: PasswordTree) {
-    this.selected = component.selected
-    this.unwatch = component.$store.watch(
-      (state: AppState) => state.ui.selectedPasswordPath,
-      (selected: string | null) => {
-        if (selected && selected !== this.selected) {
-          component.scrollTo(selected)
-        }
-        this.selected = selected;
-      })
-  }
-}
-
 </script>
 
 <style lang="scss">
 @import "src/styles/style.variables.scss";
 
 #password-tree {
+    .q-list--dense > .q-item, .q-item--dense {
+        height: 32px;
+        padding: 2px 6px;
+    }
     .q-item__section--avatar {
       min-width: 24px;
+    }
+    .q-item__section--avatar.indent {
+      min-width: 12px;
     }
 
     .q-item__section--side {

@@ -15,17 +15,17 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { ConfigModule } from '@/store'
+import { SettingsModule } from '@/store'
 
 @Component({})
-export default class ConfigUIPage extends Vue {
+export default class SettingsUIPage extends Vue {
 
   set darkMode(darkMode: boolean) {
-    ConfigModule.setDarkMode(darkMode)
+    SettingsModule.setDarkMode(darkMode)
   }
 
   get darkMode() {
-    return ConfigModule.darkMode
+    return SettingsModule.darkMode
   }
 }
 </script>

@@ -10,7 +10,6 @@ import { ionIosWarning } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowDown } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowForward } from '@quasar/extras/ionicons-v4'
 import { ionIosCloseCircleOutline } from '@quasar/extras/ionicons-v4'
-import { ionIosArchive } from '@quasar/extras/ionicons-v4'
 import { ionIosList } from '@quasar/extras/ionicons-v4'
 import { ionIosEye } from '@quasar/extras/ionicons-v4'
 import { ionIosEyeOff } from '@quasar/extras/ionicons-v4'
@@ -21,7 +20,10 @@ import { ionIosOpen } from '@quasar/extras/ionicons-v4'
 import { ionIosSend } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
-import { ionMdMore } from '@quasar/extras/ionicons-v4'
+import { ionEllipsisVertical } from '@/ui/ionicons-v5'
+import { ionSwapHorizontal } from '@/ui/ionicons-v5'
+import { ionServerOutline } from '@/ui/ionicons-v5'
+import { customTreeView } from '@/ui/custom-icons';
 
 const icons = {
     folder: ionIosFolder,
@@ -29,13 +31,13 @@ const icons = {
     password: ionIosLock,
     passwordOpen: ionIosUnlock,
     passwords: ionIosLock,
-    config: ionIosConstruct,
+    settings: ionIosConstruct,
     key: ionIosKey,
     keys: ionIosKey,
     repo: ionIosGitCompare,
-    repoPath: ionIosArchive,
+    repoPath: ionServerOutline,
     clear: ionIosClose,
-    menu: ionMdMore,
+    menu: ionEllipsisVertical,
     separator: ionIosArrowForward,
     unexpanded: ionIosArrowForward,
     expanded: ionIosArrowDown,
@@ -56,6 +58,9 @@ const icons = {
     delete: ionIosClose,
     openUrl: ionIosOpen,
     sendEmail: ionIosSend,
+    linkWithEditor: ionSwapHorizontal,
+    list: ionIosList,
+    tree: customTreeView
 }
 
 export default icons

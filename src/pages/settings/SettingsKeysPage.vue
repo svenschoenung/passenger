@@ -17,13 +17,13 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { ConfigModule } from '@/store';
+import { SettingsModule } from '@/store';
 import { validateGPGHomedir } from '@/service/keys';
 import { setNonReactiveProps } from '@/util/props';
 
 @Component({})
-export default class ConfigKeysPage extends Vue {
-  gpgPath = ConfigModule.gpgPath as string;
+export default class SettingsKeysPage extends Vue {
+  gpgPath = SettingsModule.gpgPath as string;
 
   created() {
     setNonReactiveProps(this, { validateGPGHomedir })
@@ -38,8 +38,8 @@ export default class ConfigKeysPage extends Vue {
   }
 
   changeGPGPath() {
-    if (this.gpgPath !== ConfigModule.gpgPath) {
-      ConfigModule.setGPGPath(this.gpgPath)
+    if (this.gpgPath !== SettingsModule.gpgPath) {
+      SettingsModule.setGPGPath(this.gpgPath)
     }
   }
 }

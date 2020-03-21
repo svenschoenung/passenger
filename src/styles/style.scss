@@ -54,7 +54,7 @@ body.body--dark {
 }
 
 #password-list, #password-tree {
-    height: calc(100vh - #{$footer-height} - #{$filter-height});
+    height: calc(100vh - #{$footer-height} - #{$overview-top-height});
     width: 100%;
     overflow-x: scroll;
 }

@@ -39,7 +39,7 @@ import { PublicKey } from 'gpg-promised'
 import path from 'path'
 
 import { PasswordFolder, PasswordNode, getParents, PasswordFile } from '@/model/passwords';
-import { KeysModule, PasswordsModule, UIModule, ConfigModule } from '@/store';
+import { KeysModule, PasswordsModule, UIModule, SettingsModule, PreferencesModule } from '@/store';
 import { findMatchingPublicKeys } from '@/service/keys';
 import { setNonReactiveProps } from '@/util/props';
 import { Resolvable, resolvable, resolved, unresolved, resolving, failed } from '@/store/resolvable';
@@ -74,8 +74,8 @@ export default class PasswordFileDetails extends Vue {
     if (this.file.annotations.decryptable) {
       try {
         this.contents = resolving()
-        const gpgPath = ConfigModule.gpgPath as string
-        const repoPath = ConfigModule.repoPath as string
+        const gpgPath = SettingsModule.gpgPath as string
+        const repoPath = SettingsModule.repoPath as string
         const absPath = path.join(repoPath, this.file.relPath)
         this.contents = resolved(await delay(() => decryptPasswordFile(gpgPath, absPath)))
       } catch (error) {
@@ -93,11 +93,11 @@ export default class PasswordFileDetails extends Vue {
   }
 
   get contentView() {
-    return UIModule.contentViewType
+    return PreferencesModule.contentViewType
   }
 
   set contentView(contentView: ContentViewType) {
-    UIModule.setContentViewType(contentView)
+    PreferencesModule.setContentViewType(contentView)
   }
 }
 </script>

@@ -50,12 +50,12 @@
             </q-item>
             <q-space/>
             <q-item clickable v-ripple v-roving-tabindex
-              :active="page === 'config'"
+              :active="page === 'settings'"
               active-class="active-elem"
-              @click="changePage('config')"
+              @click="changePage('settings')"
               class="justify-end">
                 <q-item-section avatar>
-                    <q-icon :name="icons.config" />
+                    <q-icon :name="icons.settings" />
                 </q-item-section>
                 <q-tooltip anchor="center right" self="center left" :delay="1000">
                     Settings

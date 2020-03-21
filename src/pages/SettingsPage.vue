@@ -4,25 +4,25 @@
     <q-drawer bordered show-if-above :breakpoint="0" :width="200" class="bg-grey-4">
       <q-list separator v-roving-tabindex-container>
         <q-item clickable v-ripple v-roving-tabindex
-          :active="configPage === 'repo'"
+          :active="settingsPage === 'repo'"
           active-class="active-elem"
-          @click="changeConfigPage('repo')">
+          @click="changeSettingsPage('repo')">
           <q-item-section>
             <q-item-label>Repository</q-item-label>
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple v-roving-tabindex
-          :active="configPage === 'keys'"
+          :active="settingsPage === 'keys'"
           active-class="active-elem"
-          @click="changeConfigPage('keys')">
+          @click="changeSettingsPage('keys')">
           <q-item-section>
             <q-item-label>GPG</q-item-label>
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple v-roving-tabindex
-          :active="configPage === 'ui'"
+          :active="settingsPage === 'ui'"
           active-class="active-elem"
-          @click="changeConfigPage('ui')">
+          @click="changeSettingsPage('ui')">
           <q-item-section>
             <q-item-label>Appearance</q-item-label>
           </q-item-section>
@@ -32,7 +32,7 @@
     </q-drawer>
 
     <q-page-container>
-      <component :is="configPageComponent"></component>
+      <component :is="settingsPageComponent"></component>
     </q-page-container>
 
   </q-layout>
@@ -42,20 +42,20 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 import { UIModule } from '@/store'
-import { ConfigPageType } from '@/store/modules/ui'
+import { SettingsPageType } from '@/store/modules/ui'
 
 @Component({ })
-export default class ConfigPage extends Vue {
-  get configPage() {
-    return UIModule.configPage
+export default class SettingsPage extends Vue {
+  get settingsPage() {
+    return UIModule.settingsPage
   }
 
-  get configPageComponent() {
-    return 'config-' + UIModule.configPage + '-page'
+  get settingsPageComponent() {
+    return 'settings-' + UIModule.settingsPage + '-page'
   }
 
-  changeConfigPage(configPage: ConfigPageType) {
-    UIModule.setConfigPage(configPage)
+  changeSettingsPage(settingsPage: SettingsPageType) {
+    UIModule.setSettingsPage(settingsPage)
   }
 }
 </script>

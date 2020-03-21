@@ -6,11 +6,12 @@ import { getModule } from 'vuex-module-decorators'
 import ElectronStore from 'electron-store'
 
 import UIVuexModule, { UIState } from './modules/ui'
-import ProblemsVuexModule, { ProblemsState } from './modules/problems'
-import RepoVuexModule, { RepoState } from './modules/repo'
 import PasswordsVuexModule, { PasswordsState } from './modules/passwords'
+import RepoVuexModule, { RepoState } from './modules/repo'
 import KeysVuexModule, { KeysState } from './modules/keys'
-import ConfigVuexModule, { ConfigState } from './modules/config'
+import ProblemsVuexModule, { ProblemsState } from './modules/problems'
+import PreferencesVuexModule, { PreferencesState } from './modules/preferences'
+import SettingsVuexModule, { SettingsState } from './modules/settings'
 import { Dark } from 'quasar'
 
 Vue.use(Vuex)
@@ -21,7 +22,8 @@ export interface AppState {
   repo: RepoState,
   keys: KeysState,
   problems: ProblemsState,
-  config: ConfigState
+  preferences: PreferencesState,
+  settings: SettingsState
 }
 
 export const store = new Store<AppState>({
@@ -31,22 +33,23 @@ export const store = new Store<AppState>({
     repo: RepoVuexModule,
     keys: KeysVuexModule,
     problems: ProblemsVuexModule,
-    config: ConfigVuexModule,
+    preferences: PreferencesVuexModule,
+    settings: SettingsVuexModule,
   },
   plugins: [
     createPersistedState({
       whitelist: mutation => (
-        mutation.type.indexOf('ui/') === 0 ||
-        mutation.type.indexOf('config/') === 0
+        mutation.type.indexOf('preferences/') === 0 ||
+        mutation.type.indexOf('settings/') === 0
       ),
       storage: new ElectronStore<{state: AppState}>({
         name: 'store',
         serialize: (value) => {
-          if (value && value.state && value.state.config) {
+          if (value && value.state) {
             return JSON.stringify({
               state: {
-                ui: value.state.ui,
-                config: value.state.config
+                preferences: value.state.preferences,
+                settings: value.state.settings
               }
             }, null, '\t')
           }
@@ -61,8 +64,9 @@ export const UIModule = getModule(UIVuexModule, store)
 export const RepoModule = getModule(RepoVuexModule, store)
 export const PasswordsModule = getModule(PasswordsVuexModule, store)
 export const KeysModule = getModule(KeysVuexModule, store);
-export const ConfigModule = getModule(ConfigVuexModule, store);
 export const ProblemsModule = getModule(ProblemsVuexModule, store);
+export const PreferencesModule = getModule(PreferencesVuexModule, store);
+export const SettingsModule = getModule(SettingsVuexModule, store);
 
 if (process.env.NODE_ENV === 'development') {
   store.subscribe((mutation: any) => {
@@ -74,7 +78,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 store.watch(
-  state => state.config.darkMode,
+  state => state.settings.darkMode,
   darkMode => Dark.set(darkMode),
   { deep: false, immediate: true }
 )
@@ -113,20 +117,25 @@ store.watch(
 )
 
 store.watch(
-  state => state.config.gpgPath,
+  state => state.settings.gpgPath,
   repoPath => repoPath && KeysModule.loadPrivateKeys(),
   { deep: false, immediate: true }
 )
 
 store.watch(
-  state => state.config.gpgPath,
+  state => state.settings.gpgPath,
   repoPath => repoPath && KeysModule.loadPublicKeys(),
   { deep: false, immediate: true }
 )
 
 store.watch(
-  state => state.config.repoPath,
-  repoPath => repoPath && PasswordsModule.loadPasswordsFromFileSystem(),
+  state => state.settings.repoPath,
+  repoPath => {
+    UIModule.selectPasswordPath(null)
+    if (repoPath) {
+      PasswordsModule.loadPasswordsFromFileSystem()
+    }
+  },
   { deep: false, immediate: true }
 )
 

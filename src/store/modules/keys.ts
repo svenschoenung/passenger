@@ -1,7 +1,7 @@
 import { PublicKey, PrivateKey } from 'gpg-promised';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
-import { ConfigModule } from '@/store';
+import { SettingsModule } from '@/store';
 import { loadPrivateKeys, loadPublicKeys } from '@/service/keys';
 import { Resolvable, unresolved, resolving, resolved, failed } from '@/store/resolvable';
 import { delay } from '@/util/dev';
@@ -30,7 +30,7 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     async loadPublicKeys() {
         try {
             this.loadingPublicKeys()
-            const publicKeys = await delay(() => loadPublicKeys(ConfigModule.gpgPath as string))
+            const publicKeys = await delay(() => loadPublicKeys(SettingsModule.gpgPath as string))
             this.loadedPublicKeys(resolved(publicKeys))
         } catch (error) {
             this.loadedPublicKeys(failed(error))
@@ -51,7 +51,7 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     async loadPrivateKeys() {
         try {
             this.loadingPrivateKeys()
-            const privateKeys = await delay(() => loadPrivateKeys(ConfigModule.gpgPath as string))
+            const privateKeys = await delay(() => loadPrivateKeys(SettingsModule.gpgPath as string))
             this.loadedPrivateKeys(resolved(privateKeys))
         } catch (error) {
             this.loadedPrivateKeys(failed(error))

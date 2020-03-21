@@ -15,7 +15,6 @@ export interface PasswordObj {
     annotations: {
         decryptable?: boolean,
         decryptableChildren?: boolean,
-        expanded?: boolean,
         notEncryptable?: boolean,
         matches?: SearchMatches,
         index?: number
@@ -41,10 +40,7 @@ export function depth(node: PasswordNode) {
     return (node.relPath.match(/\//g) || []).length + 1
 }
 
-export function traverseTree(node: PasswordNode, visit: (n: PasswordNode, depth: number) => {skipChildren: boolean} | void, depth?: number) {
-    if (depth === undefined) {
-        depth = 0
-    }
+export function traverseTree(node: PasswordNode, visit: (n: PasswordNode, depth: number) => {skipChildren: boolean} | void, depth: number = 0) {
     const result = visit(node, depth);
     if (!(result && result.skipChildren) && node.folder) {
         node.children.forEach(child => traverseTree(child, visit, depth! + 1))

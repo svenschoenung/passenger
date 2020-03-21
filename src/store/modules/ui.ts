@@ -1,45 +1,47 @@
+import Vue from 'vue'
+import { Rectangle } from 'electron'
 import { Module, VuexModule, Mutation, Action,  } from 'vuex-module-decorators'
-import electron, { Rectangle } from 'electron'
+
+import { PasswordNode, traverseTree } from '@/model/passwords'
 
 export interface WindowState {
   maximized: boolean
   bounds: Rectangle
 }
 
+export interface ScrollPosState {
+  tree: number;
+  list: number;
+}
+
 export type OverviewType = 'tree' | 'list'
 export type ItemType = 'files-and-folders' | 'files-only'
-export type PageType = 'config' | 'repo' | 'keys' | 'passwords' | 'problems'
-export type ConfigPageType = 'repo' | 'keys' | 'ui'
+export type PageType = 'settings' | 'repo' | 'keys' | 'passwords' | 'problems'
+export type SettingsPageType = 'repo' | 'keys' | 'ui'
 export type ContentViewType = 'text' | 'key-value'
 
 export interface UIState {
     page: string
-    configPage: string
+    settingsPage: string
     selectedPasswordPath: string | null
-    windowState: WindowState
-    passwordOverviewWidthInPx: number
     filter: string
-    overviewType: OverviewType
-    showItemType: ItemType
-    showNotDecryptable: boolean
-    contentViewType: ContentViewType
+    scrollPos: ScrollPosState
+    expandedFolders: { [relPath: string]: boolean }
+}
+
+export interface ExpandFoldersPayload {
+  from: PasswordNode
+  maxDepth?: number
 }
 
 @Module({ name: 'ui', namespaced: true })
 export default class UIVuexModule extends VuexModule implements UIState {
   page: PageType = 'passwords'
-  configPage: ConfigPageType = 'repo'
+  settingsPage: SettingsPageType = 'repo'
   selectedPasswordPath: string | null = null
-  windowState: WindowState = {
-    maximized: false,
-    bounds: electron.remote.getCurrentWindow().getBounds()
-  }
-  passwordOverviewWidthInPx = 300
   filter: string = ''
-  overviewType: OverviewType = 'tree'
-  showItemType: ItemType = 'files-and-folders' 
-  showNotDecryptable: boolean = true
-  contentViewType: ContentViewType = 'text'
+  scrollPos: ScrollPosState = { tree: 0, list: 0 }
+  expandedFolders: { [relPath: string]: boolean } = {}
 
   @Mutation
   setPage(page: PageType) {
@@ -47,12 +49,12 @@ export default class UIVuexModule extends VuexModule implements UIState {
   }
 
   @Mutation
-  setConfigPage(configPage: ConfigPageType) {
-    this.configPage = configPage 
+  setSettingsPage(settingsPage: SettingsPageType) {
+    this.settingsPage = settingsPage 
   }
 
   @Mutation
-  selectPasswordPath(relPath: string) {
+  selectPasswordPath(relPath: string | null) {
     this.selectedPasswordPath = relPath 
   }
 
@@ -63,37 +65,53 @@ export default class UIVuexModule extends VuexModule implements UIState {
   }
 
   @Mutation
-  setWindowState(windowState: WindowState) {
-    this.windowState = windowState 
-  }
-
-  @Mutation
-  setPasswordOverviewWidthInPx(passwordOverviewWidthInPx: number) {
-    this.passwordOverviewWidthInPx = passwordOverviewWidthInPx
-  }
-
-  @Mutation
   setFilter(filter: string) {
     this.filter = filter
   }
 
   @Mutation
-  setOverviewType(overviewType: OverviewType) {
-    this.overviewType = overviewType
+  setScrollPos(pos: Partial<ScrollPosState>) {
+    this.scrollPos = { ...this.scrollPos, ...pos }
   }
 
   @Mutation
-  setShowItemType(showItemType: ItemType) {
-    this.showItemType = showItemType
+  expandFoldersRecursively({ from, maxDepth = Number.POSITIVE_INFINITY}: ExpandFoldersPayload) {
+    traverseTree(from, (node, depth) => {
+      if (depth >= maxDepth) {
+        return { skipChildren: true }
+      }
+      if (node.folder && node.children) {
+        Vue.set(this.expandedFolders, node.relPath, true)
+      }
+    })
   }
 
   @Mutation
-  setShowNotDecryptable(showNotDecryptable: boolean) {
-    this.showNotDecryptable = showNotDecryptable
+  collapseFoldersRecursively({ from, maxDepth = Number.POSITIVE_INFINITY}: ExpandFoldersPayload) {
+    traverseTree(from, (node, depth) => {
+      if (depth >= maxDepth) {
+        return { skipChildren: true }
+      }
+      if (node.folder && node.children) {
+        Vue.delete(this.expandedFolders, node.relPath)
+      }
+    })
   }
 
   @Mutation
-  setContentViewType(contentViewType: ContentViewType) {
-    this.contentViewType = contentViewType 
+  expandFolders(relPaths: string[]) {
+    relPaths.forEach(relPath => Vue.set(this.expandedFolders, relPath, true))
   }
+
+  @Mutation
+  toggleFolders(relPaths: string[]) {
+    relPaths.forEach(relPath => { 
+      if (this.expandedFolders[relPath]) {
+        Vue.delete(this.expandedFolders, relPath)
+      } else {
+        Vue.set(this.expandedFolders, relPath, true)
+      }
+    })
+  }
+
 }

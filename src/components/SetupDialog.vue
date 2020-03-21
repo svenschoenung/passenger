@@ -4,7 +4,7 @@
       <q-header>
         <q-toolbar>
           <q-toolbar-title>
-            <q-icon :name="icons.config" />{{' '}}Setup
+            <q-icon :name="icons.settings" />{{' '}}Setup
           </q-toolbar-title>
         </q-toolbar>
       </q-header>
@@ -53,7 +53,7 @@ import os from "os";
 import path from "path";
 import { QForm, Dark } from "quasar";
 
-import { ConfigModule } from "@/store";
+import { SettingsModule } from "@/store";
 import { setNonReactiveProps } from '@/util/props'
 import { validateRepository } from '@/service/repo'
 import { validateGPGHomedir } from '@/service/keys'
@@ -81,7 +81,7 @@ export default class SetupDialog extends Vue {
   }
 
   setup() {
-    ConfigModule.setup({ 
+    SettingsModule.setup({ 
       repoPath: this.repoPath, 
       gpgPath: this.gpgPath,
       darkMode: this.darkMode

@@ -21,7 +21,7 @@
 <script lang="ts">
 import { Component, Vue, Ref } from "vue-property-decorator";
 
-import { PasswordsModule, UIModule } from '@/store';
+import { PasswordsModule, UIModule, PreferencesModule } from '@/store';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from '@/util/props';
 
 @Component({})
@@ -39,11 +39,11 @@ export default class PasswordsPage extends Vue {
   }
 
   get overviewWidthInPx() {
-    return UIModule.passwordOverviewWidthInPx
+    return PreferencesModule.passwordOverviewWidthInPx
   }
 
   set overviewWidthInPx(overviewWidthInPx: number) {
-    UIModule.setPasswordOverviewWidthInPx(overviewWidthInPx)
+    PreferencesModule.setPasswordOverviewWidthInPx(overviewWidthInPx)
   }
 }
 </script>

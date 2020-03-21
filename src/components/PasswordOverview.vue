@@ -8,18 +8,6 @@
         <q-btn size="sm" flat class="menu-button"><q-icon :name="icons.menu" size="sm"/>
           <q-menu anchor="bottom right" self="top right">
           <q-list dense style="width: 200px" v-roving-tabindex-container>
-            <q-item clickable v-close-popup v-roving-tabindex>
-              <q-item-section>
-                <q-radio dense size="xs" v-model="overviewType" val="tree" label="Tree view"/>
-              </q-item-section>
-            </q-item>
-            <q-item clickable v-close-popup v-roving-tabindex>
-              <q-item-section>
-                <q-radio dense size="xs" v-model="overviewType" val="list" label="List view"/>
-              </q-item-section>
-            </q-item>
-            <template v-if="overviewType === 'tree'">
-            </template>
             <template v-if="overviewType === 'list'">
               <q-separator/>
               <q-item clickable v-close-popup v-roving-tabindex>
@@ -44,11 +32,26 @@
         </q-btn>
       </template>
     </q-input>
+    <q-toolbar dense class="toolbar bg-0">
+      <q-btn flat dense size="xs" @click="overviewType = 'tree'" :class="{ 'active-elem': overviewType === 'tree' }">
+        <q-icon :name="icons.tree" size="xs" />
+        <q-tooltip :delay="1000">Tree view</q-tooltip>
+      </q-btn>
+      <q-btn flat dense size="xs" @click="overviewType = 'list'" :class="{ 'active-elem': overviewType === 'list' }">
+        <q-icon :name="icons.list" size="xs" />
+        <q-tooltip :delay="1000">List view</q-tooltip>
+      </q-btn>
+      <q-space/>
+      <q-btn flat dense size="xs" :disable="!selectedPasswordPath" @click="linkUpWithEditor">
+        <q-icon :name="icons.linkWithEditor" size="xs" />
+        <q-tooltip :delay="1000">Link up with editor</q-tooltip>
+      </q-btn>
+    </q-toolbar>
     <template v-if="overviewType === 'list' && list.value">
-      <password-list :filter="filter" :list="list.value"/>
+      <password-list ref="passwordList" :filter="filter" :list="list.value"/>
     </template>
     <template v-else-if="overviewType === 'tree' && tree.value">
-      <password-tree :filter="filter" :tree="tree.value"/>
+      <password-tree ref="passwordTree" :filter="filter" :tree="tree.value"/>
     </template>
     <template v-else-if="model.resolving">
       <centered-progress />
@@ -63,14 +66,18 @@
 import { Component, Vue, Ref } from "vue-property-decorator";
 import { debounce } from 'quasar';
 
-import { UIModule, PasswordsModule } from "@/store";
+import { UIModule, PasswordsModule, PreferencesModule } from "@/store";
 import { setNonReactiveProps, getNonReactiveProp } from '@/util/props';
 import { OverviewType, ItemType } from '@/store/modules/ui';
 import { PasswordFolder } from '@/model/passwords';
+import PasswordList from '@/components/PasswordList.vue';
+import PasswordTree from '@/components/PasswordTree.vue';
 import icons from "@/ui/icons";
 
 @Component({})
 export default class PasswordOverview extends Vue {
+  @Ref() passwordList!: PasswordList
+  @Ref() passwordTree!: PasswordTree
 
   created() {
     setNonReactiveProps(this, { icons, debouncedFilter: debounce((filter: string) => {
@@ -88,27 +95,27 @@ export default class PasswordOverview extends Vue {
   }
 
   get overviewType() {
-    return UIModule.overviewType
+    return PreferencesModule.overviewType
   }
 
   set overviewType(overviewType: OverviewType) {
-    UIModule.setOverviewType(overviewType)
+    PreferencesModule.setOverviewType(overviewType)
   }
 
   get showItemType() {
-    return UIModule.showItemType
+    return PreferencesModule.showItemType
   }
 
   set showItemType(showItemType: ItemType) {
-    UIModule.setShowItemType(showItemType)
+    PreferencesModule.setShowItemType(showItemType)
   }
 
   get showNotDecryptable() {
-    return UIModule.showNotDecryptable
+    return PreferencesModule.showNotDecryptable
   }
 
   set showNotDecryptable(showNotDecryptable: boolean) {
-    UIModule.setShowNotDecryptable(showNotDecryptable)
+    PreferencesModule.setShowNotDecryptable(showNotDecryptable)
   }
 
   get model() {
@@ -130,6 +137,19 @@ export default class PasswordOverview extends Vue {
   clearFilter() {
       this.filter = ''
   }
+
+  get selectedPasswordPath() {
+    return UIModule.selectedPasswordPath
+  }
+
+  linkUpWithEditor() {
+    if (this.selectedPasswordPath) {
+      switch (this.overviewType) {
+        case 'tree': this.passwordTree.scrollTo(this.selectedPasswordPath); break;
+        case 'list': this.passwordList.scrollTo(this.selectedPasswordPath); break;
+      }
+    }
+  }
 }
 </script>
 
@@ -144,5 +164,28 @@ export default class PasswordOverview extends Vue {
         }
     }
 
+    .toolbar {
+        min-height: $overview-toolbar-height;
+        height: $overview-toolbar-height;
+    }
 }
+
+body.body--light {
+  #password-overview {
+    .toolbar {
+        border-top: 1px solid $grey-4;
+        border-bottom: 1px solid $grey-4;
+    }
+  }
+}
+
+body.body--dark {
+  #password-overview {
+    .toolbar {
+        border-top: 1px solid $grey-8;
+        border-bottom: 1px solid $grey-8;
+    }
+  }
+}
+
 </style>

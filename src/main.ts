@@ -2,12 +2,14 @@ import Vue from 'vue'
 import VueRovingTabindex from "@4rk/vue-roving-tabindex";
 import VueVirtualScroller from 'vue-virtual-scroller'
 
+import '@/styles/style.scss'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+
 import App from './App.vue'
 import { store } from '@/store'
 import '@/ui/quasar'
 import '@/components'
 import '@/pages'
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 Vue.config.productionTip = false
 

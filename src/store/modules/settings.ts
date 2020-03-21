@@ -6,14 +6,14 @@ export interface SetupPayload {
   darkMode: boolean
 }
 
-export interface ConfigState {
+export interface SettingsState {
     repoPath: string | null
     gpgPath: string | null
     darkMode: boolean
 }
 
-@Module({ name: 'config', namespaced: true })
-export default class ConfigVuexModule extends VuexModule implements ConfigState {
+@Module({ name: 'settings', namespaced: true })
+export default class SettingsVuexModule extends VuexModule implements SettingsState {
     repoPath: string | null = null
     gpgPath: string | null = null
     darkMode = false
