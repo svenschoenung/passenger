@@ -27,7 +27,6 @@ const ROW_HEIGHT = 32
 export default class VirtualScroll extends Vue {
   @Prop({ type: String }) type!: OverviewType;
   @Prop({ type: Array }) items!: PasswordNode[];
-  @Prop({ type: Function }) includeItemOnNextTick!: (relPath: string) => boolean 
 
   created() {
     setNonReactiveProps(this, { ROW_HEIGHT })
@@ -74,9 +73,7 @@ export default class VirtualScroll extends Vue {
     }
     const index = this.items.findIndex(item => item.relPath === relPath)
     if (index < 0) {
-      if (this.includeItemOnNextTick(relPath) && !nextTick) {
-        Vue.nextTick(() => this.scrollTo(relPath, true))
-      }
+    console.log('item not found')
       return
     }
     const start = virtualScroll.scrollTop / ROW_HEIGHT
@@ -86,30 +83,23 @@ export default class VirtualScroll extends Vue {
     }
   }
 
-  select(relPath: string) {
-    const scrollWatcher: SelectedWatcher = getNonReactiveProp(this, 'selectedWatcher')
-    scrollWatcher.selected = relPath
-  }
-
   get selected() {
     return UIModule.selectedPasswordPath as string;
   }
 }
 
 class SelectedWatcher {
-  selected!: string | null
   unwatch: () => any;
 
   constructor(virtualScroll: VirtualScroll) {
-    this.selected = virtualScroll.selected
-    this.unwatch = virtualScroll.$store.watch(
-      (state: AppState) => state.ui.selectedPasswordPath,
-      (selected: string | null) => {
-        if (selected && selected !== this.selected) {
-          virtualScroll.scrollTo(selected)
+    this.unwatch = virtualScroll.$store.subscribeAction({
+      after(action, state: AppState) {
+        if (action.type === 'ui/gotoPasswordPath') {
+          console.log('scrollTo')
+          virtualScroll.scrollTo(state.ui.selectedPasswordPath)
         }
-        this.selected = selected;
-      })
+      }
+    })
   }
 }
 

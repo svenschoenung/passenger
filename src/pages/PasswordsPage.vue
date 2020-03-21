@@ -85,6 +85,8 @@ export default class PasswordsPage extends Vue {
 </script>
 
 <style lang="scss">
+@import "src/styles/style.variables.scss";
+
 #passwords-page {
   .q-splitter__panel.q-splitter__before {
     display: flex;
@@ -99,11 +101,25 @@ export default class PasswordsPage extends Vue {
   .toggle {
     width: 10px;
     height: 50px;
-    background: gray;
-    opacity: 0.8;
     margin-left: 5px;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
+  }
+}
+
+body.body--light {
+  #passwords-page {
+    .toggle {
+      background: $grey-4;
+    }
+  }
+}
+
+body.body--dark {
+  #passwords-page {
+    .toggle {
+      background: $grey-8;
+    }
   }
 }
 </style>

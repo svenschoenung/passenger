@@ -1,8 +1,8 @@
 <template>
 <div>
  <virtual-scroll ref="virtualScroll" id="password-list" 
+   type="list"
    :items="textFilteredList" 
-   :includeItemOnNextTick="() => false"
    v-roving-tabindex-container>
     <template v-slot="{ item }">
       <div :class="{
@@ -27,9 +27,8 @@
         <q-item-section class="item-name">
           <span v-html="highlight(item)"></span>
         </q-item-section>
-        <q-item-section side>
-          <q-icon v-if="item.annotations.notEncryptable" size="1.4em" 
-            :name="icons.error" color="negative"/>
+        <q-item-section  v-if="item.annotations.notEncryptable" side>
+          <q-icon size="1.4em" :name="icons.error" color="negative"/>
         </q-item-section>
       </q-item>
       </div>
@@ -63,12 +62,7 @@ export default class PasswordList extends Vue {
   }
 
   select(relPath: string) {
-    this.virtualScroll.select(relPath)
     UIModule.selectPasswordPath(relPath);
-  }
-
-  scrollTo(relPath: string) {
-    this.virtualScroll.scrollTo(relPath)
   }
 
   get selected() {
@@ -134,6 +128,11 @@ export default class PasswordList extends Vue {
 @import "src/styles/style.variables.scss";
 
 #password-list {
+    .q-list--dense > .q-item, .q-item--dense {
+        height: 32px;
+        padding-right: 6px;
+    }
+
     .q-item__section--avatar {
       min-width: 24px;
     }
@@ -148,6 +147,7 @@ export default class PasswordList extends Vue {
 
     .item-name {
       white-space: nowrap;
+      overflow: hidden;
     }
 }
 

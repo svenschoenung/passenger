@@ -22,7 +22,7 @@ export default class FolderButton extends Vue {
   }
 
   folderClicked() {
-    UIModule.selectPasswordPath(this.folder.relPath)
+    UIModule.gotoPasswordPath(this.folder.relPath)
   }
 }
 </script>

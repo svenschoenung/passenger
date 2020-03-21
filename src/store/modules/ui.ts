@@ -1,10 +1,11 @@
-import { SettingsModule } from './../index';
+import { UIModule } from '@/store';
+import { SettingsModule, PreferencesModule } from './../index';
 import Vue from 'vue'
 import { Rectangle } from 'electron'
 import { Module, VuexModule, Mutation, Action,  } from 'vuex-module-decorators'
 import { darkMode } from 'electron-util'
 
-import { PasswordNode, traverseTree } from '@/model/passwords'
+import { PasswordNode, traverseTree, getParents } from '@/model/passwords'
 
 export interface WindowState {
   maximized: boolean
@@ -62,10 +63,14 @@ export default class UIVuexModule extends VuexModule implements UIState {
     this.selectedPasswordPath = relPath 
   }
 
-  @Mutation
-  gotoPasswordPath(relPath: string) {
-    this.selectedPasswordPath = relPath 
-    this.page = 'passwords'
+  @Action
+  async gotoPasswordPath(relPath: string) {
+    this.setPage('passwords')
+    await Vue.nextTick()
+    if (PreferencesModule.overviewType === 'tree') {
+      this.expandFolders(getParents(relPath).map(parent => parent.relPath))
+    }
+    this.selectPasswordPath(relPath)
   }
 
   @Mutation

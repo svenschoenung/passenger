@@ -41,8 +41,7 @@ export default class ProblemsPage extends Vue {
     }
 
     goto(relPath: string) {
-        UIModule.setPage('passwords')
-        Vue.nextTick(() => UIModule.selectPasswordPath(relPath))
+        UIModule.gotoPasswordPath(relPath)
     }
 }
 </script>

@@ -1,7 +1,7 @@
 <template>
   <virtual-scroll ref="virtualScroll" id="password-tree"
+    type="tree"
     :items="textFilteredList"
-    :includeItemOnNextTick="expandForItem"
     v-roving-tabindex-container>
     <template v-slot="{ item }">
       <q-item dense :key="item.relPath"
@@ -27,15 +27,14 @@
         <q-item-section avatar>
           <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
         </q-item-section>
-        <q-item-section>
-          <span class="item-name">
+        <q-item-section class="item-name">
+          <span>
           <span v-html="highlightTreeNode(item)"></span>
           <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
           </span>
         </q-item-section>
-        <q-item-section side>
-          <q-icon v-if="item.annotations.notEncryptable" size="1.4em" 
-            :name="icons.error" color="negative"/>
+        <q-item-section v-if="item.annotations.notEncryptable" side>
+          <q-icon size="1.4em" :name="icons.error" color="negative"/>
         </q-item-section>
         <q-menu dense context-menu touch-position anchor="top left" self="top left">
           <q-item dense clickable v-close-popup @click="expandAll(item)">
@@ -70,7 +69,6 @@ import icons from "@/ui/icons";
 export default class PasswordTree extends Vue {
   @Prop({ type: Object }) tree!: PasswordNode
   @Prop({ type: String }) filter!: string
-  @Ref() virtualScroll!: VirtualScroll
 
   created() {
     setNonReactiveProps(this, { icons, depth, highlightTreeNode })
@@ -78,19 +76,17 @@ export default class PasswordTree extends Vue {
 
   select(relPath: string) {
     if (this.selected === relPath) {
-      this.toggle(relPath)
+      const selected = PasswordsModule.selectedPasswordNode;
+      if (selected && selected.value && selected.value.folder) {
+        this.toggle(relPath)
+      }
     } else {
-      this.virtualScroll.select(relPath)
       UIModule.selectPasswordPath(relPath);
     }
   }
 
   toggle(relPath: string) {
     UIModule.toggleFolders([relPath])
-  }
-
-  scrollTo(relPath: string) {
-    this.virtualScroll.scrollTo(relPath)
   }
 
   expandAll(item: PasswordNode) {
@@ -236,9 +232,11 @@ function clipMatches(matches: SearchMatches, fullName: string): SearchMatches {
         height: 32px;
         padding: 2px 6px;
     }
+
     .q-item__section--avatar {
       min-width: 24px;
     }
+
     .q-item__section--avatar.indent {
       min-width: 12px;
     }
@@ -253,6 +251,11 @@ function clipMatches(matches: SearchMatches, fullName: string): SearchMatches {
 
     .item-name {
       white-space: nowrap;
+      overflow:hidden;
+
+      .q-icon {
+        margin-left: 5px;
+      }
     }
 }
 

@@ -48,10 +48,10 @@
       </q-btn>
     </q-toolbar>
     <template v-if="overviewType === 'list' && list.value">
-      <password-list ref="passwordList" :filter="filter" :list="list.value"/>
+      <password-list :filter="filter" :list="list.value"/>
     </template>
     <template v-else-if="overviewType === 'tree' && tree.value">
-      <password-tree ref="passwordTree" :filter="filter" :tree="tree.value"/>
+      <password-tree :filter="filter" :tree="tree.value"/>
     </template>
     <template v-else-if="model.resolving">
       <centered-progress />
@@ -76,9 +76,6 @@ import icons from "@/ui/icons";
 
 @Component({})
 export default class PasswordOverview extends Vue {
-  @Ref() passwordList!: PasswordList
-  @Ref() passwordTree!: PasswordTree
-
   created() {
     setNonReactiveProps(this, { icons, debouncedFilter: debounce((filter: string) => {
       UIModule.setFilter(filter)
@@ -143,11 +140,8 @@ export default class PasswordOverview extends Vue {
   }
 
   linkUpWithEditor() {
-    if (this.selectedPasswordPath) {
-      switch (this.overviewType) {
-        case 'tree': this.passwordTree.scrollTo(this.selectedPasswordPath); break;
-        case 'list': this.passwordList.scrollTo(this.selectedPasswordPath); break;
-      }
+    if (UIModule.selectedPasswordPath) {
+      UIModule.gotoPasswordPath(UIModule.selectedPasswordPath)
     }
   }
 }
