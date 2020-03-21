@@ -42,6 +42,10 @@
         <q-tooltip :delay="1000">List view</q-tooltip>
       </q-btn>
       <q-space/>
+      <q-btn flat dense size="xs" @click="refresh">
+        <q-icon :name="icons.refresh" size="xs" />
+        <q-tooltip :delay="1000">Refresh</q-tooltip>
+      </q-btn>
       <q-btn flat dense size="xs" :disable="!selectedPasswordPath" @click="linkUpWithEditor">
         <q-icon :name="icons.linkWithEditor" size="xs" />
         <q-tooltip :delay="1000">Link up with editor</q-tooltip>
@@ -131,18 +135,23 @@ export default class PasswordOverview extends Vue {
     return PasswordsModule.list
   }
 
-  clearFilter() {
-      this.filter = ''
-  }
-
   get selectedPasswordPath() {
     return UIModule.selectedPasswordPath
+  }
+
+  clearFilter() {
+      this.filter = ''
   }
 
   linkUpWithEditor() {
     if (UIModule.selectedPasswordPath) {
       UIModule.gotoPasswordPath(UIModule.selectedPasswordPath)
     }
+  }
+
+  async refresh() {
+    await PasswordsModule.loadPasswordsFromFileSystem()
+    
   }
 }
 </script>

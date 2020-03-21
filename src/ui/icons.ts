@@ -18,6 +18,7 @@ import { ionIosAdd } from '@quasar/extras/ionicons-v4'
 import { ionIosMail } from '@quasar/extras/ionicons-v4'
 import { ionIosOpen } from '@quasar/extras/ionicons-v4'
 import { ionIosSend } from '@quasar/extras/ionicons-v4'
+import { ionIosRefresh } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
 import { ionEllipsisVertical } from '@/ui/ionicons-v5'
@@ -60,7 +61,8 @@ const icons = {
     sendEmail: ionIosSend,
     linkWithEditor: ionSwapHorizontal,
     list: ionIosList,
-    tree: customTreeView
+    tree: customTreeView,
+    refresh: ionIosRefresh
 }
 
 export default icons

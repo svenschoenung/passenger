@@ -1,9 +1,12 @@
 <template>
  <RecycleScroller
     class="styled-scrollbar"
+    :style="{ visibility: visible ? 'visible' : 'hidden' }"
     :items="items"
     :item-size="ROW_HEIGHT"
-    key-field="relPath">
+    key-field="relPath"
+    @visible="onVisible"
+    @hidden="onHidden">
     <template v-slot="props">
       <slot v-bind="props"></slot>
     </template>
@@ -11,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Ref, Prop } from "vue-property-decorator";
+import { Component, Vue, Ref, Prop, Watch } from "vue-property-decorator";
 import Fuse, { FuseResultWithMatches } from 'fuse.js'
 
 import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule } from "@/store";
@@ -27,6 +30,7 @@ const ROW_HEIGHT = 32
 export default class VirtualScroll extends Vue {
   @Prop({ type: String }) type!: OverviewType;
   @Prop({ type: Array }) items!: PasswordNode[];
+  visible = false
 
   created() {
     setNonReactiveProps(this, { ROW_HEIGHT })
@@ -60,6 +64,15 @@ export default class VirtualScroll extends Vue {
     removeNonReactiveProp(this, 'scWatcher', (scrollWatcher: SelectedWatcher) => scrollWatcher.unwatch())
   }
 
+  onVisible() {
+    this.visible = true
+    this.scrollToPos(UIModule.scrollPos[this.type])
+  }
+
+  onHidden() {
+    this.visible = false 
+  }
+
   scrollToPos(pos: number) {
     const virtualScroll = this.$el as HTMLElement
     virtualScroll.scrollTop = pos
@@ -73,7 +86,6 @@ export default class VirtualScroll extends Vue {
     }
     const index = this.items.findIndex(item => item.relPath === relPath)
     if (index < 0) {
-    console.log('item not found')
       return
     }
     const start = virtualScroll.scrollTop / ROW_HEIGHT
@@ -95,7 +107,6 @@ class SelectedWatcher {
     this.unwatch = virtualScroll.$store.subscribeAction({
       after(action, state: AppState) {
         if (action.type === 'ui/gotoPasswordPath') {
-          console.log('scrollTo')
           virtualScroll.scrollTo(state.ui.selectedPasswordPath)
         }
       }

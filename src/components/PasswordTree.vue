@@ -200,8 +200,6 @@ export default class PasswordTree extends Vue {
       }
       expandedResults.push(item)
     })
-    console.log(expandedResults)
-
     return expandedResults
   }
 }
