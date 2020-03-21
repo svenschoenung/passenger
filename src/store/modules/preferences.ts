@@ -12,7 +12,8 @@ export type ContentViewType = 'text' | 'key-value'
 
 export interface PreferencesState {
     windowState: WindowState
-    passwordOverviewWidthInPx: number
+    overviewCollapsed: boolean
+    overviewWidth: number
     overviewType: OverviewType
     showItemType: ItemType
     showNotDecryptable: boolean
@@ -25,7 +26,8 @@ export default class PreferencesVuexModule extends VuexModule implements Prefere
     maximized: false,
     bounds: electron.remote.getCurrentWindow().getBounds()
   }
-  passwordOverviewWidthInPx = 300
+  overviewCollapsed = false
+  overviewWidth = 300
   overviewType: OverviewType = 'tree'
   showItemType: ItemType = 'files-and-folders' 
   showNotDecryptable: boolean = true
@@ -37,8 +39,18 @@ export default class PreferencesVuexModule extends VuexModule implements Prefere
   }
 
   @Mutation
-  setPasswordOverviewWidthInPx(passwordOverviewWidthInPx: number) {
-    this.passwordOverviewWidthInPx = passwordOverviewWidthInPx
+  setOverviewCollapsed(overviewCollapsd: boolean) {
+    this.overviewCollapsed = overviewCollapsd
+  }
+
+  @Mutation
+  toggleOverviewCollapsed() {
+    this.overviewCollapsed = !this.overviewCollapsed
+  }
+
+  @Mutation
+  setOverviewWidth(overviewWidth: number) {
+    this.overviewWidth = overviewWidth
   }
 
   @Mutation
