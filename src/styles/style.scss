@@ -46,17 +46,23 @@ body.body--dark {
   flex-direction: row;
 }
 
-.footer-height {
-    height: $footer-height;
-}
 .content-height {
-    height: calc(100vh - #{$footer-height});
+    height: calc(100vh - #{$status-bar-height});
 }
 
 #password-list, #password-tree {
-    height: calc(100vh - #{$footer-height} - #{$overview-top-height});
+    height: calc(100vh - #{$status-bar-height} - #{$overview-top-height});
     width: 100%;
-    overflow-x: scroll;
+}
+
+.no-status-bar {
+    .content-height {
+        height: calc(100vh);
+    }
+
+    #password-list, #password-tree {
+        height: calc(100vh - #{$overview-top-height});
+    }
 }
 
 .styled-scrollbar {

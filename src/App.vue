@@ -1,5 +1,5 @@
 <template> 
-    <div>
+    <div :class="{ 'no-status-bar': !showStatusBar }">
       <setup-dialog v-if="needsSetup"/>
       <q-layout v-else view="lHh lpR fFf">
           <q-drawer elevated
@@ -15,7 +15,7 @@
             </keep-alive>
           </q-page-container>
 
-          <status-bar/>
+          <status-bar v-if="showStatusBar"/>
       </q-layout>
     </div>
 </template>
@@ -65,6 +65,10 @@ export default class App extends Vue {
 
   get needsSetup() {
     return !SettingsModule.repoPath || !SettingsModule.gpgPath
+  }
+
+  get showStatusBar() {
+    return SettingsModule.showStatusBar
   }
 }
 

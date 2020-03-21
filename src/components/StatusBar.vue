@@ -1,5 +1,5 @@
 <template> 
-    <q-footer class="status-bar footer-height">
+    <q-footer class="status-bar">
         <div class="clickable" @click="gotoSettingsRepoPage()">
             <q-icon :name="icons.repoPath" size="xs"/> {{repoPath}}
         </div>
@@ -66,13 +66,14 @@ export default class StatusBar extends Vue {
     font-weight: 500;
     font-size: 14px;
     line-height: 24px;
+    height: $status-bar-height;
 }
 .clickable {
     margin: 0px 5px;
     display: inline-block;
     padding: 0px 5px;
     box-sizing: border-box;
-    height: $footer-height;
+    height: $status-bar-height;
 }
 .clickable:hover {
     cursor: pointer;
