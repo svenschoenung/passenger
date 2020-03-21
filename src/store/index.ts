@@ -3,7 +3,10 @@ import Vue from 'vue'
 
 import { createPersistedState } from 'vuex-electron'
 import { getModule } from 'vuex-module-decorators'
+import { ipcRenderer } from 'electron'
 import ElectronStore from 'electron-store'
+import { Dark } from 'quasar'
+import { darkMode } from 'electron-util'
 
 import UIVuexModule, { UIState } from './modules/ui'
 import PasswordsVuexModule, { PasswordsState } from './modules/passwords'
@@ -12,8 +15,7 @@ import KeysVuexModule, { KeysState } from './modules/keys'
 import ProblemsVuexModule, { ProblemsState } from './modules/problems'
 import PreferencesVuexModule, { PreferencesState } from './modules/preferences'
 import SettingsVuexModule, { SettingsState } from './modules/settings'
-import { Dark } from 'quasar'
-
+ 
 Vue.use(Vuex)
 
 export interface AppState {
@@ -77,8 +79,12 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
+darkMode.onChange(() => {
+  UIModule.setSystemDarkMode(darkMode.isEnabled)
+});
+
 store.watch(
-  state => state.settings.darkMode,
+  (state, getters) => getters['ui/darkMode'] as boolean,
   darkMode => Dark.set(darkMode),
   { deep: false, immediate: true }
 )

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import CenteredError from './CenteredError.vue'
 import CenteredProgress from './CenteredProgress.vue'
+import ColorThemePicker from './ColorThemePicker.vue'
 import FolderBreadcrumbs from './FolderBreadcrumbs.vue'
 import FolderButton from './FolderButton.vue'
 import FolderPicker from './FolderPicker.vue'
@@ -24,6 +25,7 @@ import VueHeadful from 'vue-headful';
 
 Vue.component('centered-error', CenteredError)
 Vue.component('centered-progress', CenteredProgress)
+Vue.component('color-theme-picker', ColorThemePicker)
 Vue.component('folder-breadcrumbs', FolderBreadcrumbs)
 Vue.component('folder-button', FolderButton)
 Vue.component('folder-picker', FolderPicker)

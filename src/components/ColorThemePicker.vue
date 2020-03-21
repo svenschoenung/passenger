@@ -1,0 +1,51 @@
+<template>
+  <q-item tag="label" @click.prevent="toggleColorTheme">
+    <q-item-section>
+        <q-item-label>Color theme</q-item-label>
+    </q-item-section>
+    <q-item-section side>
+        <q-btn-toggle
+            rounded @click.stop
+            v-model="colorTheme"
+            toggle-color="primary"
+            :options="[
+                {label: 'Light', value: 'light'},
+                {label: 'Dark', value: 'dark'},
+                {label: 'System', value: 'system'}
+            ]"/>
+    </q-item-section>
+  </q-item>
+</template>
+
+<script lang="ts">
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
+import { SettingsModule } from '@/store'
+import { ColorTheme } from '@/store/modules/settings'
+
+const colorThemes: ColorTheme[] = ['light', 'dark', 'system']
+
+@Component({})
+export default class ColorThemePicker extends Vue {
+  @Prop({ type: String }) value!: ColorTheme
+
+  get colorTheme() {
+    return this.value
+  }
+
+  set colorTheme(colorTheme: ColorTheme) {
+    this.changeColorTheme(colorTheme)
+  }
+
+  toggleColorTheme() {
+    this.changeColorTheme(colorThemes[(colorThemes.indexOf(this.colorTheme) + 1) % colorThemes.length])
+  }
+
+  @Emit('input')
+  changeColorTheme(colorTheme: ColorTheme) {
+      return colorTheme
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+</style>

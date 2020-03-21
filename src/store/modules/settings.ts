@@ -1,31 +1,31 @@
-import { overviewFilterHeight, overviewToolbarHeight } from './../../constants';
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
-import { statusBarHeight } from '@/constants'
 
 export interface SetupPayload {
   repoPath: string
   gpgPath: string
-  darkMode: boolean
+  colorTheme: ColorTheme
 }
+
+export type ColorTheme = 'light' | 'dark' | 'system'
 
 export interface SettingsState {
     repoPath: string | null
     gpgPath: string | null
-    darkMode: boolean
+    colorTheme: ColorTheme
 }
 
 @Module({ name: 'settings', namespaced: true })
 export default class SettingsVuexModule extends VuexModule implements SettingsState {
     repoPath: string | null = null
     gpgPath: string | null = null
-    darkMode = false
+    colorTheme: ColorTheme = 'system' 
     showStatusBar = true
 
     @Mutation
     setup(payload: SetupPayload) {
         this.repoPath = payload.repoPath;
         this.gpgPath = payload.gpgPath;
-        this.darkMode = payload.darkMode;
+        this.colorTheme = payload.colorTheme;
     }
 
     @Mutation
@@ -39,8 +39,8 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     }
 
     @Mutation
-    setDarkMode(darkMode: boolean) {
-        this.darkMode = darkMode
+    setColorTheme(colorTheme: ColorTheme) {
+        this.colorTheme = colorTheme
     }
 
     @Mutation

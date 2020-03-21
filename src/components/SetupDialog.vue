@@ -28,16 +28,9 @@
           title="Open GPG homedir"
           :validator="validateGPGHomedir"
           v-model="gpgPath"/>
-          <q-list>
-            <q-item tag="label" v-ripple>
-              <q-item-section>
-                <q-item-label>Enable Dark Mode</q-item-label>
-              </q-item-section>
-              <q-item-section avatar>
-                <q-toggle color="blue" v-model="darkMode" />
-              </q-item-section>
-            </q-item>
-          </q-list>
+        <q-list>
+          <color-theme-picker v-model="colorTheme"/>  
+        </q-list>
         </q-form>
       </q-page-container>
       <q-footer class="bg-0 q-pa-md">
@@ -51,12 +44,13 @@
 import { Component, Vue, Prop, Ref } from "vue-property-decorator";
 import os from "os";
 import path from "path";
-import { QForm, Dark } from "quasar";
+import { QForm } from "quasar";
 
-import { SettingsModule } from "@/store";
+import { SettingsModule, UIModule } from "@/store";
 import { setNonReactiveProps } from '@/util/props'
 import { validateRepository } from '@/service/repo'
 import { validateGPGHomedir } from '@/service/keys'
+import { ColorTheme } from '@/store/modules/settings';
 import icons from "@/ui/icons";
 
 @Component({})
@@ -65,26 +59,24 @@ export default class SetupDialog extends Vue {
 
   repoPath = path.join(os.homedir(), ".password-store");
   gpgPath = path.join(os.homedir(), ".gnupg");
-  darkModeState = false;
 
   created() {
     setNonReactiveProps(this, { icons, validateRepository, validateGPGHomedir })
   }
 
-  set darkMode(darkMode: boolean) {
-    Dark.set(darkMode)
-    this.darkModeState = darkMode
+  set colorTheme(colorTheme: ColorTheme) {
+    SettingsModule.setColorTheme(colorTheme)
   }
 
-  get darkMode() {
-    return this.darkModeState
+  get colorTheme() {
+    return SettingsModule.colorTheme
   }
 
   setup() {
     SettingsModule.setup({ 
       repoPath: this.repoPath, 
       gpgPath: this.gpgPath,
-      darkMode: this.darkMode
+      colorTheme: this.colorTheme
     });
   }
 }

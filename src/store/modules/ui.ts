@@ -1,6 +1,8 @@
+import { SettingsModule } from './../index';
 import Vue from 'vue'
 import { Rectangle } from 'electron'
 import { Module, VuexModule, Mutation, Action,  } from 'vuex-module-decorators'
+import { darkMode } from 'electron-util'
 
 import { PasswordNode, traverseTree } from '@/model/passwords'
 
@@ -27,6 +29,7 @@ export interface UIState {
     filter: string
     scrollPos: ScrollPosState
     expandedFolders: { [relPath: string]: boolean }
+    systemDarkMode: boolean
 }
 
 export interface ExpandFoldersPayload {
@@ -42,6 +45,7 @@ export default class UIVuexModule extends VuexModule implements UIState {
   filter: string = ''
   scrollPos: ScrollPosState = { tree: 0, list: 0 }
   expandedFolders: { [relPath: string]: boolean } = {}
+  systemDarkMode: boolean = darkMode.isEnabled
 
   @Mutation
   setPage(page: PageType) {
@@ -114,4 +118,15 @@ export default class UIVuexModule extends VuexModule implements UIState {
     })
   }
 
+  @Mutation
+  setSystemDarkMode(systemDarkMode: boolean) {
+    this.systemDarkMode = systemDarkMode
+  }
+
+  get darkMode() {
+    if (SettingsModule.colorTheme === 'system') {
+      return this.systemDarkMode
+    }
+    return SettingsModule.colorTheme === 'dark'
+  }
 }

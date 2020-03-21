@@ -1,14 +1,7 @@
 <template>
   <q-form>
-      <q-list>
-      <q-item tag="label" v-ripple>
-        <q-item-section>
-          <q-item-label>Enable Dark Mode</q-item-label>
-        </q-item-section>
-        <q-item-section avatar>
-          <q-toggle color="blue" v-model="darkMode" />
-        </q-item-section>
-      </q-item>
+    <q-list>
+      <color-theme-picker v-model="colorTheme"/> 
       <q-item tag="label" v-ripple>
         <q-item-section>
           <q-item-label>Show status bar</q-item-label>
@@ -17,23 +10,26 @@
           <q-toggle color="blue" v-model="showStatusBar" />
         </q-item-section>
       </q-item>
-      </q-list>
+    </q-list>
   </q-form>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { SettingsModule } from '@/store'
+import { ColorTheme } from '@/store/modules/settings'
+
+const colorThemes: ColorTheme[] = ['light', 'dark', 'system']
 
 @Component({})
 export default class SettingsUIPage extends Vue {
 
-  set darkMode(darkMode: boolean) {
-    SettingsModule.setDarkMode(darkMode)
+  set colorTheme(colorTheme: ColorTheme) {
+    SettingsModule.setColorTheme(colorTheme)
   }
 
-  get darkMode() {
-    return SettingsModule.darkMode
+  get colorTheme() {
+    return SettingsModule.colorTheme
   }
 
   set showStatusBar(showStatusBar: boolean) {

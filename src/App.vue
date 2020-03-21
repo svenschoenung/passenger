@@ -24,6 +24,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import electron, { BrowserWindow } from 'electron'
 import { debounce } from 'quasar'
+import { darkMode } from 'electron-util'
 
 import { UIModule, SettingsModule, PreferencesModule } from '@/store'
 
@@ -33,7 +34,7 @@ export default class App extends Vue {
     const win = electron.remote.getCurrentWindow()
     this.initWindowState(win)
     this.watchWindowState(win)
-    this.$q.dark.set(SettingsModule.darkMode)
+    this.$q.dark.set(UIModule.darkMode)
   }
 
   initWindowState(win: BrowserWindow) {
