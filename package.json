@@ -17,6 +17,7 @@
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.4",
     "electron-store": "^5.1.1",
+    "electron-util": "^0.14.0",
     "fuse.js": "^3.6.1",
     "gpg-promised": "^0.4.12",
     "immutability-helper": "^3.0.1",
@@ -32,6 +33,7 @@
     "vuex-electron": "^1.0.3"
   },
   "devDependencies": {
+    "@types/node": "^12.12.30",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "@vue/cli-plugin-babel": "~4.2.0",
@@ -41,7 +43,7 @@
     "@vue/eslint-config-typescript": "^5.0.1",
     "babel-eslint": "^10.0.3",
     "babel-plugin-transform-imports": "1.5.0",
-    "electron": "^6.0.0",
+    "electron": "^8.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
     "node-sass": "^4.13.0",
