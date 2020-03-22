@@ -42,10 +42,4 @@ export default class ProblemsCount extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.status-bar {
-    padding-left: 20px;
-    padding-right: 20px;
-    font-weight: 500;
-    font-size: 14px;
-}
 </style>

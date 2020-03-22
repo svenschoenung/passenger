@@ -21,6 +21,7 @@ import { ionIosSend } from '@quasar/extras/ionicons-v4'
 import { ionIosRefresh } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
+import { ionMdClipboard } from '@quasar/extras/ionicons-v4'
 import { ionEllipsisVertical } from '@/ui/ionicons-v5'
 import { ionSwapHorizontal } from '@/ui/ionicons-v5'
 import { ionServerOutline } from '@/ui/ionicons-v5'
@@ -62,7 +63,8 @@ const icons = {
     linkWithEditor: ionSwapHorizontal,
     list: ionIosList,
     tree: customTreeView,
-    refresh: ionIosRefresh
+    refresh: ionIosRefresh,
+    clipboard: ionMdClipboard
 }
 
 export default icons

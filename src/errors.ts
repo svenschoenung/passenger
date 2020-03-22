@@ -9,6 +9,7 @@ import icons from '@/ui/icons'
 export function showErrorNotification(error: Error) {
     Notify.create({
         html: true,
+        classes: 'notification-above-status-bar',
         color: Dark.isActive ? 'dark' : 'white',
         textColor: Dark.isActive ? 'white' : 'black',
         icon: icons.error,

@@ -6,6 +6,7 @@ import { Module, VuexModule, Mutation, Action,  } from 'vuex-module-decorators'
 import { darkMode } from 'electron-util'
 
 import { PasswordNode, traverseTree, getParents } from '@/model/passwords'
+import { removePasswordFromClipboard } from '@/service/clipboard';
 
 export interface WindowState {
   maximized: boolean
@@ -15,6 +16,11 @@ export interface WindowState {
 export interface ScrollPosState {
   tree: number;
   list: number;
+}
+
+export interface CopyToClipboard {
+  text: string
+  password?: boolean 
 }
 
 export type OverviewType = 'tree' | 'list'
@@ -47,6 +53,8 @@ export default class UIVuexModule extends VuexModule implements UIState {
   scrollPos: ScrollPosState = { tree: 0, list: 0 }
   expandedFolders: { [relPath: string]: boolean } = {}
   systemDarkMode: boolean = darkMode.isEnabled
+  passwordInClipboardInterval: number | null = null
+  passwordInClipboardCountdown: number = 0
 
   @Mutation
   setPage(page: PageType) {
@@ -128,10 +136,48 @@ export default class UIVuexModule extends VuexModule implements UIState {
     this.systemDarkMode = systemDarkMode
   }
 
+  @Action
+  startPasswordInClipboardCountdown() {
+    const duration = 10
+    const endDate = Math.ceil(new Date().valueOf() / 1000 + duration) 
+    const interval = window.setInterval(function() {
+      const now = Math.ceil(new Date().valueOf() / 1000)
+      UIModule.setPasswordInClipboardCountdown(endDate - now)
+      if (UIModule.passwordInClipboardCountdown <= 0) {
+        removePasswordFromClipboard()
+      }
+    }, 1000)
+    this.initPasswordInClipboardCountdown({ countdown: duration, interval })
+  }
+
+  @Action
+  stopPasswordInClipboardCountdown() {
+    window.clearInterval(UIModule.passwordInClipboardInterval || undefined)
+    UIModule.cleanupPasswordInClipboardCountdown()
+  }
+
+  @Mutation
+  initPasswordInClipboardCountdown(payload: { countdown: number, interval: number}) {
+    this.passwordInClipboardCountdown = payload.countdown
+    this.passwordInClipboardInterval = payload.interval
+  }
+
+  @Mutation
+  setPasswordInClipboardCountdown(countdown: number) {
+    this.passwordInClipboardCountdown = countdown <= 0 ? 0 : countdown
+  }
+
+  @Mutation
+  cleanupPasswordInClipboardCountdown() {
+    this.passwordInClipboardCountdown = 0
+    this.passwordInClipboardInterval = null
+  }
+
   get darkMode() {
     if (SettingsModule.colorTheme === 'system') {
       return this.systemDarkMode
     }
     return SettingsModule.colorTheme === 'dark'
   }
+
 }

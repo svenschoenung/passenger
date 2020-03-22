@@ -7,16 +7,23 @@
         <template slot:append>
             <q-btn dense flat @click="showPassword = !showPassword">
                 <q-icon :name="icons[showPassword ? 'hidePassword' : 'showPassword']"/>
+                <q-tooltip :delay="1000">Reveal password</q-tooltip>
             </q-btn>
-        </template>
+            <q-btn dense flat @click="copyToClipboard()" :disable="!value">
+                <q-icon :name="icons.clipboard"/>
+                <q-tooltip :delay="1000">Copy to clipboard</q-tooltip>
+            </q-btn> 
+      </template>
     </q-input>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator';
+import { Component, Vue, Prop, Emit, Watch, Ref } from 'vue-property-decorator';
 
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
+import { copyToClipboard } from '../service/clipboard';
+import { QTooltip, Notify } from 'quasar';
 
 @Component({})
 export default class PasswordInput extends Vue {
@@ -38,6 +45,17 @@ export default class PasswordInput extends Vue {
   @Emit('input')
   updatePassword(value: string) {
     return value;
+  }
+
+  async copyToClipboard() {
+    await copyToClipboard(this.value, true)
+    Notify.create({
+      color: 'primary',
+      classes: 'notification-above-status-bar',
+      position: 'bottom-right',
+      message: 'Password copied',
+      timeout: 1500,
+    })
   }
 }
 </script>
@@ -63,5 +81,4 @@ body.body--dark {
     }
   }
 }
-
 </style>

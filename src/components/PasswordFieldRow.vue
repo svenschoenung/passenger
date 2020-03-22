@@ -18,19 +18,23 @@
                 :debounce="500"
                 :value="field.value"
                 @input="setValue($event)">
-                <template v-if="['url', 'email'].includes(type)" slot:append>
+                <template slot:append>
                     <template v-if="type === 'url'">
                         <q-btn dense flat @click="openUrl()" :disable="!isValidUrl">
                             <q-icon :name="icons.openUrl"/>
-                            <q-tooltip>Open in browser</q-tooltip>
+                            <q-tooltip :delay="1000">Open in browser</q-tooltip>
                         </q-btn>
                     </template>
                     <template v-else-if="type === 'email'">
                         <q-btn dense flat @click="sendEmail()" :disable="!isValidEmail">
                             <q-icon :name="icons.sendEmail"/>
-                            <q-tooltip>Compose message</q-tooltip>
+                            <q-tooltip :delay="1000">Compose message</q-tooltip>
                         </q-btn>
                     </template>
+                    <q-btn dense flat @click="copyToClipboard()" :disable="!field.value">
+                        <q-icon :name="icons.clipboard"/>
+                        <q-tooltip :delay="1000">Copy to clipboard</q-tooltip>
+                    </q-btn> 
                 </template>
             </q-input>
         </div>
@@ -51,6 +55,8 @@ import { FolderValidator } from '@/model/validation';
 import { setNonReactiveProps } from '@/util/props';
 import { parseTextContents, parseKeyValueContents, serializeKeyValueContents, PasswordKeyValueContents, PasswordField } from '@/service/contents';
 import icons from '@/ui/icons';
+import { copyToClipboard } from '../service/clipboard';
+import { Notify } from 'quasar';
 
 export enum FieldType {
     user = 'user',
@@ -155,6 +161,17 @@ export default class PasswordFieldRow extends Vue {
 
   sendEmail() {
       shell.openExternal('mailto:' + this.field.value)
+  }
+
+  async copyToClipboard() {
+    await copyToClipboard(this.field.value, false)
+    Notify.create({
+      color: 'primary',
+      classes: 'notification-above-status-bar',
+      position: 'bottom-right',
+      message: 'Copied to clipboard',
+      timeout: 1500,
+    })
   }
 }
 </script>

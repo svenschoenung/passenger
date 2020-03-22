@@ -12,8 +12,9 @@ import '@/pages'
 import App from './App.vue'
 import { store } from '@/store'
 import { showErrorNotification } from '@/errors';
+import { removePasswordFromClipboard, removePasswordFromClipboardSync } from './service/clipboard';
 
-Vue.config.productionTip = false
+Vue.config.productionTip = true
 Vue.config.errorHandler = (err, vm, info) => {
   showErrorNotification(err)
 };
@@ -26,3 +27,6 @@ new Vue({
   render: h => h(App),
 }).$mount('#app')
 
+window.addEventListener('beforeunload', () => {
+  removePasswordFromClipboardSync()
+})

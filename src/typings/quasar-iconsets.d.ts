@@ -25,6 +25,7 @@ declare module '@quasar/extras/ionicons-v4' {
     export const ionMdMore: string
     export const ionMdGlobe: string
     export const ionMdPerson: string
+    export const ionMdClipboard: string
 }
 
 declare module 'quasar/icon-set/ionicons-v4' {
