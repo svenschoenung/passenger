@@ -5,13 +5,18 @@ import VueVirtualScroller from 'vue-virtual-scroller'
 import '@/styles/style.scss'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
-import App from './App.vue'
-import { store } from '@/store'
 import '@/ui/quasar'
+import '@/errors'
 import '@/components'
 import '@/pages'
+import App from './App.vue'
+import { store } from '@/store'
+import { showErrorNotification } from '@/errors';
 
 Vue.config.productionTip = false
+Vue.config.errorHandler = (err, vm, info) => {
+  showErrorNotification(err)
+};
 
 Vue.use(VueRovingTabindex);
 Vue.use(VueVirtualScroller)

@@ -2,6 +2,16 @@
 
 import { app, protocol, screen, BrowserWindow } from 'electron'
 import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
+import unhandled from 'electron-unhandled';
+
+unhandled({
+  logger: error => {
+    console.error(error)
+    if (win) {
+      win.webContents.send('unhandled-error', error)
+    }
+  }
+})
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 

@@ -43,7 +43,7 @@ export function normalizeKey<T extends GenericKey>(key: T): T {
 
 
 export function findMatchingKey<T extends GenericKey>(needle: string, haystack: T[]) {
-    return haystack.find(hay => {
+    return (haystack || []).find(hay => {
         if (hay.keyid === needle) {
             return true
         }

@@ -5,6 +5,9 @@
         {{title}}
         <q-chip dense color="primary" class="text-white q-px-sm" >{{keys.value ? keys.value.length : 0}}</q-chip>
       </span>
+      <q-btn v-if="$listeners.refresh" @click="refresh" dense flat>
+        <q-icon :name="icons.refresh" size="xs"/>
+      </q-btn>
       <q-space />
       <folder-button v-if="ancestor" :folder="ancestor" icon="up"/>
     </q-toolbar>
@@ -47,7 +50,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Emit } from "vue-property-decorator";
 import { GenericKey } from "gpg-promised";
 
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from '@/util/props';
@@ -161,6 +164,9 @@ export default class KeyList extends Vue {
       (document.activeElement as HTMLElement).blur()
     }
   }
+
+  @Emit('refresh')
+  refresh() { }
 }
 </script>
 

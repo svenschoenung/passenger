@@ -2,8 +2,8 @@
   <div class="column content-height">
     <vue-headful title="Passenger: GPG-Keys" />
     <div class="row flex-grow">
-      <key-list class="col q-pa-md" title="Public keys" :keys="publicKeys"/>
-      <key-list class="col q-pa-md" title="Private keys" :keys="privateKeys"/>
+      <key-list class="col q-pa-md" title="Public keys" :keys="publicKeys" @refresh="refreshPublicKeys"/>
+      <key-list class="col q-pa-md" title="Private keys" :keys="privateKeys" @refresh="refreshPrivateKeys"/>
     </div>
   </div>
 </template>
@@ -21,6 +21,14 @@ export default class KeysPage extends Vue {
 
   get privateKeys() {
     return KeysModule.privateKeys
+  }
+
+  refreshPublicKeys() {
+    KeysModule.loadPublicKeys()
+  }
+
+  refreshPrivateKeys() {
+    KeysModule.loadPrivateKeys()
   }
 }
 </script>

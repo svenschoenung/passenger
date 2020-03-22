@@ -5,7 +5,7 @@ import {
   QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput, QBreadcrumbs, QBreadcrumbsEl, QBtnToggle,
   QDrawer, QFooter, QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio, QBtnDropdown,
   QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QSeparator, QVirtualScroll,
-  Ripple, ClosePopup
+  Ripple, ClosePopup, Notify
 } from 'quasar'
 
 Vue.use(Quasar, {
@@ -17,5 +17,5 @@ Vue.use(Quasar, {
     QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QSeparator, QVirtualScroll
   },
   directives: { Ripple, ClosePopup },
-  plugins: { }
+  plugins: { Notify }
 })
