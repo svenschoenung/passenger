@@ -12,6 +12,9 @@ export interface SettingsState {
     repoPath: string | null
     gpgPath: string | null
     colorTheme: ColorTheme
+    showStatusBar: boolean
+    enablePasswordInClipboardTimeout: boolean
+    passwordInClipboardTimeout: number
 }
 
 @Module({ name: 'settings', namespaced: true })
@@ -20,6 +23,8 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     gpgPath: string | null = null
     colorTheme: ColorTheme = 'system' 
     showStatusBar = true
+    enablePasswordInClipboardTimeout = false
+    passwordInClipboardTimeout = 40
 
     @Mutation
     setup(payload: SetupPayload) {
@@ -46,5 +51,15 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     @Mutation
     setShowStatusBar(showStatusBar: boolean) {
         this.showStatusBar = showStatusBar
+    }
+
+    @Mutation
+    setEnablePasswordInClipboardTimeout(enablePasswordInClipboardTimeout: boolean) {
+        this.enablePasswordInClipboardTimeout = enablePasswordInClipboardTimeout
+    }
+
+    @Mutation
+    setPasswordInClipboardTimeout(passwordInClipboardTimeout: number) {
+        this.passwordInClipboardTimeout = passwordInClipboardTimeout
     }
 }

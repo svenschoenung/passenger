@@ -7,6 +7,7 @@ import FolderButton from './FolderButton.vue'
 import FolderPicker from './FolderPicker.vue'
 import KeyList from './KeyList.vue'
 import MenuBar from './MenuBar.vue'
+import NumberInput from './NumberInput.vue'
 import PasswordFieldRow from './PasswordFieldRow.vue'
 import PasswordFileDetails from './PasswordFileDetails.vue'
 import PasswordFolderDetails from './PasswordFolderDetails.vue'
@@ -31,6 +32,7 @@ Vue.component('folder-button', FolderButton)
 Vue.component('folder-picker', FolderPicker)
 Vue.component('key-list', KeyList)
 Vue.component('menu-bar', MenuBar)
+Vue.component('number-input', NumberInput)
 Vue.component('password-field-row', PasswordFieldRow)
 Vue.component('password-file-details', PasswordFileDetails)
 Vue.component('password-folder-details', PasswordFolderDetails)

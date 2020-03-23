@@ -1,4 +1,4 @@
-import { UIModule } from '@/store';
+import { UIModule, SettingsModule } from '@/store';
 import { clipboard } from 'electron'
 import bcrypt from 'bcrypt'
 
@@ -8,7 +8,7 @@ let passwordHash: string | null = null
 
 export async function copyToClipboard(text: string, password: boolean) {
     await removePasswordFromClipboard()
-    if (password) {
+    if (password && SettingsModule.enablePasswordInClipboardTimeout) {
         previousClipboardText = clipboard.readText()
         clipboard.writeText(text)
         passwordSalt = await bcrypt.genSalt(10)

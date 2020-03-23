@@ -7,6 +7,7 @@ import { ionIosKey } from '@quasar/extras/ionicons-v4'
 import { ionIosGitCompare } from '@quasar/extras/ionicons-v4'
 import { ionIosClose } from '@quasar/extras/ionicons-v4'
 import { ionIosWarning } from '@quasar/extras/ionicons-v4'
+import { ionIosArrowUp } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowDown } from '@quasar/extras/ionicons-v4'
 import { ionIosArrowForward } from '@quasar/extras/ionicons-v4'
 import { ionIosCloseCircleOutline } from '@quasar/extras/ionicons-v4'
@@ -42,6 +43,8 @@ const icons = {
     menu: ionEllipsisVertical,
     separator: ionIosArrowForward,
     unexpanded: ionIosArrowForward,
+    increase: ionIosArrowUp,
+    decrease: ionIosArrowDown,
     expanded: ionIosArrowDown,
     error: ionIosCloseCircleOutline,
     errors: ionIosCloseCircleOutline,

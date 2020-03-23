@@ -138,8 +138,8 @@ export default class UIVuexModule extends VuexModule implements UIState {
 
   @Action
   startPasswordInClipboardCountdown() {
-    const duration = 10
-    const endDate = Math.ceil(new Date().valueOf() / 1000 + duration) 
+    const timeout = SettingsModule.passwordInClipboardTimeout
+    const endDate = Math.ceil(new Date().valueOf() / 1000 + timeout) 
     const interval = window.setInterval(function() {
       const now = Math.ceil(new Date().valueOf() / 1000)
       UIModule.setPasswordInClipboardCountdown(endDate - now)
@@ -147,7 +147,7 @@ export default class UIVuexModule extends VuexModule implements UIState {
         removePasswordFromClipboard()
       }
     }, 1000)
-    this.initPasswordInClipboardCountdown({ countdown: duration, interval })
+    this.initPasswordInClipboardCountdown({ countdown: timeout, interval })
   }
 
   @Action

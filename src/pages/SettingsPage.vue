@@ -20,6 +20,15 @@
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple v-roving-tabindex
+          :active="settingsPage === 'security'"
+          active-class="active-elem"
+          @click="changeSettingsPage('security')">
+          <q-item-section>
+            <q-item-label>Security</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-separator />
+        <q-item clickable v-ripple v-roving-tabindex
           :active="settingsPage === 'ui'"
           active-class="active-elem"
           @click="changeSettingsPage('ui')">
