@@ -12,11 +12,12 @@
           <number-input :min="1" 
             v-model="passwordInClipboardTimeout"
             :disable="!enablePasswordInClipboardTimeout" >
-            <template v-slot:after>
-              <label class="seconds">seconds</label>
-            </template>
           </number-input>
         </q-item-section>
+        <q-item-section side :class="{ disabled: !enablePasswordInClipboardTimeout }">
+          <label class="seconds">seconds</label>
+        </q-item-section>
+
       </q-item>
     </q-list>
   </q-form>

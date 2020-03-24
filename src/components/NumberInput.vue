@@ -1,6 +1,6 @@
 <template>
   <q-input type="number" dense outlined
-    class="number-input"
+    class="number-input bg-1"
     input-class="text-right"
     v-model.number="num"
     :disable="disable"
