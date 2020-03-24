@@ -2,7 +2,7 @@ import Vue from 'vue';
 import path from 'path'
 import { PrivateKey, PublicKey } from 'gpg-promised';
 
-import { findMatchingKey } from '@/service/keys';
+import { findMatchingKey } from '@/service/gpg';
 import { PasswordsModule } from '@/store';
 
 export type SearchMatches = [number, number][]

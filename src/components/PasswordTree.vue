@@ -58,7 +58,7 @@ import path from 'path'
 
 import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule } from "@/store";
 import { PasswordFolder, PasswordNode, depth, traverseTree, getParents, traverseParents, getParent, SearchMatches } from '@/model/passwords';
-import { findMatchingKey } from '@/service/keys';
+import { findMatchingKey } from '@/service/gpg';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
 import { OverviewType } from '@/store/modules/ui';
 import VirtualScroll from '@/components/VirtualScroll.vue';

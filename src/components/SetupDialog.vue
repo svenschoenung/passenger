@@ -49,7 +49,7 @@ import { QForm } from "quasar";
 import { SettingsModule, UIModule } from "@/store";
 import { setNonReactiveProps } from '@/util/props'
 import { validateRepository } from '@/service/repo'
-import { validateGPGHomedir } from '@/service/keys'
+import { validateGPGHomedir } from '@/service/gpg'
 import { ColorTheme } from '@/store/modules/settings';
 import icons from "@/ui/icons";
 

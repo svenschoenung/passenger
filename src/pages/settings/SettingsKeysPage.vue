@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import { SettingsModule } from '@/store';
-import { validateGPGHomedir } from '@/service/keys';
+import { validateGPGHomedir } from '@/service/gpg';
 import { setNonReactiveProps } from '@/util/props';
 
 @Component({})

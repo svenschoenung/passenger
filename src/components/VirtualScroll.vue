@@ -19,7 +19,7 @@ import Fuse, { FuseResultWithMatches } from 'fuse.js'
 
 import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule } from "@/store";
 import { PasswordFolder, PasswordNode, getParents } from '@/model/passwords';
-import { findMatchingKey } from '@/service/keys';
+import { findMatchingKey } from '@/service/gpg';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
 import { OverviewType } from '@/store/modules/ui';
 import { debounce } from 'quasar';

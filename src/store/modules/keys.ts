@@ -2,7 +2,7 @@ import { PublicKey, PrivateKey } from 'gpg-promised';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
 import { SettingsModule } from '@/store';
-import { loadPrivateKeys, loadPublicKeys } from '@/service/keys';
+import { loadPrivateKeys, loadPublicKeys } from '@/service/gpg';
 import { Resolvable, unresolved, resolving, resolved, failed } from '@/store/resolvable';
 import { delay } from '@/util/dev';
 

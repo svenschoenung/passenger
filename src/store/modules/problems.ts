@@ -1,7 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { PasswordsModule, KeysModule } from '@/store'
 import { PasswordNode, PasswordFolder } from '@/model/passwords'
-import { findMatchingPublicKeys, findMissingPublicKeys } from '@/service/keys'
+import { findMatchingPublicKeys, findMissingPublicKeys } from '@/service/gpg'
 
 export type ProblemType = 'error' | 'warning'
 

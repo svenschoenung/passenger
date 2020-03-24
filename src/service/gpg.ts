@@ -41,7 +41,6 @@ export function normalizeKey<T extends GenericKey>(key: T): T {
     return key
 }
 
-
 export function findMatchingKey<T extends GenericKey>(needle: string, haystack: T[]) {
     return (haystack || []).find(hay => {
         if (hay.keyid === needle) {
@@ -71,5 +70,8 @@ export function findMissingPublicKeys(keys: string[], publicKeys: PublicKey[]): 
       .filter(key => (key as any).missing) as MissingPublicKey[]
 }
 
-
-
+export async function decryptPasswordFile(gpgPath: string, absPath: string) {
+    const keychain = new gpg.KeyChain(gpgPath)
+    await keychain.open()
+    return (await keychain.call(null, ['--decrypt', absPath], false)).stdout.toString().trimEnd()
+}

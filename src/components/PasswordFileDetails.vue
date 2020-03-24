@@ -40,11 +40,11 @@ import path from 'path'
 
 import { PasswordFolder, PasswordNode, getParents, PasswordFile } from '@/model/passwords';
 import { KeysModule, PasswordsModule, UIModule, SettingsModule, PreferencesModule } from '@/store';
-import { findMatchingPublicKeys } from '@/service/keys';
+import { findMatchingPublicKeys } from '@/service/gpg';
 import { setNonReactiveProps } from '@/util/props';
 import { Resolvable, resolvable, resolved, unresolved, resolving, failed } from '@/store/resolvable';
 import { ContentViewType } from '@/store/modules/ui';
-import { decryptPasswordFile } from '@/service/passwords';
+import { decryptPasswordFile } from '@/service/gpg';
 import { delay } from '@/util/dev';
 import icons from '@/ui/icons';
 

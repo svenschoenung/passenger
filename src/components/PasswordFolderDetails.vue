@@ -31,7 +31,7 @@ import { PublicKey } from 'gpg-promised'
 
 import { PasswordFolder, PasswordNode, getParents } from '@/model/passwords';
 import { KeysModule, PasswordsModule } from '@/store';
-import { findMatchingPublicKeys } from '@/service/keys';
+import { findMatchingPublicKeys } from '@/service/gpg';
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 import { Resolvable, resolvable, resolved } from '@/store/resolvable';
