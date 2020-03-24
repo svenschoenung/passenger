@@ -7,9 +7,21 @@
             <q-btn flat @click="gotoPasswordsPage()">
                 <q-icon :name="icons.folder" size="xs" class="q-mr-sm"/> {{folderCount}}
                 <q-icon :name="icons.password" size="xs" class="q-mx-sm"/> {{fileCount}}
+                <q-tooltip>
+                    <div>Folders: {{folderCount}}</div>
+                    <div>Files: {{fileCount}}</div>
+                </q-tooltip>
             </q-btn>
             <q-btn flat @click="gotoProblemsPage()">
                 <problems-count color="white"/>
+            </q-btn>
+            <q-btn flat @click="gotoKeysPage()">
+                <q-icon :name="icons.keys" size="xs" class="q-mr-sm"/>
+                {{publicKeysCount}} + {{privateKeysCount}}
+                <q-tooltip>
+                    <div>Public Keys: {{publicKeysCount}}</div>
+                    <div>Private Keys: {{privateKeysCount}}</div>
+                </q-tooltip>
             </q-btn>
             <q-space/>
             <q-btn flat @click="clearPassword()" v-if="passwordInClipboardCountdown">
@@ -24,7 +36,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import electron, { BrowserWindow } from 'electron'
 import { debounce, Notify } from 'quasar'
 
-import { UIModule, SettingsModule, PasswordsModule } from '@/store'
+import { UIModule, SettingsModule, PasswordsModule, KeysModule } from '@/store'
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons'
 import { tildify } from '@/util/fs';
@@ -48,6 +60,14 @@ export default class StatusBar extends Vue {
       return PasswordsModule.fileCount
   }
 
+  get publicKeysCount() {
+      return KeysModule.publicKeys.value && KeysModule.publicKeys.value.length
+  }
+
+  get privateKeysCount() {
+      return KeysModule.privateKeys.value && KeysModule.privateKeys.value.length
+  }
+
   gotoSettingsRepoPage() {
       UIModule.setSettingsPage('repo')
       UIModule.setPage('settings')
@@ -59,6 +79,10 @@ export default class StatusBar extends Vue {
 
   gotoProblemsPage() {
       UIModule.setPage('problems')
+  }
+
+  gotoKeysPage() {
+      UIModule.setPage('keys')
   }
 
   get passwordInClipboardCountdown() {

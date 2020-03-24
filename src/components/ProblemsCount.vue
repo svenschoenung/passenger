@@ -11,6 +11,10 @@
         <template v-else>
             <q-icon :name="icons.errors" size="xs"/> {{errorCount}}
             <q-icon :name="icons.warning" size="xs"/> {{warningCount}}
+            <q-tooltip>
+                <div>Errors: {{errorCount}}</div>
+                <div>Warnings: {{warningCount}}</div>
+            </q-tooltip>
         </template>
     </span>
 </template>
