@@ -39,10 +39,12 @@
       <div class="col col-1">
       </div>
     </div>
-    <styled-scrollbar style="margin-right: -10px" always>
+    <styled-scrollbar always="y" never="x">
       <template v-for="(field, i) in contents.fields"> 
-      <password-field-row :key="i"
-        :field="field" @input="updateField(i, $event)"/>
+        <div style="margin-right:-10px;"  :key="i">
+        <password-field-row
+          :field="field" @input="updateField(i, $event)"/>
+          </div>
       </template>
     </styled-scrollbar>
   </div>

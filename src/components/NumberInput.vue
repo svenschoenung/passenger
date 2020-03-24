@@ -16,9 +16,6 @@
         </q-btn>
      </div>
    </template>
-   <template v-slot:after>
-     <slot name="after"></slot>
-   </template>
  </q-input>
 </template>
 

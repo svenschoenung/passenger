@@ -1,6 +1,6 @@
 <template> 
     <div class="scrollbar-container">
-        <div :class="`scrollbar styled-scrollbar ${always && 'always'}`">
+        <div :class="`scrollbar styled-scrollbar ${alwaysClasses} ${neverClasses}`">
             <slot></slot>
         </div>
     </div>
@@ -11,7 +11,28 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component({})
 export default class StyledScrollbar extends Vue {
-    @Prop({ type: Boolean }) always!: boolean
+    @Prop() always!: boolean | 'x' | 'y'
+    @Prop() never!: boolean | 'x' | 'y'
+
+    get alwaysClasses() {
+        if (this.always) {
+            if (this.always === true) {
+                return 'always always-x always-y'
+            }
+            return `always always-${this.always}`
+        }
+        return ''
+    }
+
+    get neverClasses() {
+        if (this.never) {
+            if (this.never === true) {
+                return 'never never-x never-y'
+            }
+            return `never never-${this.never}`
+        }
+        return ''
+    }
 }
 </script>
 
@@ -33,7 +54,16 @@ export default class StyledScrollbar extends Vue {
     bottom: 0px;
     overflow: auto;
 }
-.scrollbar.always {
+.scrollbar.always-x {
+    overflow-x: scroll;
+}
+.scrollbar.always-y {
     overflow-y: scroll;
+}
+.scrollbar.never-x {
+    overflow-x: hidden;
+}
+.scrollbar.never-y {
+    overflow-y: hidden;
 }
 </style>

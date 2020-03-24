@@ -3,7 +3,7 @@
         <div class="col col-1 text-right">
             <q-icon v-if="type" :name="icons[type]" size="sm" color="primary" class="q-mr-xs"/>
         </div>
-        <div class="col col-2">
+        <div class="col col-2 col-key">
             <q-input dense outlined 
                 type="text"
                 class="bg-1"
@@ -11,7 +11,7 @@
                 :value="field.key"
                 @input="setKey($event)"/>
         </div>
-        <div class="col col-8">
+        <div class="col col-8 col-val">
             <q-input dense outlined autogrow 
                 type="textarea"
                 class="bg-1"
@@ -182,6 +182,15 @@ export default class PasswordFieldRow extends Vue {
     & > .col {
         padding: 3px;
     }
+
+    .col-key {
+        padding-left: 0px;
+    }
+
+    .col-val {
+        padding-right: 0px;
+    }
+
 }
 
 body.body--light {
