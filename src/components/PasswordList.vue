@@ -82,10 +82,7 @@ export default class PasswordList extends Vue {
         return false
       }
       return true
-    }).map((item, index) => ({
-      ...item,
-      annotations: { ...item.annotations, index }
-    }))
+    })
   }
 
   get textFilteredList(): PasswordNode[] {

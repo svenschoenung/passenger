@@ -31,18 +31,19 @@ export default class VirtualScroll extends Vue {
   @Prop({ type: String }) type!: OverviewType;
   @Prop({ type: Array }) items!: PasswordNode[];
   visible = false
+  initialPath: string | null = null
 
   created() {
     setNonReactiveProps(this, { ROW_HEIGHT })
   }
 
   mounted() {
-    this.scrollToPos(UIModule.scrollPos[this.type])
+    this.scrollToInitial()
     this.registerWatcher()
   }
 
   activated() {
-    this.scrollToPos(UIModule.scrollPos[this.type])
+    this.scrollToInitial()
     this.registerWatcher()
   }
 
@@ -60,17 +61,26 @@ export default class VirtualScroll extends Vue {
   }
 
   unregisterWatcher() {
-    removeNonReactiveProp(this, 'selectedWatcher', (scrollWatcher: SelectedWatcher) => scrollWatcher.unwatch())
-    removeNonReactiveProp(this, 'scWatcher', (scrollWatcher: SelectedWatcher) => scrollWatcher.unwatch())
+    removeNonReactiveProp(this, 'selectedWatcher', (selectedWatcher: SelectedWatcher) => selectedWatcher.unwatch())
+    removeNonReactiveProp(this, 'scrollWatcher', (scrollWatcher: ScrollWatcher) => scrollWatcher.unwatch())
   }
 
   onVisible() {
     this.visible = true
-    this.scrollToPos(UIModule.scrollPos[this.type])
+    this.scrollToInitial()
   }
 
   onHidden() {
     this.visible = false 
+  }
+
+  scrollToInitial() {
+    if (this.initialPath) {
+      this.scrollToPath(this.initialPath)
+      this.initialPath = null
+    } else {
+      this.scrollToPos(UIModule.scrollPos[this.type])
+    }
   }
 
   scrollToPos(pos: number) {
@@ -78,7 +88,7 @@ export default class VirtualScroll extends Vue {
     virtualScroll.scrollTop = pos
   }
 
-  scrollTo(relPath: string | null, nextTick = false) {
+  scrollToPath(relPath: string | null) {
     const virtualScroll = this.$el as HTMLElement
     if (!relPath) {
       this.$el.scrollTop = 0
@@ -91,6 +101,7 @@ export default class VirtualScroll extends Vue {
     const start = virtualScroll.scrollTop / ROW_HEIGHT
     const end = start + virtualScroll.offsetHeight / ROW_HEIGHT - 1
     if (index < Math.ceil(start) || index > Math.floor(end)) {
+      console.log(this.visible)
       virtualScroll.scrollTop = (index + 1) * ROW_HEIGHT - virtualScroll.offsetHeight / 2
     }
   }
@@ -107,7 +118,11 @@ class SelectedWatcher {
     this.unwatch = virtualScroll.$store.subscribeAction({
       after(action, state: AppState) {
         if (action.type === 'ui/gotoPasswordPath') {
-          virtualScroll.scrollTo(state.ui.selectedPasswordPath)
+          if (virtualScroll.visible) {
+            virtualScroll.scrollToPath(state.ui.selectedPasswordPath)
+          } else {
+            virtualScroll.initialPath = state.ui.selectedPasswordPath
+          }
         }
       }
     })

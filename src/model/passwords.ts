@@ -17,7 +17,6 @@ export interface PasswordObj {
         decryptableChildren?: boolean,
         notEncryptable?: boolean,
         matches?: SearchMatches,
-        index?: number
     }
 }
 
