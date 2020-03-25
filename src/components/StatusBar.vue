@@ -61,11 +61,11 @@ export default class StatusBar extends Vue {
   }
 
   get publicKeysCount() {
-      return KeysModule.publicKeys.value && KeysModule.publicKeys.value.length
+      return KeysModule.publicKeys.value ? KeysModule.publicKeys.value.length : 0
   }
 
   get privateKeysCount() {
-      return KeysModule.privateKeys.value && KeysModule.privateKeys.value.length
+      return KeysModule.privateKeys.value ? KeysModule.privateKeys.value.length : 0
   }
 
   gotoSettingsRepoPage() {

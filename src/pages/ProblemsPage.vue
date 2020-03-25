@@ -10,10 +10,16 @@
                         <q-icon :name="icons[problem.type]"/>
                     </q-item-section>
                     <q-item-section>
-                        <div>{{problem.msg}}</div>
-                        <div v-if="problem.node">
+                        <q-item-label>{{problem.msg}}</q-item-label>
+                        <q-item-label v-if="problem.error">
+                            <i>{{problem.error.message}}</i>
+                        </q-item-label>
+                        <q-item-label v-if="problem.node">
                             <b class="q-mr-xs">Location:</b> <a @click.stop="goto(problem.node.relPath)">{{problem.node.fullName}}</a>
-                        </div>
+                        </q-item-label>
+                        <q-item-label v-for="fix in problem.fixes" :key="fix.label">
+                            <b class="q-mr-xs">Fix:</b> <a @click.stop="fix.action">{{fix.label}}</a>
+                        </q-item-label>
                     </q-item-section>
                 </q-item>
                 <q-separator :key="`separator-${problem.id}`"/>

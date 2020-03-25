@@ -1,15 +1,24 @@
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
-import { PasswordsModule, KeysModule } from '@/store'
+import { PasswordsModule, KeysModule, UIModule } from '@/store'
 import { PasswordNode, PasswordFolder } from '@/model/passwords'
 import { findMatchingPublicKeys, findMissingPublicKeys } from '@/service/gpg'
+import { Resolvable } from '../resolvable'
+import { GPGKey, GenericKey } from 'gpg-promised'
 
 export type ProblemType = 'error' | 'warning'
+
+export interface ProblemFix {
+    label: string,
+    action: Function
+}
 
 export interface Problem {
     id: string,
     type: ProblemType,
     msg: string,
-    node?: PasswordNode
+    node?: PasswordNode,
+    error?: Error,
+    fixes?: ProblemFix[]
 }
 
 export interface ProblemsState {
@@ -34,8 +43,46 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
             })
     }
 
+    get passwordTreeProblems(): Problem[] {
+        if (PasswordsModule.tree.error) {
+            return [{
+                id: 'passwords',
+                type: 'error',
+                msg: 'Could not read from password repository',
+                error: PasswordsModule.tree.error,
+                fixes: [{
+                    label: 'Try reloading repository',
+                    action: () => {
+                        UIModule.setPage('passwords')
+                        PasswordsModule.loadPasswordsFromFileSystem()
+                    }
+                }, {
+                    label: 'Change repository location',
+                    action: () => {
+                        UIModule.setPage('settings')
+                        UIModule.setSettingsPage('repo')
+                    }
+                }]
+            }]
+        }
+        return []
+    }
+
+    get publicKeyProblems(): Problem[] {
+        return keysProblems('public keys', KeysModule.publicKeys, () => KeysModule.loadPublicKeys)
+    }
+
+    get privateKeyProblems(): Problem[] {
+        return keysProblems('private keys', KeysModule.privateKeys, () => KeysModule.loadPrivateKeys)
+    }
+
     get problems() {
-        return this.unknownKeyProblems
+        return [
+            ...this.unknownKeyProblems,
+            ...this.passwordTreeProblems,
+            ...this.publicKeyProblems,
+            ...this.privateKeyProblems
+        ]
     }
 
     get errorCount() {
@@ -45,6 +92,30 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
     get warningCount() {
         return count(this.problems, 'warning')
     }
+}
+
+function keysProblems<K extends GenericKey[]>(keyType: string, keys: Resolvable<K>, action: () => void) {
+    if (keys.error) {
+        return [{
+            id: 'passwords',
+            type: 'error' as ProblemType,
+            msg: `Could not load ${keyType}`,
+            error: keys.error,
+            fixes: [{
+                label: `Try reloading ${keyType}`,
+                action: () => {
+                    UIModule.setPage('keys')
+                }
+            }, {
+                label: 'Change GPG homedir location',
+                action: () => {
+                    UIModule.setPage('settings')
+                    UIModule.setSettingsPage('keys')
+                }
+            }]
+        }]
+    }
+    return []
 }
 
 function count(problems: Problem[], type: ProblemType) {
