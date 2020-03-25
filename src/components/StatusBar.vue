@@ -23,6 +23,9 @@
                     <div>Private Keys: {{privateKeysCount}}</div>
                 </q-tooltip>
             </q-btn>
+            <q-btn flat v-if="runningOperation && runningOperation.name" class="q-ml-md">
+               <q-spinner color="white" size="xs" :thickness="8" class="q-mr-sm"/> {{runningOperation.name}}
+            </q-btn>
             <q-space/>
             <q-btn flat @click="clearPassword()" v-if="passwordInClipboardCountdown">
                 <q-icon :name="icons.clipboard" size="xs" class="q-mr-sm"/> Password available for {{passwordInClipboardCountdown}}s
@@ -36,7 +39,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import electron, { BrowserWindow } from 'electron'
 import { debounce, Notify } from 'quasar'
 
-import { UIModule, SettingsModule, PasswordsModule, KeysModule } from '@/store'
+import { UIModule, SettingsModule, PasswordsModule, KeysModule, OperationsModule } from '@/store'
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons'
 import { tildify } from '@/util/fs';
@@ -66,6 +69,13 @@ export default class StatusBar extends Vue {
 
   get privateKeysCount() {
       return KeysModule.privateKeys.value ? KeysModule.privateKeys.value.length : 0
+  }
+
+  get runningOperation() {
+      if (OperationsModule.runningOperations.length > 0) {
+          return OperationsModule.runningOperations[0]
+      }
+      return null
   }
 
   gotoSettingsRepoPage() {

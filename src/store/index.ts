@@ -3,12 +3,12 @@ import Vue from 'vue'
 
 import { createPersistedState } from 'vuex-electron'
 import { getModule } from 'vuex-module-decorators'
-import { ipcRenderer } from 'electron'
 import ElectronStore from 'electron-store'
 import { Dark } from 'quasar'
 import { darkMode } from 'electron-util'
 
 import UIVuexModule, { UIState } from './modules/ui'
+import OperationsVuexModule, { OperationsState } from './modules/operations'
 import PasswordsVuexModule, { PasswordsState } from './modules/passwords'
 import RepoVuexModule, { RepoState } from './modules/repo'
 import KeysVuexModule, { KeysState } from './modules/keys'
@@ -20,6 +20,7 @@ Vue.use(Vuex)
 
 export interface AppState {
   ui: UIState,
+  operations: OperationsState,
   passwords: PasswordsState,
   repo: RepoState,
   keys: KeysState,
@@ -31,6 +32,7 @@ export interface AppState {
 export const store = new Store<AppState>({
   modules: {
     ui: UIVuexModule,
+    operations: OperationsVuexModule,
     passwords: PasswordsVuexModule,
     repo: RepoVuexModule,
     keys: KeysVuexModule,
@@ -63,6 +65,7 @@ export const store = new Store<AppState>({
 })
 
 export const UIModule = getModule(UIVuexModule, store)
+export const OperationsModule = getModule(OperationsVuexModule, store)
 export const RepoModule = getModule(RepoVuexModule, store)
 export const PasswordsModule = getModule(PasswordsVuexModule, store)
 export const KeysModule = getModule(KeysVuexModule, store);
@@ -82,6 +85,15 @@ if (process.env.NODE_ENV === 'development') {
 darkMode.onChange(() => {
   UIModule.setSystemDarkMode(darkMode.isEnabled)
 });
+
+store.subscribeAction({
+  before (action: any) {
+    OperationsModule.addRunningOperation(action)
+  },
+  after(action: any) {
+    OperationsModule.removeRunningOperation(action)
+  }
+})
 
 store.watch(
   (state, getters) => getters['ui/darkMode'] as boolean,
