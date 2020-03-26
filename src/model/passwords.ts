@@ -1,8 +1,5 @@
-import Vue from 'vue';
 import path from 'path'
-import { PrivateKey, PublicKey } from 'gpg-promised';
 
-import { findMatchingKey } from '@/service/gpg';
 import { PasswordsModule } from '@/store';
 
 export type SearchMatches = [number, number][]
@@ -13,9 +10,6 @@ export interface PasswordObj {
     absPath: string
     relPath: string
     annotations: {
-        decryptable?: boolean,
-        decryptableChildren?: boolean,
-        notEncryptable?: boolean,
         matches?: SearchMatches,
     }
 }
@@ -44,39 +38,6 @@ export function traverseTree(node: PasswordNode, visit: (n: PasswordNode, depth:
     if (!(result && result.skipChildren) && node.folder) {
         node.children.forEach(child => traverseTree(child, visit, depth! + 1))
     }
-}
-
-export function annotateDecryptable<T extends PasswordNode>(node: T, privateKeys: PrivateKey[], inheritedDecryptable: boolean) {
-    if (node.folder) {
-        const folder = node as PasswordFolder
-        const decryptable = folder.keys && folder.keys.length > 0 ? 
-          folder.keys.some(key => findMatchingKey(key, privateKeys)) : inheritedDecryptable
-        let decryptableChildren = false
-        folder.children.forEach(child => {
-            if (annotateDecryptable(child, privateKeys, decryptable)) {
-                decryptableChildren = true
-            }
-        })
-        Vue.set(folder.annotations, 'decryptable', decryptable)
-        Vue.set(folder.annotations, 'decryptableChildren', decryptableChildren)
-        return decryptableChildren
-    } else {
-        Vue.set(node.annotations, 'decryptable', inheritedDecryptable)
-        Vue.set(node.annotations, 'decryptableChildren', false)
-        return inheritedDecryptable
-    }
-}
-
-export function annotateNotEncryptable<T extends PasswordNode>(node: T, publicKeys: PublicKey[], inhertedNotEncryptable: boolean) {
-    if (node.folder) {
-        const folder = node as PasswordFolder
-        const notEncryptable = folder.keys && folder.keys.length > 0 ? 
-          !!folder.keys.find(key => !findMatchingKey(key, publicKeys)) : inhertedNotEncryptable
-        Vue.set(folder.annotations, 'notEncryptable', notEncryptable)
-        folder.children.forEach(child => annotateNotEncryptable(child, publicKeys, notEncryptable))
-  } else {
-        Vue.set(node.annotations, 'notEncryptable', inhertedNotEncryptable)
-  }
 }
 
 export function getParent(relPath: string): PasswordFolder | null {

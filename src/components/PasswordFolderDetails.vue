@@ -1,7 +1,7 @@
 <template>
     <div class="row direction-column flex-grow position-relative">
         <folder-breadcrumbs :folders="breadcrumb"/>
-        <h3 :class="{ 'folderName': true, 'q-pa-md': true, 'disabled': !folder.annotations.decryptable }">
+        <h3 :class="{ 'folderName': true, 'q-pa-md': true, 'disabled': !decryptable[folder.relPath] }">
           <q-icon :name="icons.folderOpen" color="primary"/> {{folder.name}}
         </h3>
         <div class="row flex-grow">
@@ -9,7 +9,7 @@
                class="col q-pa-md"
                title="Assigned keys"
                :keys="assignedKeys"
-               :disabled="!folder.annotations.decryptable" />
+               :disabled="!decryptable[folder.relPath]" />
             <key-list v-else
                class="col q-pa-md"
                title="Inherited keys"
@@ -20,7 +20,7 @@
                class="col q-pa-md"
                title="Available keys"
                :keys="publicKeys"
-               :disabled="!folder.annotations.decryptable" />
+               :disabled="!decryptable[folder.relPath]" />
         </div>
     </div>
 </template>
@@ -30,7 +30,7 @@ import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 import { PublicKey } from 'gpg-promised'
 
 import { PasswordFolder, PasswordNode, getParents } from '@/model/passwords';
-import { KeysModule, PasswordsModule } from '@/store';
+import { KeysModule, PasswordsModule, AnnotationsModule } from '@/store';
 import { findMatchingPublicKeys } from '@/service/gpg';
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
@@ -43,6 +43,10 @@ export default class PasswordFolderDetails extends Vue {
 
   created() {
     setNonReactiveProps(this, { icons })
+  }
+
+  get decryptable() {
+    return AnnotationsModule.decryptable
   }
 
   get assignedKeys(): Resolvable<PublicKey[]> {

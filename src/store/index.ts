@@ -5,11 +5,11 @@ import { createPersistedState } from 'vuex-electron'
 import { getModule } from 'vuex-module-decorators'
 import ElectronStore from 'electron-store'
 import { Dark } from 'quasar'
-import { darkMode } from 'electron-util'
 
 import UIVuexModule, { UIState } from './modules/ui'
 import OperationsVuexModule, { OperationsState } from './modules/operations'
 import PasswordsVuexModule, { PasswordsState } from './modules/passwords'
+import AnnotationsVuexModule, { AnnotationsState } from './modules/annotations'
 import RepoVuexModule, { RepoState } from './modules/repo'
 import KeysVuexModule, { KeysState } from './modules/keys'
 import ProblemsVuexModule, { ProblemsState } from './modules/problems'
@@ -22,6 +22,7 @@ export interface AppState {
   ui: UIState,
   operations: OperationsState,
   passwords: PasswordsState,
+  annotations: AnnotationsState,
   repo: RepoState,
   keys: KeysState,
   problems: ProblemsState,
@@ -34,6 +35,7 @@ export const store = new Store<AppState>({
     ui: UIVuexModule,
     operations: OperationsVuexModule,
     passwords: PasswordsVuexModule,
+    annotations: AnnotationsVuexModule,
     repo: RepoVuexModule,
     keys: KeysVuexModule,
     problems: ProblemsVuexModule,
@@ -68,6 +70,7 @@ export const UIModule = getModule(UIVuexModule, store)
 export const OperationsModule = getModule(OperationsVuexModule, store)
 export const RepoModule = getModule(RepoVuexModule, store)
 export const PasswordsModule = getModule(PasswordsVuexModule, store)
+export const AnnotationsModule = getModule(AnnotationsVuexModule, store)
 export const KeysModule = getModule(KeysVuexModule, store);
 export const ProblemsModule = getModule(ProblemsVuexModule, store);
 export const PreferencesModule = getModule(PreferencesVuexModule, store);
@@ -81,10 +84,6 @@ if (process.env.NODE_ENV === 'development') {
     console.log('action', action)
   })
 }
-
-darkMode.onChange(() => {
-  UIModule.setSystemDarkMode(darkMode.isEnabled)
-});
 
 store.subscribeAction({
   before (action: any) {
@@ -105,10 +104,10 @@ store.watch(
   state => state.passwords.tree,
   (tree) => {
     if (tree.value && KeysModule.privateKeys.value) {
-      PasswordsModule.annotatePasswordsUsingPrivateKeys();
+      AnnotationsModule.annotatePasswordsUsingPrivateKeys();
     }
     if (tree.value && KeysModule.publicKeys.value) {
-      PasswordsModule.annotatePasswordsUsingPublicKeys();
+      AnnotationsModule.annotatePasswordsUsingPublicKeys();
     }
   },
   { deep: false, immediate: false }
@@ -118,7 +117,7 @@ store.watch(
   state => state.keys.privateKeys,
   privateKeys => {
     if (PasswordsModule.tree.value && privateKeys.value) {
-      PasswordsModule.annotatePasswordsUsingPrivateKeys();
+      AnnotationsModule.annotatePasswordsUsingPrivateKeys();
     }
   },
   { deep: true, immediate: false }
@@ -128,7 +127,7 @@ store.watch(
   state => state.keys.publicKeys,
   publicKeys => {
     if (PasswordsModule.tree.value && publicKeys.value) {
-      PasswordsModule.annotatePasswordsUsingPublicKeys();
+      AnnotationsModule.annotatePasswordsUsingPublicKeys();
     }
   },
   { deep: true, immediate: false }
@@ -136,13 +135,13 @@ store.watch(
 
 store.watch(
   state => state.settings.gpgPath,
-  repoPath => repoPath && KeysModule.loadPrivateKeys(),
+  gpgPath => gpgPath && KeysModule.loadPrivateKeys(),
   { deep: false, immediate: true }
 )
 
 store.watch(
   state => state.settings.gpgPath,
-  repoPath => repoPath && KeysModule.loadPublicKeys(),
+  gpgPath => gpgPath && KeysModule.loadPublicKeys(),
   { deep: false, immediate: true }
 )
 
@@ -150,6 +149,7 @@ store.watch(
   state => state.settings.repoPath,
   repoPath => {
     UIModule.selectPasswordPath(null)
+    UIModule.clearExpandedFolders()
     if (repoPath) {
       PasswordsModule.loadPasswordsFromFileSystem()
     }

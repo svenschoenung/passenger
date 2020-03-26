@@ -1,10 +1,10 @@
 <template>
     <div class="flex direction-column flex-grow position-relative">
         <folder-breadcrumbs :folders="breadcrumb"/>
-        <h3 :class="`fileName q-pt-md q-pl-md q-pr-md ${!file.annotations.decryptable && 'disabled'}`">
+        <h3 :class="`fileName q-pt-md q-pl-md q-pr-md ${!decryptable[file.relPath] && 'disabled'}`">
           <q-icon :name="icons[contents.value ? 'passwordOpen' : 'password']" color="primary"/> {{file.name}}
         </h3>
-        <div v-if="!file.annotations.decryptable" class="q-pa-md column flex-grow justify-center text-center disabled">
+        <div v-if="!decryptable[file.relPath]" class="q-pa-md column flex-grow justify-center text-center disabled">
           <div><q-icon :name="icons.warning" color="primary" size="5em"/></div>
           <div>You cannot decrypt this file</div>
         </div>
@@ -39,7 +39,7 @@ import { PublicKey } from 'gpg-promised'
 import path from 'path'
 
 import { PasswordFolder, PasswordNode, getParents, PasswordFile } from '@/model/passwords';
-import { KeysModule, PasswordsModule, UIModule, SettingsModule, PreferencesModule } from '@/store';
+import { KeysModule, PasswordsModule, UIModule, SettingsModule, PreferencesModule, AnnotationsModule } from '@/store';
 import { findMatchingPublicKeys } from '@/service/gpg';
 import { setNonReactiveProps } from '@/util/props';
 import { Resolvable, resolvable, resolved, unresolved, resolving, failed } from '@/store/resolvable';
@@ -71,7 +71,7 @@ export default class PasswordFileDetails extends Vue {
   }
 
   async loadPasswordContents() {
-    if (this.file.annotations.decryptable) {
+    if (this.decryptable[this.file.relPath]) {
       try {
         this.contents = resolving()
         const gpgPath = SettingsModule.gpgPath as string
@@ -86,6 +86,10 @@ export default class PasswordFileDetails extends Vue {
 
   unloadPasswordContents() {
     this.contents = unresolved()
+  }
+
+  get decryptable() {
+    return AnnotationsModule.decryptable
   }
 
   get breadcrumb() {

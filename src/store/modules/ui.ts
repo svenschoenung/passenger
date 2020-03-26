@@ -132,6 +132,11 @@ export default class UIVuexModule extends VuexModule implements UIState {
   }
 
   @Mutation
+  clearExpandedFolders() {
+    this.expandedFolders = {}
+  }
+
+  @Mutation
   setSystemDarkMode(systemDarkMode: boolean) {
     this.systemDarkMode = systemDarkMode
   }

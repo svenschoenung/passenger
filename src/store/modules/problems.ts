@@ -1,3 +1,4 @@
+import { AnnotationsModule } from './../index';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { PasswordsModule, KeysModule, UIModule } from '@/store'
 import { PasswordNode, PasswordFolder } from '@/model/passwords'
@@ -28,8 +29,13 @@ export interface ProblemsState {
 export default class ProblemsVuexModule extends VuexModule implements ProblemsState {
 
     get unknownKeyProblems(): Problem[] {
-        return (PasswordsModule.list.value || [])
-            .filter(item => item.annotations.notEncryptable && item.folder)
+        if (!PasswordsModule.map.value) {
+            return []
+        }
+        return Object.keys(AnnotationsModule.notEncryptable)
+            .filter(relPath => AnnotationsModule.notEncryptable[relPath])
+            .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
+            .filter(node => node && node.folder)
             .map(folder => {
                 const keys = (folder as PasswordFolder).keys
                 const missingKeys = findMissingPublicKeys(keys, KeysModule.publicKeys.value!)

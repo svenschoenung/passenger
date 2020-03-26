@@ -34,7 +34,7 @@ export default class App extends Vue {
     const win = electron.remote.getCurrentWindow()
     this.initWindowState(win)
     this.watchWindowState(win)
-    this.$q.dark.set(UIModule.darkMode)
+    this.watchDarkMode()
   }
 
   initWindowState(win: BrowserWindow) {
@@ -58,6 +58,13 @@ export default class App extends Vue {
     [ 'resize', 'move', 'moved', 'maximize', 'unmaximize' ].forEach(e => {
       win.on(e as any, windowStateChangedDebounced)
     }); 
+  }
+
+  watchDarkMode() {
+    this.$q.dark.set(UIModule.darkMode)
+    darkMode.onChange(() => {
+      UIModule.setSystemDarkMode(darkMode.isEnabled)
+    });
   }
 
   get pageComponent() {

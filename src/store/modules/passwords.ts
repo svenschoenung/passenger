@@ -2,13 +2,13 @@ import Vue from 'vue'
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import path from 'path'
 
-import { PasswordFolder, traverseTree, PasswordNode, annotateDecryptable, annotateNotEncryptable } from '@/model/passwords'
+import { PasswordFolder, traverseTree, PasswordNode } from '@/model/passwords'
 import { readPasswordTree } from '@/service/passwords'
-import { decryptPasswordFile } from '@/service/gpg'
-import { SettingsModule, PasswordsModule, UIModule, KeysModule } from '@/store'
+import { SettingsModule, PasswordsModule, UIModule } from '@/store'
 import { Resolvable, unresolved, resolving, resolved, failed, resolvable } from '@/store/resolvable'
 import { delay } from '@/util/dev'
 
+export type PasswordFlags = { [relPath: string]: boolean }
 export type PasswordMap = { [relPath: string]: PasswordNode }
 
 export interface PasswordsModels {
@@ -92,20 +92,6 @@ export default class PasswordsVuexModule extends VuexModule implements Passwords
         }
     }
 
-    @Mutation
-    annotatePasswordsUsingPrivateKeys() {
-        if (this.tree.value && KeysModule.privateKeys.value) {
-            annotateDecryptable(this.tree.value, KeysModule.privateKeys.value, false)
-        }
-    }
-
-    @Mutation
-    annotatePasswordsUsingPublicKeys() {
-        if (this.tree.value && KeysModule.publicKeys.value) {
-            annotateNotEncryptable(this.tree.value, KeysModule.publicKeys.value, false)
-        }
-    }
-
     get selectedPasswordNode(): Resolvable<PasswordNode|null> {
         const map = PasswordsModule.map
         if (!map.success || !map.value) {
@@ -117,6 +103,4 @@ export default class PasswordsVuexModule extends VuexModule implements Passwords
         }
         return resolvable(map, map.value[selectedPasswordPath])
     }
-
-
 }

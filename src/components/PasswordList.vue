@@ -15,19 +15,19 @@
         @mouseleave.stop.prevent
         :class="{
             'item-selected': item.relPath === selected,
-            'not-decryptable': !item.annotations.decryptable,
-            'not-encryptable': item.annotations.notEncryptable
+            'not-decryptable': !decryptable[item.relPath],
+            'not-encryptable': notEncryptable[item.relPath]
         }">
         <q-item-section avatar>
-          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="item.annotations.notEncryptable ? 'negative' : 'primary'"/>
+          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="notEncryptable[item.relPath] ? 'negative' : 'primary'"/>
         </q-item-section>
         <q-item-section avatar v-if="showItemType === 'files-and-folders'">
-          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="item.annotations.notEncryptable ? 'negative' : 'grey-8'"/>
+          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="notEncryptable[item.relPath] ? 'negative' : 'grey-8'"/>
         </q-item-section>
         <q-item-section class="item-name">
           <span v-html="highlight(item)"></span>
         </q-item-section>
-        <q-item-section  v-if="item.annotations.notEncryptable" side>
+        <q-item-section  v-if="notEncryptable[item.relPath]" side>
           <q-icon size="1.4em" :name="icons.error" color="negative"/>
         </q-item-section>
       </q-item>
@@ -42,7 +42,7 @@
 import { Component, Vue, Ref, Prop } from "vue-property-decorator";
 import Fuse, { FuseResultWithMatches } from 'fuse.js'
 
-import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule } from "@/store";
+import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule, AnnotationsModule } from "@/store";
 import { PasswordFolder, PasswordNode } from '@/model/passwords';
 import { findMatchingKey } from '@/service/gpg';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
@@ -65,6 +65,14 @@ export default class PasswordList extends Vue {
     UIModule.selectPasswordPath(relPath);
   }
 
+  get decryptable() {
+    return AnnotationsModule.decryptable
+  }
+
+  get notEncryptable() {
+    return AnnotationsModule.notEncryptable
+  }
+
   get selected() {
     return UIModule.selectedPasswordPath as string;
   }
@@ -78,7 +86,7 @@ export default class PasswordList extends Vue {
       if (PreferencesModule.showItemType === 'files-only' && item.folder) {
         return false
       }
-      if (!PreferencesModule.showNotDecryptable && !item.annotations.decryptable) {
+      if (!PreferencesModule.showNotDecryptable && !this.decryptable[item.relPath]) {
         return false
       }
       return true
