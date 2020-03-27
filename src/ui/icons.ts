@@ -20,6 +20,8 @@ import { ionIosMail } from '@quasar/extras/ionicons-v4'
 import { ionIosOpen } from '@quasar/extras/ionicons-v4'
 import { ionIosSend } from '@quasar/extras/ionicons-v4'
 import { ionIosRefresh } from '@quasar/extras/ionicons-v4'
+import { ionIosGitCommit } from '@quasar/extras/ionicons-v4'
+import { ionIosGitMerge } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
 import { ionMdClipboard } from '@quasar/extras/ionicons-v4'
@@ -67,7 +69,9 @@ const icons = {
     list: ionIosList,
     tree: customTreeView,
     refresh: ionIosRefresh,
-    clipboard: ionMdClipboard
+    clipboard: ionMdClipboard,
+    commit: ionIosGitCommit,
+    mergeCommit: ionIosGitMerge
 }
 
 export default icons

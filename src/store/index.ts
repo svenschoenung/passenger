@@ -135,13 +135,12 @@ store.watch(
 
 store.watch(
   state => state.settings.gpgPath,
-  gpgPath => gpgPath && KeysModule.loadPrivateKeys(),
-  { deep: false, immediate: true }
-)
-
-store.watch(
-  state => state.settings.gpgPath,
-  gpgPath => gpgPath && KeysModule.loadPublicKeys(),
+  gpgPath => {
+    if (gpgPath) {
+      KeysModule.loadPrivateKeys()
+      KeysModule.loadPublicKeys()
+    }
+  },
   { deep: false, immediate: true }
 )
 
@@ -152,8 +151,8 @@ store.watch(
     UIModule.clearExpandedFolders()
     if (repoPath) {
       PasswordsModule.loadPasswordsFromFileSystem()
+      RepoModule.loadCommitsFromRepo()
     }
   },
   { deep: false, immediate: true }
 )
-
