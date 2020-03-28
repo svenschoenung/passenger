@@ -25,6 +25,7 @@ declare module '@quasar/extras/ionicons-v4' {
     export const ionIosRefresh: string
     export const ionIosGitCommit: string
     export const ionIosGitMerge: string
+    export const ionIosColorWand: string
     export const ionMdMore: string
     export const ionMdGlobe: string
     export const ionMdPerson: string

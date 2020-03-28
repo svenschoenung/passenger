@@ -22,6 +22,7 @@
     "electron-unhandled": "^3.0.2",
     "electron-util": "^0.14.0",
     "fuse.js": "^3.6.1",
+    "generate-password": "^1.5.1",
     "gpg-promised": "^0.4.12",
     "immutability-helper": "^3.0.1",
     "isomorphic-git": "^1.3.1",

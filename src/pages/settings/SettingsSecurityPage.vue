@@ -9,7 +9,7 @@
           <q-item-label>Clear copied passwords after:</q-item-label>
         </q-item-section>
         <q-item-section side :class="{ disabled: !enablePasswordInClipboardTimeout }">
-          <number-input :min="1" 
+          <number-input outlined :min="1" class="bg-1"
             v-model="passwordInClipboardTimeout"
             :disable="!enablePasswordInClipboardTimeout" >
           </number-input>

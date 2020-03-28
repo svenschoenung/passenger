@@ -22,6 +22,7 @@ import { ionIosSend } from '@quasar/extras/ionicons-v4'
 import { ionIosRefresh } from '@quasar/extras/ionicons-v4'
 import { ionIosGitCommit } from '@quasar/extras/ionicons-v4'
 import { ionIosGitMerge } from '@quasar/extras/ionicons-v4'
+import { ionIosColorWand } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
 import { ionMdClipboard } from '@quasar/extras/ionicons-v4'
@@ -71,7 +72,8 @@ const icons = {
     refresh: ionIosRefresh,
     clipboard: ionMdClipboard,
     commit: ionIosGitCommit,
-    mergeCommit: ionIosGitMerge
+    mergeCommit: ionIosGitMerge,
+    generatePassword: ionIosColorWand
 }
 
 export default icons

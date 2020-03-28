@@ -8,7 +8,7 @@
       <div class="col col-1">
       </div>
     </div>
-    <div class="row">
+    <div class="row input-row">
       <div class="col col-1"></div>
       <div class="col col-10">
         <password-input :value="contents.password" @input="setPassword"/> 
@@ -111,6 +111,7 @@ export default class PasswordKeyValueEditor extends Vue {
 <style lang="scss">
 @import "src/styles/style.variables.scss";
 .password-key-value-editor {
+  flex-wrap: nowrap;
 
   > .row {
     align-items: center;

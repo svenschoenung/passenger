@@ -7,6 +7,15 @@ export interface WindowState {
   bounds: Rectangle
 }
 
+export interface PasswordGeneratorOptions {
+  length: number,
+  lowercase: boolean,
+  uppercase: boolean,
+  numbers: boolean,
+  symbols: boolean,
+  excludeSimilarCharacters: boolean,
+}
+
 export type OverviewType = 'tree' | 'list'
 export type ItemType = 'files-and-folders' | 'files-only'
 export type ContentViewType = 'text' | 'key-value'
@@ -19,6 +28,7 @@ export interface PreferencesState {
     showItemType: ItemType
     showNotDecryptable: boolean
     contentViewType: ContentViewType
+    passwordGeneratorOptions: PasswordGeneratorOptions
 }
 
 @Module({ name: 'preferences', namespaced: true })
@@ -38,6 +48,14 @@ export default class PreferencesVuexModule extends VuexModule implements Prefere
   showCommitter: boolean = false
   showCommitterDate: boolean = false
   showMergeCommits: boolean = true
+  passwordGeneratorOptions: PasswordGeneratorOptions = {
+    length: 16,
+    lowercase: true,
+    uppercase: true,
+    numbers: true,
+    symbols: false,
+    excludeSimilarCharacters: true
+  }
 
   @Mutation
   setWindowState(windowState: WindowState) {
@@ -102,5 +120,10 @@ export default class PreferencesVuexModule extends VuexModule implements Prefere
   @Mutation
   setShowMergeCommits(showMergeCommits: boolean) {
     this.showMergeCommits = showMergeCommits
+  }
+
+  @Mutation
+  setPasswordGeneratorOptions(passwordGeneratorOptions: Partial<PasswordGeneratorOptions>) {
+    this.passwordGeneratorOptions = { ...this.passwordGeneratorOptions, ...passwordGeneratorOptions }
   }
 }

@@ -9,7 +9,7 @@
       <div class="col col-1">
       </div>
     </div>
-    <div class="row">
+    <div class="row input-row">
       <div class="col col-1"></div>
       <div class="col col-10">
         <password-input :value="contents.password" @input="setPassword"/> 
@@ -24,7 +24,7 @@
       <div class="col col-1">
       </div>
     </div>
-    <div class="row flex direction-column flex-grow">
+    <div class="row input-row flex direction-column flex-grow">
       <div class="col col-1"></div>
       <div class="col col-10 flex direction-column flex-grow">
         <q-input dense outlined 
@@ -56,6 +56,7 @@ export default class PasswordTextEditor extends Vue {
   }
 
   setPassword(password: string) {
+    this.contents!.password = password
     this.updateContents()
   }
 
@@ -75,6 +76,7 @@ export default class PasswordTextEditor extends Vue {
 @import "src/styles/style.variables.scss";
 @import "src/styles/style.mixins.scss";
 .password-text-editor {
+  flex-wrap: nowrap;
 
   > .row {
     align-items: center;

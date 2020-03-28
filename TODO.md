@@ -1,5 +1,5 @@
 - [ ] Remove annotations.matches
-- [ ] Password generator
+- [x] Password generator
 - [ ] Better colors in password overview
 - [ ] Configure custom fields in settings
 - [ ] Watch file system for changes

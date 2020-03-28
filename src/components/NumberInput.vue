@@ -1,13 +1,21 @@
 <template>
-  <q-input type="number" dense outlined
-    class="number-input bg-1"
+  <q-input type="number" dense :outlined="outlined" :rounded="rounded" :standout="standout" 
+    :class="{ 'number-input': true, 'number-input-dense': dense }"
     input-class="text-right"
     v-model.number="num"
     :disable="disable"
     @keydown.up="increase"
     @keydown.down="decrease">
     <template v-slot:append>
-      <div class="flex direction-column buttons">
+      <div v-if="dense" class="dense-buttons">
+        <q-btn flat dense size="xs" @click="increase" class="button-up">
+          <q-icon :name="icons.increase" size="xs"/>
+        </q-btn>
+        <q-btn flat dense size="xs" @click="decrease" class="button-down">
+          <q-icon :name="icons.decrease" size="xs"/>
+        </q-btn>
+      </div>
+      <div v-else class="flex direction-column buttons">
         <q-btn flat dense size="xs" @click="increase" class="button-up">
           <q-icon :name="icons.increase" size="xs"/>
         </q-btn>
@@ -30,6 +38,10 @@ export default class NumberInput extends Vue {
   @Prop({ type: Boolean }) disable!: boolean;
   @Prop({ type: Number }) min!: number;
   @Prop({ type: Number }) max!: number;
+  @Prop({ type: Boolean }) dense!: boolean;
+  @Prop({ type: Boolean }) rounded!: boolean;
+  @Prop({ type: String }) standout!: string;
+  @Prop({ type: Boolean }) outlined!: boolean;
 
   created() {
       setNonReactiveProps(this, { icons })
@@ -82,6 +94,15 @@ export default class NumberInput extends Vue {
 
         .button-down svg {
             margin-top: -2px;
+        }
+    }
+
+    &.number-input-dense {
+        &.q-field--dense .q-field__control, &.q-field--dense .q-field__marginal {
+            height: 30px
+        }
+        .q-btn {
+            margin-top: -5px;
         }
     }
 }
