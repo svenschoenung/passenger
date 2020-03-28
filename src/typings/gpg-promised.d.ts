@@ -4,7 +4,10 @@ declare module "gpg-promised" {
         email: string
         user_id: string
     }
-    export interface GenericKey {
+    export interface GPGRecord {
+        type: string
+    }
+    export interface GenericKey extends GPGRecord {
         type: 'pub' | 'sec'
         keyid: string
         uid: GPGUser | GPGUser[]
@@ -28,7 +31,11 @@ declare module "gpg-promised" {
         decrypt(input: string | Buffer | null, options?: { from?: string[] }): Promise<Buffer>
         call(input: string | Buffer | null, args: string[], batch: boolean): Promise<ExecResult>
     }
+    export class Parser {
+        static parseColons(input: string): GPGRecord[]
+    }
     export default class GpgPromised {
         static KeyChain: typeof KeyChain;
+        static Parser: typeof Parser;
     }
 }

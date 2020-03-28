@@ -1,32 +1,69 @@
+import gpg, { GenericKey, GPGUser, PublicKey, GpgParse, PrivateKey } from 'gpg-promised'
+import { spawn } from 'child_process';
 import { ValidationResult, validateFolder } from '@/model/validation';
-import gpg, { GenericKey, GPGUser, PublicKey } from 'gpg-promised'
+import once from 'once'
+import { openSystemPreferences } from 'electron-util';
 
 export interface MissingPublicKey extends PublicKey {
     missing: true
 }
 
+export interface GPGOptions {
+    homedir?: string | null,
+}
+
+function runGpg(opts: { args: string[] } & GPGOptions): Promise<string>{
+    return new Promise((resolve, reject) => {
+        let args = opts.args
+        if (opts.homedir) {
+            args = ['--homedir', opts.homedir, ...args]
+        }
+
+        let output = ''
+        const rejectOnce: ((reason: Error) => void) = once(reject)
+        const gpgProcess = spawn('gpg', args);
+
+        gpgProcess.stdout.on('data', data => {
+           output += data.toString()
+        })
+        gpgProcess.stdout.on('error', error => {
+            rejectOnce(error)
+        })
+        gpgProcess.stdout.on('exit', (code: number) => {
+            if (code > 0) {
+                rejectOnce(new Error(`GPG exited with ${code}`))
+            } else {
+                resolve(output)
+            }
+        })
+        gpgProcess.stdout.on('close', (code: number) => {
+            if (code > 0) {
+                rejectOnce(new Error(`GPG exited with ${code}`))
+            } else {
+                resolve(output)
+            }
+        })
+    })
+}
+
+
+
 export async function validateGPGHomedir(gpgPath: string): Promise<ValidationResult> {
     return await validateFolder(gpgPath)
 }
 
-export async function loadPrivateKeys(gpgPath: string) {
-    const folder = await validateFolder(gpgPath)
-    if (!folder.valid) {
-        throw new Error(folder.error)
-    }
-    const keychain = new gpg.KeyChain(gpgPath) 
-    await keychain.open()
-    return (await keychain.listSecretKeys()).map(normalizeKey)
+export async function loadPrivateKeys(opts: GPGOptions) {
+    const output = await runGpg({ ...opts, args: ['--list-secret-keys', '--with-colons', '--with-fingerprint']});
+    return gpg.Parser.parseColons(output)
+      .filter(rec => rec.type === 'sec')
+      .map(rec => normalizeKey(rec as PrivateKey))
 }
 
-export async function loadPublicKeys(gpgPath: string) {
-    const folder = await validateFolder(gpgPath)
-    if (!folder.valid) {
-        throw new Error(folder.error)
-    } 
-    const keychain = new gpg.KeyChain(gpgPath) 
-    await keychain.open()
-    return (await keychain.listPublicKeys()).map(normalizeKey)
+export async function loadPublicKeys(opts: GPGOptions) {
+    const output = await runGpg({ ...opts, args: ['--list-public-keys', '--with-colons', '--with-fingerprint'] });
+    return gpg.Parser.parseColons(output)
+      .filter(rec => rec.type === 'pub')
+      .map(rec => normalizeKey(rec as PublicKey))
 }
 
 export function normalizeKey<T extends GenericKey>(key: T): T {
@@ -70,8 +107,7 @@ export function findMissingPublicKeys(keys: string[], publicKeys: PublicKey[]): 
       .filter(key => (key as any).missing) as MissingPublicKey[]
 }
 
-export async function decryptPasswordFile(gpgPath: string, absPath: string) {
-    const keychain = new gpg.KeyChain(gpgPath)
-    await keychain.open()
-    return (await keychain.call(null, ['--decrypt', absPath], false)).stdout.toString().trimEnd()
+export async function decryptPasswordFile(absPath: string, opts: GPGOptions) {
+    const output = await runGpg({ ...opts, args: ['--decrypt', absPath] });
+    return output.trimEnd()
 }

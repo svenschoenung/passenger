@@ -77,7 +77,7 @@ export default class PasswordFileDetails extends Vue {
         const gpgPath = SettingsModule.gpgPath as string
         const repoPath = SettingsModule.repoPath as string
         const absPath = path.join(repoPath, this.file.relPath)
-        this.contents = resolved(await delay(() => decryptPasswordFile(gpgPath, absPath)))
+        this.contents = resolved(await delay(() => decryptPasswordFile(absPath, { homedir: gpgPath })))
       } catch (error) {
         this.contents = failed(error)
       }

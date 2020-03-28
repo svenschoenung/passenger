@@ -30,7 +30,7 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     async loadPublicKeys() {
         try {
             this.loadingPublicKeys()
-            const publicKeys = await delay(() => loadPublicKeys(SettingsModule.gpgPath as string))
+            const publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))
             this.loadedPublicKeys(resolved(publicKeys))
         } catch (error) {
             this.loadedPublicKeys(failed(error))
@@ -51,7 +51,7 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     async loadPrivateKeys() {
         try {
             this.loadingPrivateKeys()
-            const privateKeys = await delay(() => loadPrivateKeys(SettingsModule.gpgPath as string))
+            const privateKeys = await delay(() => loadPrivateKeys({ homedir: SettingsModule.gpgPath }))
             this.loadedPrivateKeys(resolved(privateKeys))
         } catch (error) {
             this.loadedPrivateKeys(failed(error))
