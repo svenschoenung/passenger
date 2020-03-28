@@ -2,7 +2,7 @@ import { AnnotationsModule } from './../index';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { PasswordsModule, KeysModule, UIModule } from '@/store'
 import { PasswordNode, PasswordFolder } from '@/model/passwords'
-import { findMatchingPublicKeys, findMissingPublicKeys } from '@/service/gpg'
+import { findMatchingPublicKeys, findUnknownPublicKeys } from '@/service/gpg'
 import { Resolvable } from '../resolvable'
 import { GPGKey, GenericKey } from 'gpg-promised'
 
@@ -38,12 +38,12 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
             .filter(node => node && node.folder)
             .map(folder => {
                 const keys = (folder as PasswordFolder).keys
-                const missingKeys = findMissingPublicKeys(keys, KeysModule.publicKeys.value!)
+                const unknownKeys = findUnknownPublicKeys(keys, KeysModule.publicKeys.value!)
                   .map(key => key.keyid)
                 return {
                     id: `unknownKey_${folder.relPath}`,
                     type: 'error',
-                    msg: `Unknown public key${missingKeys.length > 1 ? 's': ''}: ${missingKeys.join(', ')}`,
+                    msg: `Unknown public key${unknownKeys.length > 1 ? 's': ''}: ${unknownKeys.join(', ')}`,
                     node: folder 
                 }
             })

@@ -54,7 +54,7 @@ const icons = {
     warning: ionIosWarning,
     warnings: ionIosWarning,
     problems: ionIosCloseCircleOutline,
-    missing: ionIosClose,
+    unknown: ionIosClose,
     keyValue: ionIosList,
     text: ionIosSquareOutline,
     showPassword: ionIosEye,

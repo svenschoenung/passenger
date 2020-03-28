@@ -4,8 +4,8 @@ import { ValidationResult, validateFolder } from '@/model/validation';
 import once from 'once'
 import { openSystemPreferences } from 'electron-util';
 
-export interface MissingPublicKey extends PublicKey {
-    missing: true
+export interface UnknownPublicKey extends PublicKey {
+    unknown: true
 }
 
 export interface GPGOptions {
@@ -87,24 +87,24 @@ export function findMatchingKey<T extends GenericKey>(needle: string, haystack: 
     })
 }
 
-export function missing(key: string): MissingPublicKey {
+export function unknown(key: string): UnknownPublicKey {
     return {
       keyid: key,
-      uid: [{ user_id: 'Missing' }],
-      missing: true
-    } as MissingPublicKey
+      uid: [{ user_id: 'Unknown key' }],
+      unknown: true
+    } as UnknownPublicKey
 }
 
 export function findMatchingPublicKeys(keys: string[], publicKeys: PublicKey[]): PublicKey[] {
     const matchingPublicKeys = keys
       .map(key => findMatchingKey(key, publicKeys) || key)
-      .map(key => typeof key === 'string' ? missing(key) : key)
+      .map(key => typeof key === 'string' ? unknown(key) : key)
     return matchingPublicKeys
 }
 
-export function findMissingPublicKeys(keys: string[], publicKeys: PublicKey[]): MissingPublicKey[] {
+export function findUnknownPublicKeys(keys: string[], publicKeys: PublicKey[]): UnknownPublicKey[] {
     return findMatchingPublicKeys(keys, publicKeys)
-      .filter(key => (key as any).missing) as MissingPublicKey[]
+      .filter(key => (key as any).unknown) as UnknownPublicKey[]
 }
 
 export async function decryptPasswordFile(absPath: string, opts: GPGOptions) {

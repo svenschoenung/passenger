@@ -23,9 +23,9 @@
           @mouseover="endSelection(index)"
           :class="selectedAndSelectingKeys[key.keyid] ? 'highlighted-key' : ''"
         >
-          <q-item-section avatar v-if="key.missing">
+          <q-item-section avatar v-if="key.unknown">
             <q-avatar color="negative" text-color="white">
-              <q-icon :name="icons.missing" size="lg"/>
+              <q-icon :name="icons.unknown" size="lg"/>
             </q-avatar>
           </q-item-section>
           <q-item-section avatar v-else>
@@ -34,9 +34,9 @@
             </q-avatar>
           </q-item-section>
 
-          <q-item-section :class="{ 'text-negative': key.missing }">
+          <q-item-section :class="{ 'text-negative': key.unknown }">
             <q-item-label>{{ key.keyid }}</q-item-label>
-            <q-item-label :class="{ 'text-negative': key.missing, 'text-italic': key.missing }"
+            <q-item-label :class="{ 'text-negative': key.unknown, 'text-italic': key.unknown }"
               caption
               lines="1"
               v-for="uid in key.uid"
