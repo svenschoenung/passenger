@@ -1,3 +1,4 @@
+import { openNewGitHubIssue } from 'electron-util';
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
 import electron, { Rectangle } from 'electron'
 
@@ -32,6 +33,11 @@ export default class PreferencesVuexModule extends VuexModule implements Prefere
   showItemType: ItemType = 'files-and-folders' 
   showNotDecryptable: boolean = true
   contentViewType: ContentViewType = 'text'
+  showAuthor: boolean = true
+  showAuthorDate: boolean = true
+  showCommitter: boolean = false
+  showCommitterDate: boolean = false
+  showMergeCommits: boolean = true
 
   @Mutation
   setWindowState(windowState: WindowState) {
@@ -71,5 +77,30 @@ export default class PreferencesVuexModule extends VuexModule implements Prefere
   @Mutation
   setContentViewType(contentViewType: ContentViewType) {
     this.contentViewType = contentViewType 
+  }
+
+  @Mutation
+  setShowAuthor(showAuthor: boolean) {
+    this.showAuthor = showAuthor 
+  }
+
+  @Mutation
+  setShowAuthorDate(showAuthorDate: boolean) {
+    this.showAuthorDate = showAuthorDate 
+  }
+
+  @Mutation
+  setShowCommitter(showCommitter: boolean) {
+    this.showCommitter = showCommitter 
+  }
+
+  @Mutation
+  setShowCommitterDate(showCommitterDate: boolean) {
+    this.showCommitterDate = showCommitterDate
+  }
+
+  @Mutation
+  setShowMergeCommits(showMergeCommits: boolean) {
+    this.showMergeCommits = showMergeCommits
   }
 }

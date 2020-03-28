@@ -95,3 +95,9 @@ body.body--dark {
 .notification-above-status-bar {
   margin-bottom: 24px;
 }
+
+.menu-button {
+    .q-btn__wrapper {
+        padding: 0px 0px;
+    }
+}

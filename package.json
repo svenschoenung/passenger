@@ -17,6 +17,7 @@
     "@quasar/extras": "^1.0.0",
     "bcrypt": "^4.0.1",
     "core-js": "^3.6.4",
+    "date-fns": "^2.11.1",
     "electron-store": "^5.1.1",
     "electron-unhandled": "^3.0.2",
     "electron-util": "^0.14.0",

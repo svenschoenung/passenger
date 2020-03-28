@@ -162,9 +162,6 @@ export default class PasswordOverview extends Vue {
 #password-overview {
     .menu-button {
         height: 100%;
-        .q-btn__wrapper {
-            padding: 0px 0px;
-        }
     }
 
     .toolbar {
