@@ -8,9 +8,10 @@ declare module "gpg-promised" {
         type: string
     }
     export interface GenericKey extends GPGRecord {
-        type: 'pub' | 'sec'
+        type: 'pub' | 'sec' | 'sub'
         keyid: string
         uid: GPGUser | GPGUser[]
+        sub: SubKey | SubKey[]
     }
     export interface PublicKey extends GenericKey {
         type: 'pub'
@@ -18,7 +19,10 @@ declare module "gpg-promised" {
     export interface PrivateKey extends GenericKey {
         type: 'sec'
     }
-    export type GPGKey = PublicKey | PrivateKey
+    export interface SubKey extends GenericKey {
+        type: 'sub'
+    }
+    export type GPGKey = PublicKey | PrivateKey | SubKey
     export interface ExecResult {
         stdout: string
         stdin: string

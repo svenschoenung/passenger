@@ -28,22 +28,19 @@ export interface ProblemsState {
 @Module({ name: 'problems', namespaced: true })
 export default class ProblemsVuexModule extends VuexModule implements ProblemsState {
 
-    get unknownKeyProblems(): Problem[] {
+    get toBeEncryptedWithUnknownKeysProblems(): Problem[] {
         if (!PasswordsModule.map.value) {
             return []
         }
-        return Object.keys(AnnotationsModule.notEncryptable)
-            .filter(relPath => AnnotationsModule.notEncryptable[relPath])
+        return Object.keys(AnnotationsModule.toBeEncryptedWithUnknownKeys)
             .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
             .filter(node => node && node.folder)
             .map(folder => {
-                const keys = (folder as PasswordFolder).keys
-                const unknownKeys = findUnknownPublicKeys(keys, KeysModule.publicKeys.value!)
-                  .map(key => key.keyid)
+                const unknownKeys = AnnotationsModule.toBeEncryptedWithUnknownKeys[folder.relPath]
                 return {
-                    id: `unknownKey_${folder.relPath}`,
+                    id: `toBeEncryptedWithUnknownKeys_${folder.relPath}`,
                     type: 'error',
-                    msg: `Unknown public key${unknownKeys.length > 1 ? 's': ''}: ${unknownKeys.join(', ')}`,
+                    msg: `Folder requires unknown public key${unknownKeys.length > 1 ? 's': ''} for encryption: ${unknownKeys.join(', ')}`,
                     node: folder 
                 }
             })
@@ -82,12 +79,51 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
         return keysProblems('private keys', KeysModule.privateKeys, () => KeysModule.loadPrivateKeys)
     }
 
+    get encryptedWithUnknownKeysProblems(): Problem[] {
+        if (!PasswordsModule.map.value) {
+            return []
+        }
+        return Object.keys(AnnotationsModule.encryptedWithUnknownKeys)
+            .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
+            .filter(node => node && !node.folder)
+            .map(file => {
+                const unknownKeys = AnnotationsModule.encryptedWithUnknownKeys[file.relPath]
+                return {
+                    id: `encrytpedWithUnknownKeys_${file.relPath}`,
+                    type: 'warning',
+                    msg: `Encrypted with unknown public key${unknownKeys.length > 1 ? 's': ''}: ${unknownKeys.join(', ')}`,
+                    node: file 
+                }
+            })
+    }
+
+    get encryptedWithUnintendedKeysProblems(): Problem[] {
+        if (!PasswordsModule.map.value) {
+            return []
+        }
+        return Object.keys(AnnotationsModule.encryptedWithUnintendedKeys)
+            .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
+            .filter(node => node && !node.folder)
+            .map(file => {
+                const unintendedKeys = AnnotationsModule.encryptedWithUnintendedKeys[file.relPath]
+                console.log
+                return {
+                    id: `encryptedWithUnintendedKeys_${file.relPath}`,
+                    type: 'warning',
+                    msg: `Encrypted with unexpected key${unintendedKeys.length > 1 ? 's': ''}: ${unintendedKeys.join(', ')}`,
+                    node: file 
+                }
+            })
+    }
+
     get problems() {
         return [
-            ...this.unknownKeyProblems,
             ...this.passwordTreeProblems,
             ...this.publicKeyProblems,
-            ...this.privateKeyProblems
+            ...this.privateKeyProblems,
+            ...this.toBeEncryptedWithUnknownKeysProblems,
+            ...this.encryptedWithUnknownKeysProblems,
+            ...this.encryptedWithUnintendedKeysProblems
         ]
     }
 

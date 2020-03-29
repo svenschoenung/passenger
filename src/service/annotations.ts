@@ -1,44 +1,66 @@
 import Vue from 'vue';
 import { PrivateKey, PublicKey } from 'gpg-promised'
 
-import { findMatchingKey } from '@/service/gpg';
+import { findMatchingKey, findUnknownPublicKeys } from '@/service/gpg';
 import { PasswordFolder, PasswordNode } from '@/model/passwords'
 import { PasswordFlags } from '@/store/modules/passwords'
+import { PasswordKeysMap, AnnotationsState } from '@/store/modules/annotations';
 
-export function annotateDecryptable<T extends PasswordNode>(
-    node: T, privateKeys: PrivateKey[], inheritedDecryptable: boolean,
-    decryptableFlags: PasswordFlags, decryptableChildrenFlags: PasswordFlags) {
+export function annotateDecryptable<T extends PasswordNode>(node: T, privateKeys: PrivateKey[],
+    inheritedDecryptable: boolean, 
+    result: Pick<AnnotationsState, 'decryptable' | 'hasDecryptableChildren'>) {
     if (node.folder) {
         const folder = node as PasswordFolder
-        const decryptable = folder.keys && folder.keys.length > 0 ? 
-          folder.keys.some(key => findMatchingKey(key, privateKeys)) : inheritedDecryptable
-        let decryptableChildren = false
+        const inheritsKeys = !folder.keys || folder.keys.length === 0
+        const decryptable = inheritsKeys ?  inheritedDecryptable :
+          folder.keys.some(key => findMatchingKey(key, privateKeys))
+
+        let hasDecryptableChildren = false
         folder.children.forEach(child => {
-            if (annotateDecryptable(child, privateKeys, decryptable, decryptableFlags, decryptableChildrenFlags)) {
-                decryptableChildren = true
+            if (annotateDecryptable(child, privateKeys, decryptable, result)) {
+                hasDecryptableChildren = true
             }
         })
 
-        Vue.set(decryptableFlags, folder.relPath, decryptable)
-        Vue.set(decryptableChildrenFlags, folder.relPath, decryptableChildren)
-        return decryptableChildren
+        Vue.set(result.decryptable, folder.relPath, decryptable)
+        Vue.set(result.hasDecryptableChildren, folder.relPath, hasDecryptableChildren)
+        return hasDecryptableChildren
     } else {
-        Vue.set(decryptableFlags, node.relPath, inheritedDecryptable)
-        Vue.set(decryptableChildrenFlags, node.relPath, false)
+        Vue.set(result.decryptable, node.relPath, inheritedDecryptable)
+        Vue.set(result.hasDecryptableChildren, node.relPath, false)
         return inheritedDecryptable
     }
 }
 
-export function annotateNotEncryptable<T extends PasswordNode>(
-    node: T, publicKeys: PublicKey[], inhertedNotEncryptable: boolean,
-    notEncryptableFlags: PasswordFlags) {
+export function annotateIntendedKeys<T extends PasswordNode>(node: T, 
+    inheritedKeys: string[], result: Pick<AnnotationsState, 'intendedKeys'>) {
     if (node.folder) {
         const folder = node as PasswordFolder
-        const notEncryptable = folder.keys && folder.keys.length > 0 ? 
-          !!folder.keys.find(key => !findMatchingKey(key, publicKeys)) : inhertedNotEncryptable
-        Vue.set(notEncryptableFlags, folder.relPath, notEncryptable)
-        folder.children.forEach(child => annotateNotEncryptable(child, publicKeys, notEncryptable, notEncryptableFlags))
+        const inheritsKeys = !folder.keys || folder.keys.length === 0
+        const keys = inheritsKeys ? inheritedKeys : folder.keys
+
+        folder.children.forEach(child => annotateIntendedKeys(child, keys, result))
+
+        Vue.set(result.intendedKeys, folder.relPath, keys)
+    } else {
+        Vue.set(result.intendedKeys, node.relPath, inheritedKeys)
+    }
+}
+
+export function annotateToBeEncryptedWithUnknownKeys<T extends PasswordNode>(
+    node: T, publicKeys: PublicKey[], inheritedUnknownKeys: string[],
+    toBeEncryptedWithUnknownKeysResult: PasswordKeysMap) {
+    if (node.folder) {
+        const folder = node as PasswordFolder
+        const unknownKeys = folder.keys && folder.keys.length > 0 ? 
+          findUnknownPublicKeys(folder.keys, publicKeys).map(key => key.keyid) : inheritedUnknownKeys
+        if (unknownKeys.length > 0) {
+            Vue.set(toBeEncryptedWithUnknownKeysResult, folder.relPath, unknownKeys)
+        }
+        folder.children.forEach(child => annotateToBeEncryptedWithUnknownKeys(child, publicKeys, unknownKeys, toBeEncryptedWithUnknownKeysResult))
   } else {
-        Vue.set(notEncryptableFlags, node.relPath, inhertedNotEncryptable)
+      if (inheritedUnknownKeys.length > 0) {
+        Vue.set(toBeEncryptedWithUnknownKeysResult, node.relPath, inheritedUnknownKeys)
+      }
   }
 }

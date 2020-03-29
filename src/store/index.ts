@@ -97,37 +97,54 @@ store.subscribeAction({
 store.watch(
   (state, getters) => getters['ui/darkMode'] as boolean,
   darkMode => Dark.set(darkMode),
-  { deep: false, immediate: true }
+  { immediate: true }
 )
 
 store.watch(
   state => state.passwords.tree,
   (tree) => {
-    if (tree.value && KeysModule.privateKeys.value) {
-      AnnotationsModule.annotatePasswordsUsingPrivateKeys();
-    }
-    if (tree.value && KeysModule.publicKeys.value) {
-      AnnotationsModule.annotatePasswordsUsingPublicKeys();
-    }
-  },
-  { deep: false, immediate: false }
-)
-
-store.watch(
-  state => state.keys.privateKeys,
-  privateKeys => {
-    if (PasswordsModule.tree.value && privateKeys.value) {
-      AnnotationsModule.annotatePasswordsUsingPrivateKeys();
+    if (tree.value) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesWithUsedKeys())
     }
   },
   { deep: true, immediate: false }
 )
 
 store.watch(
-  state => state.keys.publicKeys,
-  publicKeys => {
-    if (PasswordsModule.tree.value && publicKeys.value) {
-      AnnotationsModule.annotatePasswordsUsingPublicKeys();
+  state => state.passwords.tree,
+  (tree) => {
+    if (tree.value) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesAndFoldersWithIntendedKeys())
+    }
+  },
+  { deep: true, immediate: false }
+)
+
+store.watch(
+  state => [state.passwords.tree, state.keys.privateKeys],
+  ([tree, privateKeys]) => {
+    if (tree.value && privateKeys.value) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesAndFoldersThatAreDecryptable())
+    }
+  },
+  { deep: true, immediate: false }
+)
+
+store.watch(
+  state => [state.passwords.tree, state.keys.publicKeys, state.annotations.usedKeys],
+  ([tree, publicKeys, usedKeys]) => {
+    if (tree.value && publicKeys.value && usedKeys) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesAndFoldersToBeEncryptedWithUnknownKeys());
+    }
+  },
+  { deep: true, immediate: false }
+)
+
+store.watch(
+  state => [state.passwords.tree, state.keys.publicKeys, state.annotations.usedKeys],
+  ([tree, publicKeys, usedKeys]) => {
+    if (tree.value && publicKeys.value && usedKeys) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesEncryptedWithUnintendedKeys())
     }
   },
   { deep: true, immediate: false }
@@ -141,7 +158,7 @@ store.watch(
       KeysModule.loadPublicKeys()
     }
   },
-  { deep: false, immediate: true }
+  { immediate: true }
 )
 
 store.watch(
@@ -154,5 +171,5 @@ store.watch(
       RepoModule.loadCommitsFromRepo()
     }
   },
-  { deep: false, immediate: true }
+  { immediate: true }
 )

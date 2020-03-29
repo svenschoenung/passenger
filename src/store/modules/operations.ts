@@ -16,7 +16,8 @@ export interface OperationsState {
 const OPERATION_NAMES: { [action: string]: string } = {
     'passwords/loadPasswordsFromFileSystem': 'Loading passwords from file system',
     'keys/loadPublicKeys': 'Loading public keys from GPG',
-    'keys/loadPrivateKeys': 'Loading private keys from GPG'
+    'keys/loadPrivateKeys': 'Loading private keys from GPG',
+    'annotations/annotateFilesWithUsedKeys': 'Determining used keys'
 }
 
 @Module({ name: 'operations', namespaced: true })

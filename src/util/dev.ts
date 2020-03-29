@@ -1,7 +1,7 @@
 function delayInMs() {
-    if (process.env.NODE_ENV === 'development') {
-         return Math.random() * 3000 + 2000
-    } 
+    // if (process.env.NODE_ENV === 'development') {
+    //      return Math.random() * 3000 + 2000
+    // } 
     return 0
 }
 

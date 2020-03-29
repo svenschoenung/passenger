@@ -16,18 +16,18 @@
         :class="{
             'item-selected': item.relPath === selected,
             'not-decryptable': !decryptable[item.relPath],
-            'not-encryptable': notEncryptable[item.relPath]
+            'not-encryptable': toBeEncryptedWithUnknownKeys[item.relPath]
         }">
         <q-item-section avatar>
-          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="notEncryptable[item.relPath] ? 'negative' : 'primary'"/>
+          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="toBeEncryptedWithUnknownKeys[item.relPath] ? 'negative' : 'primary'"/>
         </q-item-section>
         <q-item-section avatar v-if="showItemType === 'files-and-folders'">
-          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="notEncryptable[item.relPath] ? 'negative' : 'grey-8'"/>
+          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="toBeEncryptedWithUnknownKeys[item.relPath] ? 'negative' : 'grey-8'"/>
         </q-item-section>
         <q-item-section class="item-name">
           <span v-html="highlight(item)"></span>
         </q-item-section>
-        <q-item-section  v-if="notEncryptable[item.relPath]" side>
+        <q-item-section  v-if="toBeEncryptedWithUnknownKeys[item.relPath]" side>
           <q-icon size="1.4em" :name="icons.error" color="negative"/>
         </q-item-section>
       </q-item>
@@ -69,8 +69,8 @@ export default class PasswordList extends Vue {
     return AnnotationsModule.decryptable
   }
 
-  get notEncryptable() {
-    return AnnotationsModule.notEncryptable
+  get toBeEncryptedWithUnknownKeys() {
+    return AnnotationsModule.toBeEncryptedWithUnknownKeys
   }
 
   get selected() {
