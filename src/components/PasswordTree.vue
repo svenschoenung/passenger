@@ -37,6 +37,13 @@
           <q-icon size="1.4em" :name="icons.error" color="negative"/>
         </q-item-section>
         <q-menu dense context-menu touch-position anchor="top left" self="top left">
+          <q-item dense clickable v-close-popup @click="copy(item.fullName)" v-if="item.fullName !== '/'">
+            <q-item-section>Copy location</q-item-section>
+          </q-item>
+          <q-item dense clickable v-close-popup @click="copy(item.absPath)">
+            <q-item-section>Copy absolute path</q-item-section>
+          </q-item>
+          <q-separator/>
           <q-item dense clickable v-close-popup @click="expandAll(item)">
             <q-item-section>Expand all</q-item-section>
           </q-item>
@@ -64,6 +71,7 @@ import { OverviewType } from '@/store/modules/ui';
 import VirtualScroll from '@/components/VirtualScroll.vue';
 import { highlightTreeNode } from '@/util/html'
 import icons from "@/ui/icons";
+import { copyToClipboard } from '@/service/clipboard';
 
 @Component({ })
 export default class PasswordTree extends Vue {
@@ -103,6 +111,10 @@ export default class PasswordTree extends Vue {
     }
     UIModule.expandFolders(getParents(relPath).map(parent => parent.relPath))
     return true;
+  }
+
+  copy(path: string) {
+    copyToClipboard(path, false)
   }
 
   get decryptable() {
