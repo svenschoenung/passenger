@@ -101,7 +101,6 @@ export default class VirtualScroll extends Vue {
     const start = virtualScroll.scrollTop / ROW_HEIGHT
     const end = start + virtualScroll.offsetHeight / ROW_HEIGHT - 1
     if (index < Math.ceil(start) || index > Math.floor(end)) {
-      console.log(this.visible)
       virtualScroll.scrollTop = (index + 1) * ROW_HEIGHT - virtualScroll.offsetHeight / 2
     }
   }

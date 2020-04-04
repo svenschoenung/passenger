@@ -90,7 +90,6 @@ export default class AnnotationsVuexModule extends VuexModule implements Annotat
                     cb(e)
                 }
             })
-            console.log('usedKeys', usedKeys)
             AnnotationsModule.setUsedKeys(usedKeys)
         }
     }
@@ -146,9 +145,6 @@ export default class AnnotationsVuexModule extends VuexModule implements Annotat
                   .filter(key => !!key) as string[]
                 const missingIntendedKeys = difference(knownIntendedKeys, knownUsedKeys)
                 if (missingIntendedKeys.length > 0) {
-                    console.log('usedKeys', this.usedKeys)
-                    console.log('knownUsedKeys', knownUsedKeys)
-                    console.log('knownIntendedKeys', knownIntendedKeys)
                     encryptedWithoutIntendedKeys[relPath] = missingIntendedKeys
                 }
             })

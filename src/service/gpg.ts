@@ -112,13 +112,9 @@ export async function listUsedKeys(absPath: string, opts?: GPGOptions) {
         args: ['--list-packets', '--pinentry-mode=cancel', absPath],
         ignoreError: true
     });
-    const k = output.split(/\n/g)
+    return output.split(/\n/g)
       .filter(line => line.match(/keyid/))
       .map(line => line.replace(/.*keyid\s+([A-Z0-9]+).*/, '$1'))
-      if (k.length === 0) {
-          console.log('output', output)
-      }
-      return k
 }
 
 export class KeyFinder<T extends GenericKey> {
