@@ -6,7 +6,7 @@ import { difference } from 'lodash'
 
 import { annotateDecryptable, annotateToBeEncryptedWithUnknownKeys, annotateIntendedKeys } from '@/service/annotations'
 import { PasswordsModule, KeysModule } from '@/store'
-import { listUsedKeys, findUnknownPublicKeys, findMatchingPublicKeys, isUnknownKey, findMatchingKey } from '@/service/gpg';
+import { listUsedKeys, findUnknownPublicKeys, findMatchingPublicKeys, isUnknownKey, findMatchingKey, PublicKeyFinder } from '@/service/gpg';
 import { PublicKey } from 'gpg-promised';
 
 export type PasswordFlags = { [relPath: string]: boolean }
@@ -82,7 +82,7 @@ export default class AnnotationsVuexModule extends VuexModule implements Annotat
         if (PasswordsModule.list.value && KeysModule.publicKeys.value) {
             const usedKeys: PasswordKeysMap = {}
             const files = PasswordsModule.list.value.filter(item => !item.folder) as PasswordFile[]
-            await async.eachLimit(files, 10, async (file, cb) => {
+            await async.eachLimit(files, 20, async (file, cb) => {
                 try {
                     usedKeys[file.relPath] = await listUsedKeys(file.absPath)
                     cb()
@@ -99,15 +99,10 @@ export default class AnnotationsVuexModule extends VuexModule implements Annotat
     annotateFilesEncryptedWithUnknownKeys() {
         if (KeysModule.publicKeys.value) {
             const encryptedWithUnknownKeys: PasswordKeysMap = {}
-            const unknownKeysCache: PasswordFlags = {}
+            const keyFinder = new PublicKeyFinder(KeysModule.publicKeys.value)
             Object.keys(this.usedKeys).forEach(relPath => {
                 const usedKeys = this.usedKeys[relPath]
-                const unknownKeys = usedKeys.filter(usedKey => {
-                    if (!Object.prototype.hasOwnProperty.call(unknownKeysCache, usedKey)) {
-                        unknownKeysCache[usedKey] = isUnknownKey(usedKey, KeysModule.publicKeys.value!)
-                    }
-                    return unknownKeysCache[usedKey]
-                })
+                const unknownKeys = usedKeys.filter(usedKey => !keyFinder.findMatchingKey(usedKey))
                 if (unknownKeys.length > 0) {
                     encryptedWithUnknownKeys[relPath] = unknownKeys
                 }
@@ -120,30 +115,44 @@ export default class AnnotationsVuexModule extends VuexModule implements Annotat
     annotateFilesEncryptedWithUnintendedKeys() {
         if (KeysModule.publicKeys.value) {
             const encryptedWithUnintendedKeys: PasswordKeysMap = {}
-            const keysCache: { [key: string]: string | null } = {}
+            const keyFinder = new PublicKeyFinder(KeysModule.publicKeys.value)
             Object.keys(this.usedKeys).forEach(relPath => {
-                const usedKeys = this.usedKeys[relPath]
-                const knownUsedKeys = usedKeys.map(usedKey => {
-                    if (!Object.prototype.hasOwnProperty.call(keysCache, usedKey)) {
-                        const matchingKey = findMatchingKey(usedKey, KeysModule.publicKeys.value!)
-                        keysCache[usedKey] = matchingKey ? matchingKey.keyid : null
-                    }
-                    return keysCache[usedKey]
-                }).filter(key => !!key) as string[]
-                const intendedKeys = this.intendedKeys[relPath]
-                const knownIntendedKeys = intendedKeys.map(intendedKey => {
-                    if (!Object.prototype.hasOwnProperty.call(keysCache, intendedKey)) {
-                        const matchingKey = findMatchingKey(intendedKey, KeysModule.publicKeys.value!)
-                        keysCache[intendedKey] = matchingKey ? matchingKey.keyid : null
-                    }
-                    return keysCache[intendedKey]
-                }).filter(key => !!key) as string[]
+                const knownUsedKeys = this.usedKeys[relPath]
+                  .map(usedKey => keyFinder.findMatchingKeyId(usedKey))
+                  .filter(key => !!key) as string[]
+                const knownIntendedKeys = this.intendedKeys[relPath]
+                  .map(intendedKey => keyFinder.findMatchingKeyId(intendedKey))
+                  .filter(key => !!key) as string[]
                 const unintendedKeys = difference(knownUsedKeys, knownIntendedKeys)
                 if (unintendedKeys.length > 0) {
                     encryptedWithUnintendedKeys[relPath] = unintendedKeys
                 }
             })
             this.encryptedWithUnintendedKeys = encryptedWithUnintendedKeys
+        }
+    }
+
+    @Mutation
+    annotateFilesEncryptedWithoutIntendedKeys() {
+        if (KeysModule.publicKeys.value) {
+            const encryptedWithoutIntendedKeys: PasswordKeysMap = {}
+            const keyFinder = new PublicKeyFinder(KeysModule.publicKeys.value)
+            Object.keys(this.usedKeys).forEach(relPath => {
+                const knownUsedKeys = this.usedKeys[relPath]
+                  .map(usedKey => keyFinder.findMatchingKeyId(usedKey))
+                  .filter(key => !!key) as string[]
+                const knownIntendedKeys = this.intendedKeys[relPath]
+                  .map(intendedKey => keyFinder.findMatchingKeyId(intendedKey))
+                  .filter(key => !!key) as string[]
+                const missingIntendedKeys = difference(knownIntendedKeys, knownUsedKeys)
+                if (missingIntendedKeys.length > 0) {
+                    console.log('usedKeys', this.usedKeys)
+                    console.log('knownUsedKeys', knownUsedKeys)
+                    console.log('knownIntendedKeys', knownIntendedKeys)
+                    encryptedWithoutIntendedKeys[relPath] = missingIntendedKeys
+                }
+            })
+            this.encryptedWithoutIntendedKeys = encryptedWithoutIntendedKeys
         }
     }
 }

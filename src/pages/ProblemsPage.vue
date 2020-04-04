@@ -7,15 +7,21 @@
                 <template v-for="problem in problems" >
                 <q-item :class="`problem-${problem.type}`" :key="`item-${problem.id}`">
                     <q-item-section avatar>
-                        <q-icon :name="icons[problem.type]"/>
+                        <q-icon :name="icons[problem.type]" size="md"/>
                     </q-item-section>
                     <q-item-section>
                         <q-item-label>{{problem.msg}}</q-item-label>
                         <q-item-label v-if="problem.error">
                             <i>{{problem.error.message}}</i>
                         </q-item-label>
+                        <q-item-label v-for="key in problem.keys" :key="key.keyid">
+                            <b class="q-mr-xs">Key:</b> {{key.keyid}}
+                            <span v-if="key.uid && key.uid[0] && key.uid[0].user_id">
+                                [{{key.uid[0].user_id}}<span v-if="key.uid.length > 1"> ...</span>]
+                            </span>
+                        </q-item-label>
                         <q-item-label v-if="problem.node">
-                            <b class="q-mr-xs">Location:</b> <a @click.stop="goto(problem.node.relPath)">{{problem.node.fullName}}</a>
+                            <b class="q-mr-xs">{{problem.node.folder ? 'Folder' : 'File'}}:</b> <a @click.stop="goto(problem.node.relPath)">{{problem.node.fullName}}</a>
                         </q-item-label>
                         <q-item-label v-for="fix in problem.fixes" :key="fix.label">
                             <b class="q-mr-xs">Fix:</b> <a @click.stop="fix.action">{{fix.label}}</a>

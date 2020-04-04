@@ -13,7 +13,7 @@ export function annotateDecryptable<T extends PasswordNode>(node: T, privateKeys
         const folder = node as PasswordFolder
         const inheritsKeys = !folder.keys || folder.keys.length === 0
         const decryptable = inheritsKeys ?  inheritedDecryptable :
-          folder.keys.some(key => findMatchingKey(key, privateKeys))
+          folder.keys.some(key => findMatchingKey(key, privateKeys, 'sec'))
 
         let hasDecryptableChildren = false
         folder.children.forEach(child => {

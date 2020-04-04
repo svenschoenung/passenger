@@ -31,7 +31,7 @@ import { PublicKey } from 'gpg-promised'
 
 import { PasswordFolder, PasswordNode, getParents } from '@/model/passwords';
 import { KeysModule, PasswordsModule, AnnotationsModule } from '@/store';
-import { findMatchingPublicKeys } from '@/service/gpg';
+import { findMatchingPublicKeys, UnknownKey } from '@/service/gpg';
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 import { Resolvable, resolvable, resolved } from '@/store/resolvable';
@@ -49,14 +49,14 @@ export default class PasswordFolderDetails extends Vue {
     return AnnotationsModule.decryptable
   }
 
-  get assignedKeys(): Resolvable<PublicKey[]> {
+  get assignedKeys(): Resolvable<(PublicKey | UnknownKey<PublicKey>)[]> {
     if (!this.publicKeys.value) {
       return resolvable(this.publicKeys)
     }
     return resolved(findMatchingPublicKeys(this.folder.keys, this.publicKeys.value))
   }
 
-  get inheritedKeys(): Resolvable<PublicKey[]> {
+  get inheritedKeys(): Resolvable<(PublicKey | UnknownKey<PublicKey>)[]> {
     if (!this.publicKeys.value) {
       return resolvable(this.publicKeys)
     }

@@ -151,6 +151,17 @@ store.watch(
 )
 
 store.watch(
+  state => [state.passwords.tree, state.keys.publicKeys, state.annotations.usedKeys],
+  ([tree, publicKeys, usedKeys]) => {
+    if (tree.value && publicKeys.value && usedKeys) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesEncryptedWithoutIntendedKeys())
+    }
+  },
+  { deep: true, immediate: false }
+)
+
+
+store.watch(
   state => state.settings.gpgPath,
   gpgPath => {
     if (gpgPath) {

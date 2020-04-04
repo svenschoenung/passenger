@@ -3,7 +3,7 @@
 - [x] Better colors in password overview
 - [ ] Configure custom fields in settings
 - [ ] Watch file system for changes
-- [ ] Compare gpg-id with keys used to encrypt files and issue warnings
+- [x] Compare gpg-id with keys used to encrypt files and issue warnings
 - [ ] Show more information about keys
 - [ ] Sort and filter problems
 - [ ] Large password reveal
