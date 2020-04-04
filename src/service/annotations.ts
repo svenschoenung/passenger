@@ -1,9 +1,8 @@
 import Vue from 'vue';
 import { PrivateKey, PublicKey } from 'gpg-promised'
 
-import { findMatchingKey, findUnknownPublicKeys } from '@/service/gpg';
+import { findUnknownPublicKeys, hasMatchingPrivateKey } from '@/service/gpg';
 import { PasswordFolder, PasswordNode } from '@/model/passwords'
-import { PasswordFlags } from '@/store/modules/passwords'
 import { PasswordKeysMap, AnnotationsState } from '@/store/modules/annotations';
 
 export function annotateDecryptable<T extends PasswordNode>(node: T, privateKeys: PrivateKey[],
@@ -13,7 +12,7 @@ export function annotateDecryptable<T extends PasswordNode>(node: T, privateKeys
         const folder = node as PasswordFolder
         const inheritsKeys = !folder.keys || folder.keys.length === 0
         const decryptable = inheritsKeys ?  inheritedDecryptable :
-          folder.keys.some(key => findMatchingKey(key, privateKeys, 'sec'))
+          folder.keys.some(key => hasMatchingPrivateKey(key, privateKeys))
 
         let hasDecryptableChildren = false
         folder.children.forEach(child => {

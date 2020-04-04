@@ -106,6 +106,10 @@ export async function decryptPasswordFile(absPath: string, opts?: GPGOptions) {
     return output.trimEnd()
 }
 
+export function hasMatchingPrivateKey(key: string, publicKeys: PrivateKey[]): boolean {
+    return !(findMatchingKey(key, publicKeys, 'sec') as any).unknown
+}
+
 export async function listUsedKeys(absPath: string, opts?: GPGOptions) {
     const output = await runGpg({
         ...opts,
