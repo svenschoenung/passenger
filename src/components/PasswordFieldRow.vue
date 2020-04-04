@@ -50,39 +50,15 @@
 import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator';
 import { shell } from 'electron';
 import { validate } from 'validate.js'
+import { Notify } from 'quasar';
 
 import { FolderValidator } from '@/model/validation';
 import { setNonReactiveProps } from '@/util/props';
 import { parseTextContents, parseKeyValueContents, serializeKeyValueContents, PasswordKeyValueContents, PasswordField } from '@/service/contents';
+import { copyToClipboard } from '@/service/clipboard';
+import { CustomFieldType } from '@/store/modules/settings';
 import icons from '@/ui/icons';
-import { copyToClipboard } from '../service/clipboard';
-import { Notify } from 'quasar';
-
-export enum FieldType {
-    user = 'user',
-    email = 'email',
-    url = 'url'
-}
-
-export interface FieldTypeKeys {
-    type: FieldType,
-    keys: string[]
-}
-
-export const DEFAULT_FIELDS: FieldTypeKeys[] = [
-    {
-        type: FieldType.user,
-        keys: ['User', 'Username', 'Login', 'Account']
-    },
-    {
-        type: FieldType.email,
-        keys: ['Email', 'Mail', 'Email-Address']
-    },
-    {
-        type: FieldType.url,
-        keys: ['URL', 'Web', 'Website']
-    }
-]
+import { SettingsModule } from '@/store';
 
 @Component({})
 export default class PasswordFieldRow extends Vue {
@@ -95,18 +71,18 @@ export default class PasswordFieldRow extends Vue {
   get type() {
     if (this.field.key) {
         const fieldKey = this.field.key.toLowerCase()
-        const typeFromKey = DEFAULT_FIELDS.find(fieldTypeKeys => {
-            return fieldTypeKeys.keys.find(key => key.toLowerCase() === fieldKey)
+        const typeFromKey = SettingsModule.customFields.find(customField => {
+            return customField.keys.find(key => key.toLowerCase() === fieldKey)
         })
         if (typeFromKey) {
             return typeFromKey.type
         }
     }
-    const typeFromValidation = DEFAULT_FIELDS.find(fieldTypeKeys => {
+    const typeFromValidation = SettingsModule.customFields.find(customField => {
         let valid: boolean = false
-        switch (fieldTypeKeys.type) {
-            case FieldType.url: valid = this.isValidUrl; break;
-            case FieldType.email: valid = this.isValidEmail; break;
+        switch (customField.type) {
+            case CustomFieldType.url: valid = this.isValidUrl; break;
+            case CustomFieldType.email: valid = this.isValidEmail; break;
         }
         if (valid) {
             return true

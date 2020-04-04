@@ -23,6 +23,7 @@ import { ionIosRefresh } from '@quasar/extras/ionicons-v4'
 import { ionIosGitCommit } from '@quasar/extras/ionicons-v4'
 import { ionIosGitMerge } from '@quasar/extras/ionicons-v4'
 import { ionIosColorWand } from '@quasar/extras/ionicons-v4'
+import { ionIosHelpCircleOutline } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
 import { ionMdClipboard } from '@quasar/extras/ionicons-v4'
@@ -49,6 +50,7 @@ const icons = {
     increase: ionIosArrowUp,
     decrease: ionIosArrowDown,
     expanded: ionIosArrowDown,
+    down: ionIosArrowDown,
     error: ionIosCloseCircleOutline,
     errors: ionIosCloseCircleOutline,
     warning: ionIosWarning,
@@ -73,7 +75,8 @@ const icons = {
     clipboard: ionMdClipboard,
     commit: ionIosGitCommit,
     mergeCommit: ionIosGitMerge,
-    generatePassword: ionIosColorWand
+    generatePassword: ionIosColorWand,
+    help: ionIosHelpCircleOutline
 }
 
 export default icons

@@ -1,6 +1,6 @@
 - [ ] Remove annotations.matches
 - [x] Password generator
-- [ ] Better colors in password overview
+- [x] Better colors in password overview
 - [ ] Configure custom fields in settings
 - [ ] Watch file system for changes
 - [ ] Compare gpg-id with keys used to encrypt files and issue warnings

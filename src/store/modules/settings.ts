@@ -8,6 +8,32 @@ export interface SetupPayload {
 
 export type ColorTheme = 'light' | 'dark' | 'system'
 
+export enum CustomFieldType {
+    user = 'user',
+    email = 'email',
+    url = 'url'
+}
+
+export interface CustomField {
+    type: CustomFieldType,
+    keys: string[]
+}
+
+export const DEFAULT_CUSTOM_FIELDS: CustomField[] = [
+    {
+        type: CustomFieldType.user,
+        keys: ['User', 'Username', 'Login', 'Account']
+    },
+    {
+        type: CustomFieldType.email,
+        keys: ['Email', 'Mail', 'Email-Address']
+    },
+    {
+        type: CustomFieldType.url,
+        keys: ['URL', 'Web', 'Website']
+    }
+]
+
 export interface SettingsState {
     repoPath: string | null
     gpgPath: string | null
@@ -15,6 +41,7 @@ export interface SettingsState {
     showStatusBar: boolean
     enablePasswordInClipboardTimeout: boolean
     passwordInClipboardTimeout: number
+    customFields: CustomField[]
 }
 
 @Module({ name: 'settings', namespaced: true })
@@ -25,6 +52,7 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     showStatusBar = true
     enablePasswordInClipboardTimeout = false
     passwordInClipboardTimeout = 40
+    customFields = DEFAULT_CUSTOM_FIELDS
 
     @Mutation
     setup(payload: SetupPayload) {
@@ -61,5 +89,10 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     @Mutation
     setPasswordInClipboardTimeout(passwordInClipboardTimeout: number) {
         this.passwordInClipboardTimeout = passwordInClipboardTimeout
+    }
+
+    @Mutation
+    setCustomFields(customFields: CustomField[]) {
+        this.customFields = customFields
     }
 }

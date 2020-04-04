@@ -24,12 +24,12 @@
         <q-btn-dropdown split rounded flat dense size="sm" @click="addField()"
           :icon="icons.add" :dropdown-icon="icons.expanded">
           <q-list dense>
-            <q-item v-for="f in fieldTypeKeys" :key="f.type"
-              clickable v-close-popup @click="addField(f.keys[0])">
+            <q-item v-for="(customField, i) in customFields" :key="i"
+              clickable v-close-popup @click="addField(customField.keys[0])">
               <q-item-section>
                  <q-item-label class="q-mr-sm">
-                 <q-icon :name="icons[f.type]" size="xs" class="q-mr-sm"/>
-                  {{f.keys[0]}}
+                 <q-icon :name="icons[customField.type]" size="xs" class="q-mr-sm"/>
+                  {{customField.keys[0]}}
                  </q-item-label>
               </q-item-section>
             </q-item>
@@ -57,8 +57,9 @@ import electron from 'electron';
 import { FolderValidator } from '@/model/validation';
 import { setNonReactiveProps } from '@/util/props';
 import { parseTextContents, parseKeyValueContents, serializeKeyValueContents, PasswordKeyValueContents, PasswordField } from '@/service/contents';
-import { FieldType, DEFAULT_FIELDS, FieldTypeKeys } from './PasswordFieldRow.vue';
 import icons from '@/ui/icons';
+import { CustomField } from '@/store/modules/settings';
+import { SettingsModule } from '@/store';
 
 @Component({})
 export default class PasswordKeyValueEditor extends Vue {
@@ -71,8 +72,8 @@ export default class PasswordKeyValueEditor extends Vue {
     this.ensureOneFieldExists()
   }
 
-  get fieldTypeKeys(): FieldTypeKeys[] {
-    return DEFAULT_FIELDS
+  get customFields(): CustomField[] {
+    return SettingsModule.customFields
   }
 
   setPassword(password: string) {

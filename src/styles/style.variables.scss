@@ -18,6 +18,11 @@ $bg-0-dark : $dark;
 $bg-1-light: #fafafa;
 $bg-1-dark : #252426;
 
+$bg-btn-secondary-light: none;
+$bg-btn-secondary-dark: $grey-8;
+$fg-btn-secondary-light: $grey-9;
+$fg-btn-secondary-dark: white;
+
 $bg-primary-light: rgba($primary, $alpha: .2);
 $bg-primary-dark: rgba($primary, $alpha: .3);
 

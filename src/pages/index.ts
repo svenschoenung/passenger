@@ -1,6 +1,7 @@
 import Vue from 'vue'
 
 import SettingsPage from './SettingsPage.vue'
+import SettingsFieldsPage from './settings/SettingsFieldsPage.vue'
 import SettingsKeysPage from './settings/SettingsKeysPage.vue'
 import SettingsRepoPage from './settings/SettingsRepoPage.vue'
 import SettingsSecurityPage from './settings/SettingsSecurityPage.vue'
@@ -11,6 +12,7 @@ import PasswordsPage from './PasswordsPage.vue'
 import RepoPage from './RepoPage.vue'
 
 Vue.component('settings-page', SettingsPage)
+Vue.component('settings-fields-page', SettingsFieldsPage)
 Vue.component('settings-keys-page', SettingsKeysPage)
 Vue.component('settings-security-page', SettingsSecurityPage)
 Vue.component('settings-repo-page', SettingsRepoPage)

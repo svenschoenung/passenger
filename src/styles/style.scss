@@ -15,6 +15,12 @@ body.body--light {
     .bg-1 {
         background: $bg-1-light;
     }
+
+    .btn-secondary {
+        background: $bg-btn-secondary-light;
+        color: $fg-btn-secondary-light;
+        text-transform: none;
+    }
 }
 
 body.body--dark {
@@ -31,6 +37,12 @@ body.body--dark {
 
     .bg-1 {
         background: $bg-1-dark;
+    }
+
+    .btn-secondary {
+        background: $bg-btn-secondary-dark;
+        color: $fg-btn-secondary-dark;
+        text-transform: none;
     }
 }
 
