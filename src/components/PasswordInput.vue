@@ -7,7 +7,7 @@
           :type="showPassword ? 'text' : 'password'"
           v-model="value">
           <template slot:append>
-              <q-btn dense flat @click="showPassword = !showPassword">
+              <q-btn dense flat @click="toggleShowPassword">
                   <q-icon :name="icons[showPassword ? 'hidePassword' : 'showPassword']"/>
                   <q-tooltip :delay="1000">Reveal password</q-tooltip>
               </q-btn>
@@ -15,11 +15,11 @@
                   <q-icon :name="icons.glasses"/>
                   <q-tooltip :delay="1000">Reveal large password</q-tooltip>
               </q-btn>
-              <q-btn dense flat @click="showPassword = false; showGeneratePassword = !showGeneratePassword">
+              <q-btn dense flat @click="toggleShowGeneratePassword">
                   <q-icon :name="icons.generatePassword"/>
                   <q-tooltip :delay="1000">Generate password</q-tooltip>
               </q-btn>
-              <q-btn dense flat @click="copyToClipboard()" :disable="!value">
+              <q-btn dense flat @click="copyToClipboard" :disable="!value">
                   <q-icon :name="icons.clipboard"/>
                   <q-tooltip :delay="1000">Copy to clipboard</q-tooltip>
               </q-btn> 
@@ -48,9 +48,9 @@ import { QTooltip, Notify } from 'quasar';
 import { generate } from 'generate-password'
 
 import PasswordPopup from '@/components/PasswordPopup.vue';
-import { setNonReactiveProps } from '@/util/props';
+import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from '@/util/props';
 import { copyToClipboard } from '@/service/clipboard';
-import { PreferencesModule } from '@/store';
+import { PreferencesModule, UIModule, SettingsModule } from '@/store';
 import icons from '@/ui/icons';
 
 @Component({})
@@ -61,6 +61,32 @@ export default class PasswordInput extends Vue {
 
   created() {
     setNonReactiveProps(this, { icons })
+    this.subscribeEndCountdown()
+  }
+  
+  activated() {
+    this.subscribeEndCountdown()
+  }
+
+  deactivated() {
+    this.unsubscribeEndCountdown()
+  }
+
+  destroyed() {
+    this.unsubscribeEndCountdown()
+  }
+
+  subscribeEndCountdown() {
+    initNonReactiveProp(this, 'endCountdown', () => this.$store.subscribeAction(action => {
+      if (action.type === 'ui/endCountdown' && action.payload === 'passwordReveal') {
+        this.showPassword = false
+      }
+    }))
+  }
+
+  unsubscribeEndCountdown() {
+    removeNonReactiveProp(this, 'endCountdown', unsubscribe => unsubscribe())
+    UIModule.endCountdown('passwordReveal')
   }
 
   get password() {
@@ -80,15 +106,31 @@ export default class PasswordInput extends Vue {
     return value;
   }
 
-  async copyToClipboard() {
-    await copyToClipboard(this.value, true)
-    Notify.create({
-      color: 'primary',
-      classes: 'notification-above-status-bar',
-      position: 'bottom-right',
-      message: 'Password copied',
-      timeout: 1500,
+  toggleShowPassword() {
+    if (this.showPassword) {
+      this.showPassword = false
+      UIModule.endCountdown('passwordReveal')
+    } else {
+      this.showPassword = true
+      if (SettingsModule.timeouts.passwordReveal.enable) {
+        UIModule.startPasswordRevealCountdown()
+      }
+    }
+  }
+
+  showPasswordDialog() {
+    this.$q.dialog({
+      component: PasswordPopup,
+      parent: this,
+      password: this.value
     })
+  }
+
+  toggleShowGeneratePassword() {
+    if (this.showGeneratePassword) {
+      this.showPassword = false
+    }
+    this.showGeneratePassword = !this.showGeneratePassword
   }
 
   generatePassword() {
@@ -100,11 +142,14 @@ export default class PasswordInput extends Vue {
     this.updatePassword(pass)
   }
 
-  showPasswordDialog() {
-    this.$q.dialog({
-      component: PasswordPopup,
-      parent: this,
-      password: this.value
+  async copyToClipboard() {
+    await copyToClipboard(this.value, true)
+    Notify.create({
+      color: 'primary',
+      classes: 'notification-above-status-bar',
+      position: 'bottom-right',
+      message: 'Password copied',
+      timeout: 1500,
     })
   }
 }

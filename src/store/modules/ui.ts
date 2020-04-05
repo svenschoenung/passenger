@@ -1,10 +1,10 @@
-import { UIModule } from '@/store';
-import { SettingsModule, PreferencesModule } from './../index';
 import Vue from 'vue'
 import { Rectangle } from 'electron'
 import { Module, VuexModule, Mutation, Action,  } from 'vuex-module-decorators'
 import { darkMode } from 'electron-util'
 
+import { SettingsModule, PreferencesModule, UIModule } from '@/store';
+import { TimeoutType } from '@/store/modules/settings';
 import { PasswordNode, traverseTree, getParents } from '@/model/passwords'
 import { removePasswordFromClipboard } from '@/service/clipboard';
 
@@ -29,6 +29,11 @@ export type PageType = 'settings' | 'repo' | 'keys' | 'passwords' | 'problems'
 export type SettingsPageType = 'repo' | 'keys' | 'ui'
 export type ContentViewType = 'text' | 'key-value'
 
+export interface CountdownState {
+  seconds: number
+  interval: number | null
+}
+
 export interface UIState {
     page: string
     settingsPage: string
@@ -37,7 +42,14 @@ export interface UIState {
     scrollPos: ScrollPosState
     expandedFolders: { [relPath: string]: boolean }
     systemDarkMode: boolean
+    countdowns: {
+      passwordInClipboard: CountdownState
+      passwordReveal: CountdownState
+      passwordPopup: CountdownState
+    }
 }
+
+export type CountdownType = keyof UIState['countdowns']
 
 export interface ExpandFoldersPayload {
   from: PasswordNode
@@ -53,8 +65,11 @@ export default class UIVuexModule extends VuexModule implements UIState {
   scrollPos: ScrollPosState = { tree: 0, list: 0 }
   expandedFolders: { [relPath: string]: boolean } = {}
   systemDarkMode: boolean = darkMode.isEnabled
-  passwordInClipboardInterval: number | null = null
-  passwordInClipboardCountdown: number = 0
+  countdowns: UIState['countdowns'] = {
+    passwordInClipboard: { seconds: 0, interval: null },
+    passwordReveal: { seconds: 0, interval: null },
+    passwordPopup: { seconds: 0, interval: null }
+  }
 
   @Mutation
   setPage(page: PageType) {
@@ -143,39 +158,51 @@ export default class UIVuexModule extends VuexModule implements UIState {
 
   @Action
   startPasswordInClipboardCountdown() {
-    const timeout = SettingsModule.passwordInClipboardTimeout
-    const endDate = Math.ceil(new Date().valueOf() / 1000 + timeout) 
-    const interval = window.setInterval(function() {
-      const now = Math.ceil(new Date().valueOf() / 1000)
-      UIModule.setPasswordInClipboardCountdown(endDate - now)
-      if (UIModule.passwordInClipboardCountdown <= 0) {
-        removePasswordFromClipboard()
-      }
-    }, 1000)
-    this.initPasswordInClipboardCountdown({ countdown: timeout, interval })
+    startCountdown({
+      countdownType: 'passwordInClipboard',
+      timeoutType: 'passwordInClipboard',
+      elapsed: () => removePasswordFromClipboard()
+    })
+  } 
+
+  @Action
+  startPasswordRevealCountdown() {
+    startCountdown({
+      countdownType: 'passwordReveal',
+      timeoutType: 'passwordReveal',
+      elapsed: () => this.endCountdown('passwordReveal')
+    })
   }
 
   @Action
-  stopPasswordInClipboardCountdown() {
-    window.clearInterval(UIModule.passwordInClipboardInterval || undefined)
-    UIModule.cleanupPasswordInClipboardCountdown()
+  startPasswordPopupCountdown() {
+    startCountdown({
+      countdownType: 'passwordPopup',
+      timeoutType: 'passwordReveal',
+      elapsed: () => this.endCountdown('passwordPopup')
+    })
+  }
+
+  @Action
+  endCountdown(type: CountdownType) {
+    window.clearInterval(UIModule.countdowns[type].interval || undefined)
+    UIModule.clearCountdown(type)
   }
 
   @Mutation
-  initPasswordInClipboardCountdown(payload: { countdown: number, interval: number}) {
-    this.passwordInClipboardCountdown = payload.countdown
-    this.passwordInClipboardInterval = payload.interval
+  initCountdown(payload: { type: CountdownType, countdown: CountdownState }) {
+    this.countdowns[payload.type] = payload.countdown
   }
 
   @Mutation
-  setPasswordInClipboardCountdown(countdown: number) {
-    this.passwordInClipboardCountdown = countdown <= 0 ? 0 : countdown
+  setCountdownSeconds(payload: { type: CountdownType, seconds: number }) {
+    this.countdowns[payload.type].seconds = payload.seconds <= 0 ? 0 : payload.seconds
   }
 
   @Mutation
-  cleanupPasswordInClipboardCountdown() {
-    this.passwordInClipboardCountdown = 0
-    this.passwordInClipboardInterval = null
+  clearCountdown(type: CountdownType) {
+    this.countdowns[type].seconds = 0
+    this.countdowns[type].interval = null
   }
 
   get darkMode() {
@@ -185,4 +212,17 @@ export default class UIVuexModule extends VuexModule implements UIState {
     return SettingsModule.colorTheme === 'dark'
   }
 
+}
+
+function startCountdown(opts: { countdownType: CountdownType, timeoutType: TimeoutType, elapsed: () => void }) {
+  const seconds = SettingsModule.timeouts[opts.timeoutType].seconds
+  const endDate = Math.ceil(new Date().valueOf() / 1000 + seconds) 
+  const interval = window.setInterval(function() {
+    const now = Math.ceil(new Date().valueOf() / 1000)
+    UIModule.setCountdownSeconds({ type: opts.countdownType, seconds: endDate - now })
+    if (UIModule.countdowns[opts.countdownType].seconds <= 0 && UIModule.countdowns[opts.countdownType].interval) {
+      opts.elapsed()
+    }
+  }, 1000)
+  UIModule.initCountdown({ type: opts.countdownType, countdown: { seconds, interval } })
 }

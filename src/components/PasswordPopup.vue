@@ -15,18 +15,44 @@ import { Component, Vue, Prop, Emit, Watch, Ref } from 'vue-property-decorator';
 import { QTooltip, Notify, QDialog } from 'quasar';
 
 import icons from '@/ui/icons';
+import { initNonReactiveProp, removeNonReactiveProp } from '@/util/props';
+import { UIModule, SettingsModule } from '@/store';
 
 @Component({})
 export default class PasswordInput extends Vue {
   @Prop({ type: String }) password!: string;
   @Ref() dialog!: QDialog;
 
-  show () {
+  show() {
     this.dialog.show()
+    this.subscribeEndCountdown()
+    if (SettingsModule.timeouts.passwordReveal.enable) {
+        UIModule.startPasswordPopupCountdown()
+    }
   }
 
-  hide () {
+  hide() {
     this.dialog.hide()
+    this.unsubscribeEndCountdown()
+    UIModule.endCountdown('passwordPopup')
+  }
+
+  @Emit('hide')
+  hideDialog() {
+    this.unsubscribeEndCountdown()
+    UIModule.endCountdown('passwordPopup')
+  }
+
+  subscribeEndCountdown() {
+    initNonReactiveProp(this, 'endCountdown', () => this.$store.subscribeAction(action => {
+      if (action.type === 'ui/endCountdown' && action.payload === 'passwordPopup') {
+        this.hide()
+      }
+    }))
+  }
+
+  unsubscribeEndCountdown() {
+    removeNonReactiveProp(this, 'endCountdown', unsubscribe => unsubscribe())
   }
 
   type(char: string) {
@@ -42,8 +68,6 @@ export default class PasswordInput extends Vue {
     return 'symbol'
  }
 
-  @Emit('hide')
-  hideDialog() { }
 }
 </script>
 

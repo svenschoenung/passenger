@@ -7,7 +7,7 @@
 - [ ] Show more information about keys
 - [ ] Sort and filter problems
 - [x] Large password reveal
-- [ ] Clear revealed passwords
+- [x] Clear revealed passwords
 - [ ] Multiple select in password overview
 - [ ] Settings for turning validaton on and off
 - [ ] Menu

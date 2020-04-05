@@ -8,7 +8,7 @@ let passwordHash: string | null = null
 
 export async function copyToClipboard(text: string, password: boolean) {
     await removePasswordFromClipboard()
-    if (password && SettingsModule.enablePasswordInClipboardTimeout) {
+    if (password && SettingsModule.timeouts.passwordInClipboard.enable) {
         previousClipboardText = clipboard.readText()
         clipboard.writeText(text)
         passwordSalt = await bcrypt.genSalt(10)
@@ -21,7 +21,7 @@ export async function copyToClipboard(text: string, password: boolean) {
 
 export async function removePasswordFromClipboard(sync: boolean = false) {
     if (!passwordHash || !passwordSalt) {
-        UIModule.stopPasswordInClipboardCountdown()
+        UIModule.endCountdown('passwordInClipboard')
         return
     }
     const clipboardHash = sync ? bcrypt.hashSync(clipboard.readText(), passwordSalt) : 
@@ -32,7 +32,7 @@ export async function removePasswordFromClipboard(sync: boolean = false) {
     previousClipboardText = null
     passwordHash = null
     passwordSalt = null
-    UIModule.stopPasswordInClipboardCountdown()
+    UIModule.endCountdown('passwordInClipboard')
 }
 
 export function removePasswordFromClipboardSync() {

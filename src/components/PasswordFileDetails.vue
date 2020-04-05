@@ -71,7 +71,6 @@ export default class PasswordFileDetails extends Vue {
   }
 
   async loadPasswordContents() {
-    console.log(this.decryptable)
     if (this.decryptable[this.file.relPath]) {
       try {
         this.contents = resolving()

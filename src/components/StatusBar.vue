@@ -96,7 +96,7 @@ export default class StatusBar extends Vue {
   }
 
   get passwordInClipboardCountdown() {
-      return UIModule.passwordInClipboardCountdown
+      return UIModule.countdowns.passwordInClipboard.seconds
   }
 
   async clearPassword() {

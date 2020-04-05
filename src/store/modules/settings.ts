@@ -34,15 +34,24 @@ export const DEFAULT_CUSTOM_FIELDS: CustomField[] = [
     }
 ]
 
+export interface TimeoutSettings {
+    enable: boolean
+    seconds: number
+}
+
 export interface SettingsState {
     repoPath: string | null
     gpgPath: string | null
     colorTheme: ColorTheme
     showStatusBar: boolean
-    enablePasswordInClipboardTimeout: boolean
-    passwordInClipboardTimeout: number
     customFields: CustomField[]
+    timeouts: {
+        passwordInClipboard: TimeoutSettings
+        passwordReveal: TimeoutSettings
+    }
 }
+
+export type TimeoutType = keyof SettingsState['timeouts']
 
 @Module({ name: 'settings', namespaced: true })
 export default class SettingsVuexModule extends VuexModule implements SettingsState {
@@ -50,9 +59,11 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     gpgPath: string | null = null
     colorTheme: ColorTheme = 'system' 
     showStatusBar = true
-    enablePasswordInClipboardTimeout = false
-    passwordInClipboardTimeout = 40
     customFields = DEFAULT_CUSTOM_FIELDS
+    timeouts = {
+        passwordInClipboard: { enable: true, seconds: 40 },
+        passwordReveal: { enable: true, seconds: 40 }
+    }
 
     @Mutation
     setup(payload: SetupPayload) {
@@ -82,13 +93,13 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     }
 
     @Mutation
-    setEnablePasswordInClipboardTimeout(enablePasswordInClipboardTimeout: boolean) {
-        this.enablePasswordInClipboardTimeout = enablePasswordInClipboardTimeout
+    setEnableTimeout(payload: { type: TimeoutType, enable: boolean }) {
+        this.timeouts[payload.type].enable = payload.enable
     }
 
     @Mutation
-    setPasswordInClipboardTimeout(passwordInClipboardTimeout: number) {
-        this.passwordInClipboardTimeout = passwordInClipboardTimeout
+    setTimeoutSeconds(payload: { type: TimeoutType, seconds: number }) {
+        this.timeouts[payload.type].seconds = payload.seconds
     }
 
     @Mutation
