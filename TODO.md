@@ -1,10 +1,14 @@
 - [ ] Remove annotations.matches
 - [x] Password generator
-- [x] Better colors in password overview
-- [ ] Configure custom fields in settings
+- [ ] Better colors in password overview
+- [x] Configure custom fields in settings
 - [ ] Watch file system for changes
 - [x] Compare gpg-id with keys used to encrypt files and issue warnings
 - [ ] Show more information about keys
 - [ ] Sort and filter problems
-- [ ] Large password reveal
+- [x] Large password reveal
 - [ ] Clear revealed passwords
+- [ ] Multiple select in password overview
+- [ ] Settings for turning validaton on and off
+- [ ] Menu
+- [ ] Splash screen

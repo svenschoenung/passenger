@@ -11,6 +11,10 @@
                   <q-icon :name="icons[showPassword ? 'hidePassword' : 'showPassword']"/>
                   <q-tooltip :delay="1000">Reveal password</q-tooltip>
               </q-btn>
+              <q-btn dense flat @click="showPasswordDialog">
+                  <q-icon :name="icons.glasses"/>
+                  <q-tooltip :delay="1000">Reveal large password</q-tooltip>
+              </q-btn>
               <q-btn dense flat @click="showPassword = false; showGeneratePassword = !showGeneratePassword">
                   <q-icon :name="icons.generatePassword"/>
                   <q-tooltip :delay="1000">Generate password</q-tooltip>
@@ -43,10 +47,11 @@ import { Component, Vue, Prop, Emit, Watch, Ref } from 'vue-property-decorator';
 import { QTooltip, Notify } from 'quasar';
 import { generate } from 'generate-password'
 
+import PasswordPopup from '@/components/PasswordPopup.vue';
 import { setNonReactiveProps } from '@/util/props';
-import icons from '@/ui/icons';
-import { copyToClipboard } from '../service/clipboard';
+import { copyToClipboard } from '@/service/clipboard';
 import { PreferencesModule } from '@/store';
+import icons from '@/ui/icons';
 
 @Component({})
 export default class PasswordInput extends Vue {
@@ -93,6 +98,14 @@ export default class PasswordInput extends Vue {
       strict: true
     })
     this.updatePassword(pass)
+  }
+
+  showPasswordDialog() {
+    this.$q.dialog({
+      component: PasswordPopup,
+      parent: this,
+      password: this.value
+    })
   }
 }
 </script>

@@ -15,6 +15,7 @@ import PasswordInput from './PasswordInput.vue'
 import PasswordKeyValueEditor from './PasswordKeyValueEditor.vue'
 import PasswordList from './PasswordList.vue'
 import PasswordOverview from './PasswordOverview.vue'
+import PasswordPopup from './PasswordPopup.vue'
 import PasswordTextEditor from './PasswordTextEditor.vue'
 import PasswordTree from './PasswordTree.vue'
 import ProblemsCount from './ProblemsCount.vue'
@@ -22,7 +23,7 @@ import SetupDialog from './SetupDialog.vue'
 import StatusBar from './StatusBar.vue'
 import StyledScrollbar from './StyledScrollbar.vue'
 import VirtualScroll from './VirtualScroll.vue'
-import VueHeadful from 'vue-headful';
+import VueHeadful from 'vue-headful'
 
 Vue.component('centered-error', CenteredError)
 Vue.component('centered-progress', CenteredProgress)
@@ -40,11 +41,12 @@ Vue.component('password-input', PasswordInput)
 Vue.component('password-key-value-editor', PasswordKeyValueEditor)
 Vue.component('password-list', PasswordList)
 Vue.component('password-overview', PasswordOverview)
+Vue.component('password-popup', PasswordPopup)
 Vue.component('password-text-editor', PasswordTextEditor)
 Vue.component('password-tree', PasswordTree)
 Vue.component('problems-count', ProblemsCount)
 Vue.component('setup-dialog', SetupDialog)
 Vue.component('status-bar', StatusBar)
 Vue.component('styled-scrollbar', StyledScrollbar)
-Vue.component('virtual-scroll', VirtualScroll);
-Vue.component('vue-headful', VueHeadful);
+Vue.component('virtual-scroll', VirtualScroll)
+Vue.component('vue-headful', VueHeadful)

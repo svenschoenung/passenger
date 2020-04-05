@@ -30,6 +30,7 @@ import { ionMdClipboard } from '@quasar/extras/ionicons-v4'
 import { ionEllipsisVertical } from '@/ui/ionicons-v5'
 import { ionSwapHorizontal } from '@/ui/ionicons-v5'
 import { ionServerOutline } from '@/ui/ionicons-v5'
+import { ionGlassesOutline } from '@/ui/ionicons-v5'
 import { customTreeView } from '@/ui/custom-icons';
 
 const icons = {
@@ -76,7 +77,8 @@ const icons = {
     commit: ionIosGitCommit,
     mergeCommit: ionIosGitMerge,
     generatePassword: ionIosColorWand,
-    help: ionIosHelpCircleOutline
+    help: ionIosHelpCircleOutline,
+    glasses: ionGlassesOutline
 }
 
 export default icons
