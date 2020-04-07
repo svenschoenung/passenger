@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+        * {
+            -webkit-user-select:none;
+        }
+        body.light {
+            background: #ffffff;
+        }
+        body.dark {
+            background: #333333;
+        }
+
+        .splash {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        svg {
+            width: 150px;
+            margin-bottom: 10px;
+            animation: rotation-lock 2s linear infinite;
+        }
+        body.light svg {
+            fill: #027BE3;
+        }
+        body.dark svg {
+            fill: #ffffff;
+        }
+
+        .ring {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+        .ring div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            margin: 50px;
+            border: 20px solid #ccc;
+            border-radius: 50%;
+            animation: rotation-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        body.light .ring div {
+            border-color: #cccccc transparent transparent transparent;
+        }
+        body.dark .ring div {
+            border-color: #027BE3 transparent transparent transparent;
+        }
+
+        .ring div:nth-child(1) {
+            animation-delay: -0.45s;
+        }
+        .ring div:nth-child(2) {
+            animation-delay: -0.30s;
+        }
+        .ring div:nth-child(3) {
+            animation-delay: -0.15s;
+        }
+
+        @keyframes rotation-ring {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes rotation-lock {
+            0% {
+                transform: rotate(0deg);
+                transform-origin: 75px 84px;
+            }
+            100% {
+                transform: rotate(-360deg);
+                transform-origin: 75px 84px;
+            }
+        }
+    </style>
+</head>
+<body class="<%= htmlWebpackPlugin.options.theme %>">
+    <div class="splash">
+        <svg aria-hidden="true" role="presentation" focusable="false" viewBox="0 0 512 512">
+            <path d="M376 192h-24v-46.7c0-52.7-42-96.5-94.7-97.3-53.4-.7-97.3 42.8-97.3 96v48h-24c-22 0-40 18-40 40v192c0 22 18 40 40 40h240c22 0 40-18 40-40V232c0-22-18-40-40-40zM270 316.8v68.8c0 7.5-5.8 14-13.3 14.4-8 .4-14.7-6-14.7-14v-69.2c-11.5-5.6-19.1-17.8-17.9-31.7 1.4-15.5 14.1-27.9 29.6-29 18.7-1.3 34.3 13.5 34.3 31.9 0 12.7-7.3 23.6-18 28.8zM324 192H188v-48c0-18.1 7.1-35.1 20-48s29.9-20 48-20 35.1 7.1 48 20 20 29.9 20 48v48z"></path>
+        </svg>
+    </div>
+    <div class="ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</body>
+</html>

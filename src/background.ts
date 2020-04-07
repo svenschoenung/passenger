@@ -2,7 +2,11 @@
 
 import { app, protocol, screen, BrowserWindow } from 'electron'
 import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
+import Store from 'electron-store'
 import unhandled from 'electron-unhandled';
+import path from 'path'
+import { get } from 'lodash'
+import { darkMode } from 'electron-util'
 
 unhandled({
   logger: error => {
@@ -18,19 +22,71 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win: BrowserWindow | null = null;
+let splash: BrowserWindow | null = null;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }])
 
-function createWindow () {
-  const [ minWidth, minHeight ] = [ 640, 480 ]
+function loadState() {
+  return new Store({ name: 'store' }).get('state');
+}
+
+function createSplash(state = loadState()) {
   const screenSize = screen.getPrimaryDisplay().workAreaSize
+  const width = 400
+  const height = 400
+
+  splash = new BrowserWindow({
+    title: 'Passenger',
+    show: true,
+    x: (screenSize.width - width) / 2,
+    y: (screenSize.height - height) / 2, 
+    width,
+    height,
+    resizable: false,
+    frame: false,
+    focusable: false,
+    alwaysOnTop: true,
+    webPreferences: {
+      nodeIntegration: false
+    }
+  })
+
+  let theme = get(state, 'settings.colorTheme')
+  if (!theme || theme === 'system') {
+    theme = darkMode.isEnabled ? 'dark' : 'light'
+  }
+
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    // Load the url of the dev server if in development mode
+    splash.loadURL(path.join(process.env.WEBPACK_DEV_SERVER_URL, `splash_${theme}.html`))
+  } else {
+    createProtocol('app')
+    // Load the index.html when not in development
+    splash.loadURL(`app://./splash_${theme}.html`)
+  }
+}
+
+function createWindow(state = loadState()) {
+  const [ minWidth, minHeight ] = [ 640, 480 ]
+  const x = get(state, 'preferences.windowState.bounds.x')
+  const y = get(state, 'preferences.windowState.bounds.y')
+  let width = get(state, 'preferences.windowState.bounds.width')
+  let height = get(state, 'preferences.windowState.bounds.height')
+
+  if (!width || !height) {
+    const screenSize = screen.getPrimaryDisplay().workAreaSize
+    width = Math.round(Math.max(minWidth, screenSize.width * 0.8))
+    height = Math.round(Math.max(minHeight, screenSize.height * 0.8))
+  }
 
   win = new BrowserWindow({
     title: 'Passenger',
     show: false,
-    width: Math.round(Math.max(minWidth, screenSize.width * 0.8)),
-    height: Math.round(Math.max(minHeight, screenSize.height * 0.8)),
+    x,
+    y,
+    width,
+    height, 
     minWidth,
     minHeight,
     webPreferences: {
@@ -42,6 +98,10 @@ function createWindow () {
     if (win) {
       win.show()
       win.focus()
+    }
+    if (splash) {
+      splash.close()
+      splash = null
     }
   });
 
@@ -95,7 +155,9 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
-  createWindow()
+  const state = loadState()
+  createSplash(state)
+  createWindow(state)
 })
 
 // Exit cleanly on request from parent process in development mode.
