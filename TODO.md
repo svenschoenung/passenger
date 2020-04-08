@@ -11,4 +11,5 @@
 - [ ] Multiple select in password overview
 - [ ] Settings for turning validaton on and off
 - [ ] Menu
-- [ ] Splash screen
+- [x] Splash screen
+- [ ] Setup wizard

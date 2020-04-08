@@ -31,6 +31,13 @@ module.exports = {
   pluginOptions: {
     quasar: {
       rtlSupport: false
+    },
+    electronBuilder: {
+      builderOptions: {
+        appId: "org.schoenung.passenger",
+        productName: "Passenger",
+        copyright: "Copyright © 2020 Sven Schoenung"
+      }
     }
   },
   transpileDependencies: [

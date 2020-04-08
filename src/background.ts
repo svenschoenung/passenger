@@ -1,5 +1,7 @@
 'use strict'
 
+declare var __static: string;
+
 import { app, protocol, screen, BrowserWindow } from 'electron'
 import { createProtocol, installVueDevtools } from 'vue-cli-plugin-electron-builder/lib'
 import Store from 'electron-store'
@@ -43,6 +45,7 @@ function createSplash(state = loadState()) {
     y: (screenSize.height - height) / 2, 
     width,
     height,
+    icon: path.join(__static, 'icon.png'),
     resizable: false,
     frame: false,
     focusable: false,
@@ -57,11 +60,10 @@ function createSplash(state = loadState()) {
     theme = darkMode.isEnabled ? 'dark' : 'light'
   }
 
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
+  if (process.env.NODE_ENV === 'development') {
     // Load the url of the dev server if in development mode
-    splash.loadURL(path.join(process.env.WEBPACK_DEV_SERVER_URL, `splash_${theme}.html`))
+    splash.loadURL(path.join(process.env.WEBPACK_DEV_SERVER_URL!, `splash_${theme}.html`))
   } else {
-    createProtocol('app')
     // Load the index.html when not in development
     splash.loadURL(`app://./splash_${theme}.html`)
   }
@@ -89,6 +91,7 @@ function createWindow(state = loadState()) {
     height, 
     minWidth,
     minHeight,
+    icon: path.join(__static, 'icon.png'),
     webPreferences: {
       nodeIntegration: true
     }
@@ -105,12 +108,11 @@ function createWindow(state = loadState()) {
     }
   });
 
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
+  if (process.env.NODE_ENV === 'development') {
     // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL!)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
-    createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
@@ -155,6 +157,11 @@ app.on('ready', async () => {
       console.error('Vue Devtools failed to install:', e.toString())
     }
   }
+
+  if (!process.env.WEBPACK_DEV_SERVER_URL) {
+    createProtocol('app')
+  }
+
   const state = loadState()
   createSplash(state)
   createWindow(state)
