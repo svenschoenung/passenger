@@ -40,7 +40,7 @@
 import { Component, Vue, Prop, Emit, Watch } from 'vue-property-decorator';
 import electron from 'electron';
 
-import { FolderValidator } from '@/model/validation';
+import { PathValidator } from '@/model/validation';
 import { setNonReactiveProps } from '@/util/props';
 import { parseTextContents, PasswordTextContents, serializeTextContents } from '@/service/contents';
 import icons from '@/ui/icons';

@@ -52,7 +52,7 @@ import { shell } from 'electron';
 import { validate } from 'validate.js'
 import { Notify } from 'quasar';
 
-import { FolderValidator } from '@/model/validation';
+import { PathValidator } from '@/model/validation';
 import { setNonReactiveProps } from '@/util/props';
 import { parseTextContents, parseKeyValueContents, serializeKeyValueContents, PasswordKeyValueContents, PasswordField } from '@/service/contents';
 import { copyToClipboard } from '@/service/clipboard';

@@ -4,7 +4,6 @@ import CenteredProgress from './CenteredProgress.vue'
 import ColorThemePicker from './ColorThemePicker.vue'
 import FolderBreadcrumbs from './FolderBreadcrumbs.vue'
 import FolderButton from './FolderButton.vue'
-import FolderPicker from './FolderPicker.vue'
 import KeyList from './KeyList.vue'
 import MenuBar from './MenuBar.vue'
 import NumberInput from './NumberInput.vue'
@@ -18,6 +17,7 @@ import PasswordOverview from './PasswordOverview.vue'
 import PasswordPopup from './PasswordPopup.vue'
 import PasswordTextEditor from './PasswordTextEditor.vue'
 import PasswordTree from './PasswordTree.vue'
+import PathPicker from './PathPicker.vue'
 import ProblemsCount from './ProblemsCount.vue'
 import SetupDialog from './SetupDialog.vue'
 import StatusBar from './StatusBar.vue'
@@ -30,7 +30,6 @@ Vue.component('centered-progress', CenteredProgress)
 Vue.component('color-theme-picker', ColorThemePicker)
 Vue.component('folder-breadcrumbs', FolderBreadcrumbs)
 Vue.component('folder-button', FolderButton)
-Vue.component('folder-picker', FolderPicker)
 Vue.component('key-list', KeyList)
 Vue.component('menu-bar', MenuBar)
 Vue.component('number-input', NumberInput)
@@ -44,6 +43,7 @@ Vue.component('password-overview', PasswordOverview)
 Vue.component('password-popup', PasswordPopup)
 Vue.component('password-text-editor', PasswordTextEditor)
 Vue.component('password-tree', PasswordTree)
+Vue.component('path-picker', PathPicker)
 Vue.component('problems-count', ProblemsCount)
 Vue.component('setup-dialog', SetupDialog)
 Vue.component('status-bar', StatusBar)

@@ -1,3 +1,4 @@
+import { SettingsModule } from './../store/index';
 import gpg, { GenericKey, GPGUser, PublicKey, PrivateKey, SubKey, GPGKey } from 'gpg-promised'
 //import { spawn } from 'child_process';
 import { ValidationResult, validateFolder } from '@/model/validation';
@@ -19,7 +20,7 @@ async function runGpg(opts: { args: string[], ignoreError?: boolean } & GPGOptio
     }
 
     try {
-        const gpgProcess = await spawn('gpg', args, { capture: [ 'stdout', 'stderr' ]})
+        const gpgProcess = await spawn(SettingsModule.gpgBinaryPath || 'gpg', args, { capture: [ 'stdout', 'stderr' ]})
         return gpgProcess.stdout;
     } catch (e) {
         if (opts.ignoreError) {

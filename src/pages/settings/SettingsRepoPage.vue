@@ -7,9 +7,10 @@
     spellcheck="false"
     class="q-pa-md"
   >
-        <folder-picker
+        <path-picker
           label="Repository location:"
           title="Open repository"
+          :folder="true"
           :validator="validateRepository"
           v-model="repoPath"/>
   </q-form>

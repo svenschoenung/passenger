@@ -42,6 +42,7 @@ export interface TimeoutSettings {
 export interface SettingsState {
     repoPath: string | null
     gpgPath: string | null
+    gpgBinaryPath: string | null
     colorTheme: ColorTheme
     showStatusBar: boolean
     customFields: CustomField[]
@@ -57,6 +58,7 @@ export type TimeoutType = keyof SettingsState['timeouts']
 export default class SettingsVuexModule extends VuexModule implements SettingsState {
     repoPath: string | null = null
     gpgPath: string | null = null
+    gpgBinaryPath: string | null = null
     colorTheme: ColorTheme = 'system' 
     showStatusBar = true
     customFields = DEFAULT_CUSTOM_FIELDS
@@ -80,6 +82,11 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     @Mutation
     setGPGPath(gpgPath: string) {
         this.gpgPath = gpgPath
+    }
+
+    @Mutation
+    setGPGBinaryPath(gpgBinaryPath: string) {
+        this.gpgBinaryPath = gpgBinaryPath
     }
 
     @Mutation

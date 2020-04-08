@@ -18,14 +18,16 @@
           class="q-pa-md"
           @submit="setup"
         >
-        <folder-picker
+        <path-picker
           label="Repository location:"
           title="Open repository"
+          :folder="true"
           :validator="validateRepository"
           v-model="repoPath"/>
-        <folder-picker
+        <path-picker
           label="GPG homedir location:"
           title="Open GPG homedir"
+          :folder="true"
           :validator="validateGPGHomedir"
           v-model="gpgPath"/>
         <q-list>

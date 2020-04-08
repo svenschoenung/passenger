@@ -1,18 +1,18 @@
 <template>
   <q-input
-    class="folder-picker"
+    class="path-picker"
     outlined
     debounce="500"
-    v-model="folderPath"
+    v-model="path"
     :label="label"
     stack-label
     auto-focus
     bottom-slots
-    :rules="[validateRepository]"
+    :rules="[validateSelection]"
   >
     <template v-slot:append>
       <q-avatar rounded>
-        <q-btn @click="openRepository">
+        <q-btn @click="openFileDialog">
           <q-icon :name="icons.folder" />
         </q-btn>
       </q-avatar>
@@ -24,24 +24,25 @@
 import { Component, Vue, Prop, Emit } from 'vue-property-decorator';
 import electron from 'electron';
 
-import { FolderValidator } from '@/model/validation';
+import { PathValidator } from '@/model/validation';
 import { setNonReactiveProps } from '@/util/props';
 import icons from '@/ui/icons';
 
 @Component({})
-export default class FolderPicker extends Vue {
+export default class PathPicker extends Vue {
   @Prop({ type: String }) label!: string;
   @Prop({ type: String }) title!: string;
   @Prop({ type: String }) value!: string;
-  @Prop({ type: Function }) validator!: FolderValidator;
-  folderPath: string | null = null;
+  @Prop({ type: Boolean }) folder!: boolean;
+  @Prop({ type: Function }) validator!: PathValidator;
+  path: string | null = null;
 
   created() {
     setNonReactiveProps(this, { icons })
-    this.folderPath = this.value;
+    this.path = this.value;
   }
 
-  async validateRepository(repoPath: string) {
+  async validateSelection(repoPath: string) {
     const result = await this.validator(repoPath);
     if (result.valid) {
       this.updateValue(repoPath);
@@ -50,18 +51,18 @@ export default class FolderPicker extends Vue {
     return result.error;
   }
 
-  async openRepository() {
-    const folder = await electron.remote.dialog.showOpenDialog(
+  async openFileDialog() {
+    const file = await electron.remote.dialog.showOpenDialog(
       electron.remote.getCurrentWindow(),
       {
         title: this.title,
         defaultPath: this.value,
         buttonLabel: "Open",
-        properties: ["openDirectory", "showHiddenFiles", "createDirectory"]
+        properties: [this.folder ? "openDirectory" : "openFile", "showHiddenFiles", "createDirectory"]
       }
     );
-    if (folder && folder.filePaths && folder.filePaths[0]) {
-      this.folderPath = folder.filePaths[0];
+    if (file && file.filePaths && file.filePaths[0]) {
+      this.path = file.filePaths[0];
     }
   }
 
@@ -75,7 +76,7 @@ export default class FolderPicker extends Vue {
 <style lang="scss">
 @import "src/styles/style.variables.scss";
 
-.folder-picker .q-field__append.q-anchor--skip {
+.path-picker .q-field__append.q-anchor--skip {
   display: none;
 }
 </style>
