@@ -1,4 +1,8 @@
-# Passenger
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/svenschoenung/passenger/master/public/icon.png" width="80"/>
+  <h1 align="center">Passenger</h1>
+</p>
 
 An Electron-based GUI frontend for the [standard UNIX password manager](https://www.passwordstore.org/)
 
