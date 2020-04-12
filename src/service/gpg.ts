@@ -18,6 +18,7 @@ async function runGpg(opts: { args: string[], ignoreError?: boolean } & GPGOptio
     if (opts.homedir) {
         args = ['--homedir', opts.homedir, ...args]
     }
+    args = ['--batch', ...args]
 
     try {
         const gpgProcess = await spawn(SettingsModule.gpgBinaryPath || 'gpg', args, { capture: [ 'stdout', 'stderr' ]})
@@ -120,6 +121,13 @@ export async function listUsedKeys(absPath: string, opts?: GPGOptions) {
     return output.split(/\n/g)
       .filter(line => line.match(/keyid/))
       .map(line => line.replace(/.*keyid\s+([A-Z0-9]+).*/, '$1'))
+}
+
+export async function deletePublicKey(key: PublicKey, opts?: GPGOptions) {
+    await runGpg({
+        ...opts,
+        args: ['--delete-key', '--yes', key.keyid],
+    }); 
 }
 
 export class KeyFinder<T extends GenericKey> {

@@ -9,18 +9,22 @@
                class="col q-pa-md"
                title="Assigned keys"
                :keys="assignedKeys"
-               :disabled="!decryptable[folder.relPath]" />
+               :disabled="!decryptable[folder.relPath]"
+               :toolbar="['title']" />
             <key-list v-else
                class="col q-pa-md"
                title="Inherited keys"
-               :ancestor="ancestorWithKeys"
                :keys="inheritedKeys"
-               :disabled="true"/>
+               :disabled="true"
+               :toolbar="['title', ' ', 'ancestor']"
+               :ancestor="ancestorWithKeys" />
             <key-list
                class="col q-pa-md"
                title="Available keys"
                :keys="publicKeys"
-               :disabled="!decryptable[folder.relPath]" />
+               :disabled="!decryptable[folder.relPath]"
+               :toolbar="['title', 'refresh']"
+               @refresh="refreshPublicKeys" />
         </div>
     </div>
 </template>
@@ -83,6 +87,10 @@ export default class PasswordFolderDetails extends Vue {
       }
     }
     return null
+  }
+
+  refreshPublicKeys() {
+    KeysModule.loadPublicKeys()
   }
 }
 </script>

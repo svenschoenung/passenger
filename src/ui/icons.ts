@@ -31,6 +31,7 @@ import { ionEllipsisVertical } from '@/ui/ionicons-v5'
 import { ionSwapHorizontal } from '@/ui/ionicons-v5'
 import { ionServerOutline } from '@/ui/ionicons-v5'
 import { ionGlassesOutline } from '@/ui/ionicons-v5'
+import { ionTrashOutline } from '@/ui/ionicons-v5'
 import { customTreeView } from '@/ui/custom-icons';
 
 const icons = {
@@ -78,7 +79,8 @@ const icons = {
     mergeCommit: ionIosGitMerge,
     generatePassword: ionIosColorWand,
     help: ionIosHelpCircleOutline,
-    glasses: ionGlassesOutline
+    glasses: ionGlassesOutline,
+    trash: ionTrashOutline
 }
 
 export default icons

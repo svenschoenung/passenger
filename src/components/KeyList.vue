@@ -1,15 +1,21 @@
 <template>
   <div class="flex direction-column key-list-container">
     <q-toolbar class="q-pa-none">
-      <span :class="{'disabled': disabled}">
-        {{title}}
-        <q-chip dense color="primary" class="text-white q-px-sm" >{{keys.value ? keys.value.length : 0}}</q-chip>
-      </span>
-      <q-btn v-if="$listeners.refresh" @click="refresh" dense flat>
-        <q-icon :name="icons.refresh" size="xs"/>
-      </q-btn>
-      <q-space />
-      <folder-button v-if="ancestor" :folder="ancestor" icon="up"/>
+      <template v-for="item in toolbar">
+        <span v-if="item === 'title'" :key="item" :class="{'disabled': disabled}">
+          {{title}}
+          <q-chip dense color="primary" class="text-white q-px-sm" >{{keys.value ? keys.value.length : 0}}</q-chip>
+        </span>
+        <q-btn v-else-if="item === 'refresh'" :key="item" @click="refresh" dense flat>
+          <q-icon :name="icons.refresh" size="xs"/>
+        </q-btn>
+        <q-btn v-else-if="item === 'delete'" :key="item" @click="deleteKeys" dense flat :disable="deleteDisabled">
+          <q-icon :name="icons.trash" size="xs"/>
+        </q-btn>
+        <folder-button v-else-if="item === 'ancestor'" :key="item" :folder="ancestor" icon="up"/>
+        <q-space v-else-if="item === ' '" :key="item"/>
+        <q-separator v-else-if="item === '|'" :key="item"/>
+      </template>
     </q-toolbar>
     <q-list bordered class="flex flex-grow key-list" v-roving-tabindex-container :disabled="disabled">
       <centered-progress v-if="keys.resolving" class="flex-grow"/>
@@ -21,8 +27,7 @@
           @mousedown.ctrl="startSelection(index, true)"
           @mousedown.meta="startSelection(index, true)"
           @mouseover="endSelection(index)"
-          :class="selectedAndSelectingKeys[key.keyid] ? 'highlighted-key' : ''"
-        >
+          :class="selectedAndSelectingKeys[key.keyid] ? 'highlighted-key' : ''">
           <q-item-section avatar v-if="key.unknown">
             <q-avatar color="negative" text-color="white">
               <q-icon :name="icons.unknown" size="lg"/>
@@ -66,6 +71,7 @@ export default class KeyList extends Vue {
   @Prop() keys!: Resolvable<GenericKey[]>;
   @Prop() disabled!: boolean;
   @Prop() ancestor!: PasswordFolder
+  @Prop() toolbar!: ('title' | 'refresh' | 'delete' | 'ancestor' | ' ' | '|')[]
 
   selectionStart = -1;
   selectionEnd = -1;
@@ -165,8 +171,17 @@ export default class KeyList extends Vue {
     }
   }
 
+  get deleteDisabled() {
+    return !this.keys.value || Object.keys(this.selectedKeys).length === 0
+  }
+
   @Emit('refresh')
   refresh() { }
+
+  @Emit('delete')
+  deleteKeys() {
+    return this.keys.value!.filter(key => this.selectedKeys[key.keyid])
+  }
 }
 </script>
 

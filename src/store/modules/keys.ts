@@ -2,7 +2,7 @@ import { PublicKey, PrivateKey } from 'gpg-promised';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
 import { SettingsModule } from '@/store';
-import { loadPrivateKeys, loadPublicKeys } from '@/service/gpg';
+import { loadPrivateKeys, loadPublicKeys, deletePublicKey } from '@/service/gpg';
 import { Resolvable, unresolved, resolving, resolved, failed } from '@/store/resolvable';
 import { delay } from '@/util/dev';
 
@@ -22,7 +22,7 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     }
 
     @Mutation
-    loadedPublicKeys(publicKeys: Resolvable<PublicKey[]>) {
+    setPublicKeys(publicKeys: Resolvable<PublicKey[]>) {
         this.publicKeys = publicKeys
     }
 
@@ -31,9 +31,9 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
         try {
             this.loadingPublicKeys()
             const publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))
-            this.loadedPublicKeys(resolved(publicKeys))
+            this.setPublicKeys(resolved(publicKeys))
         } catch (error) {
-            this.loadedPublicKeys(failed(error))
+            this.setPublicKeys(failed(error))
         }
     }
 
@@ -43,7 +43,7 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     }
 
     @Mutation
-    loadedPrivateKeys(privateKeys: Resolvable<PrivateKey[]>) {
+    setPrivateKeys(privateKeys: Resolvable<PrivateKey[]>) {
         this.privateKeys = privateKeys
     }
 
@@ -52,9 +52,26 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
         try {
             this.loadingPrivateKeys()
             const privateKeys = await delay(() => loadPrivateKeys({ homedir: SettingsModule.gpgPath }))
-            this.loadedPrivateKeys(resolved(privateKeys))
+            this.setPrivateKeys(resolved(privateKeys))
         } catch (error) {
-            this.loadedPrivateKeys(failed(error))
+            this.setPrivateKeys(failed(error))
         }
+    }
+
+    @Action
+    async deletePublicKeys(keys: PublicKey[]) {
+        if (!this.publicKeys.value) {
+            return
+        }
+        const deleted: { [keyid: string]: boolean } = {} 
+        for (const i in keys) {
+            try {
+                await delay(() => deletePublicKey(keys[i], { homedir: SettingsModule.gpgPath }))
+                deleted[keys[i].keyid] = true
+            } catch (error) {
+                console.log(error)
+            } 
+        }
+        this.setPublicKeys(resolved(this.publicKeys.value.filter(key => !deleted[key.keyid])))
     }
 }
