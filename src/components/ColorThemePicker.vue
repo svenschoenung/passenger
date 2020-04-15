@@ -1,17 +1,17 @@
 <template>
-  <q-item tag="label" @click.prevent="toggleColorTheme">
+  <q-item tag="label" @click.prevent="toggleColorTheme" class="color-theme-picker">
     <q-item-section>
         <q-item-label>Color theme</q-item-label>
     </q-item-section>
     <q-item-section side>
-        <q-btn-toggle
-            rounded @click.stop
+        <q-btn-toggle rounded flat @click.stop
             v-model="colorTheme"
             toggle-color="primary"
+            toggle-text-color="white"
             :options="[
                 {label: 'Light', value: 'light'},
-                {label: 'Dark', value: 'dark'},
-                {label: 'System', value: 'system'}
+                {label: 'System', value: 'system'},
+                {label: 'Dark', value: 'dark'}
             ]"/>
     </q-item-section>
   </q-item>
@@ -22,7 +22,7 @@ import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 import { SettingsModule } from '@/store'
 import { ColorTheme } from '@/store/modules/settings'
 
-const colorThemes: ColorTheme[] = ['light', 'dark', 'system']
+const colorThemes: ColorTheme[] = ['light', 'system', 'dark']
 
 @Component({})
 export default class ColorThemePicker extends Vue {
@@ -47,5 +47,31 @@ export default class ColorThemePicker extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@import "src/styles/style.variables.scss";
+
+.color-theme-picker {
+  .q-btn-group button.text-white {
+        background: $primary !important;
+  }
+}
+
+body.body--light {
+  .color-theme-picker {
+    .q-btn-group button {
+        background: $grey-4;
+    }
+    &:hover .q-btn-group button {
+        background: $grey-1; 
+    }
+  }
+}
+
+body.body--dark {
+  .color-theme-picker {
+    .q-btn-group button {
+        background: $grey-8;
+    }
+  }
+}
 </style>

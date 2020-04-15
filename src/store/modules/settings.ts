@@ -61,6 +61,7 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     gpgBinaryPath: string | null = null
     colorTheme: ColorTheme = 'system' 
     showStatusBar = true
+    showSplashScreen = true
     customFields = DEFAULT_CUSTOM_FIELDS
     timeouts = {
         passwordInClipboard: { enable: true, seconds: 40 },
@@ -97,6 +98,11 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     @Mutation
     setShowStatusBar(showStatusBar: boolean) {
         this.showStatusBar = showStatusBar
+    }
+
+    @Mutation
+    setShowSplashScreen(showSplashScreen: boolean) {
+        this.showSplashScreen = showSplashScreen
     }
 
     @Mutation

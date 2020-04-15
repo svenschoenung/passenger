@@ -10,6 +10,14 @@
           <q-toggle color="blue" v-model="showStatusBar" />
         </q-item-section>
       </q-item>
+      <q-item tag="label" v-ripple>
+        <q-item-section>
+          <q-item-label>Show splash screen on startup</q-item-label>
+        </q-item-section>
+        <q-item-section avatar>
+          <q-toggle color="blue" v-model="showSplashScreen" />
+        </q-item-section>
+      </q-item>
     </q-list>
   </q-form>
 </template>
@@ -38,6 +46,14 @@ export default class SettingsUIPage extends Vue {
 
   get showStatusBar() {
     return SettingsModule.showStatusBar
+  }
+
+  set showSplashScreen(showSplashScreen: boolean) {
+    SettingsModule.setShowSplashScreen(showSplashScreen)
+  }
+
+  get showSplashScreen() {
+    return SettingsModule.showSplashScreen
   }
 }
 </script>

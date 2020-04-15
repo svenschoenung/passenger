@@ -34,6 +34,9 @@ function loadState() {
 }
 
 function createSplash(state = loadState()) {
+  if (!get(state, 'settings.showSplashScreen')) {
+    return
+  }
   const screenSize = screen.getPrimaryDisplay().workAreaSize
   const width = 400
   const height = 400
