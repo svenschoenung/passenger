@@ -96,9 +96,5 @@ export default class PasswordTextEditor extends Vue {
     flex-grow: 1
   }
 
-  textarea {
-      resize: none !important;
-      @include styled-scrollbar
-  }
 }
 </style>

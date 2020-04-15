@@ -8,13 +8,12 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import '@/ui/quasar'
 import '@/errors'
 import '@/components'
+import '@/filters'
 import '@/pages'
 import App from './App.vue'
 import { store } from '@/store'
 import { showErrorNotification } from '@/errors';
 import { removePasswordFromClipboardSync } from './service/clipboard';
-import { formatISO } from 'date-fns'
-
 
 Vue.config.productionTip = true
 Vue.config.errorHandler = (err, vm, info) => {
@@ -23,10 +22,6 @@ Vue.config.errorHandler = (err, vm, info) => {
 
 Vue.use(VueRovingTabindex);
 Vue.use(VueVirtualScroller)
-
-Vue.filter('timestamp-to-iso-date', function(timestamp: number) {
-  return formatISO(new Date(timestamp * 1000))
-})
 
 new Vue({
   store,

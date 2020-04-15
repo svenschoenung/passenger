@@ -1,21 +1,25 @@
 import Vue from 'vue'
 
 import {
-  Quasar, QIcon, QChip, QList, QItem, QToolbar, QToolbarTitle, QMenu, QCheckbox, QBadge, QSpinner,
-  QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput, QBreadcrumbs, QBreadcrumbsEl, QBtnToggle,
-  QDrawer, QFooter, QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio, QBtnDropdown,
-  QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QSeparator, QVirtualScroll, QSelect,
-  Ripple, ClosePopup, Notify, Dialog
+  QIcon, QChip, QList, QItem, QToolbar, QToolbarTitle, QMenu, QCheckbox, QBadge,
+  QSpinner, QTabPanels, QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput,
+  QBreadcrumbs, QBreadcrumbsEl, QBtnToggle, QTabs, QRouteTab, QDrawer, QFooter,
+  QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio, QBtnDropdown, QLinearProgress,
+  QTabPanel, QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QField,
+  QSeparator, QVirtualScroll, QSelect, QCard, QCardSection, QCardActions, QTab, QExpansionItem,
+  Ripple, ClosePopup, Notify, Dialog, Quasar
 
 } from 'quasar'
 
 Vue.use(Quasar, {
   config: {},
   components: {
-    QIcon, QChip, QList, QItem, QToolbar, QToolbarTitle, QMenu, QCheckbox, QBadge, QSpinner,
-    QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput, QBreadcrumbs, QBreadcrumbsEl, QBtnToggle,
-    QDrawer, QFooter, QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio, QBtnDropdown,
-    QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QSeparator, QVirtualScroll, QSelect
+    QIcon, QChip, QList, QItem, QToolbar, QToolbarTitle, QMenu, QCheckbox, QBadge,
+    QSpinner, QTabPanels, QSplitter, QTree, QScrollArea, QLayout, QBtn, QInput,
+    QBreadcrumbs, QBreadcrumbsEl, QBtnToggle, QTabs, QRouteTab, QDrawer, QFooter,
+    QPageContainer, QAvatar, QDialog, QHeader, QItemSection, QRadio, QBtnDropdown, QLinearProgress,
+    QTabPanel, QItemLabel, QToggle, QTooltip, QSpace, QCircularProgress, QForm, QField,
+    QSeparator, QVirtualScroll, QSelect, QCard, QCardSection, QCardActions, QTab, QExpansionItem
   },
   directives: { Ripple, ClosePopup },
   plugins: { Notify, Dialog }

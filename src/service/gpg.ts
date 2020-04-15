@@ -1,11 +1,63 @@
 import { SettingsModule } from './../store/index';
-import gpg, { GenericKey, GPGUser, PublicKey, PrivateKey, SubKey, GPGKey } from 'gpg-promised'
-//import { spawn } from 'child_process';
+import gpg, { GenericKey, GPGUser, PublicKey, PrivateKey, SubKey, GPGKey, MasterKey } from 'gpg-promised'
 import { ValidationResult, validateFolder } from '@/model/validation';
-import { once } from 'lodash'
 import { spawn } from 'child-process-promise'
 
-export interface UnknownKey<T extends GenericKey> extends GenericKey {
+/* https://tools.ietf.org/html/rfc4880#section-9.1 */
+export const PublicKeyAlgo = {
+    1: "RSA (Encrypt/Sign)",
+    2: "RSA (Encrypt-Only)",
+    3: "RSA (Sign-Only)",
+    16: "Elgamal (Encrypt-Only)",
+    17: "DSA",
+    18: "Elliptic Curve",
+    19: "ECDSA",
+    20: "Elgamal (Encrypt/Sign)",
+    21: "Diffie-Hellman (X9.42)",
+    100: "Private/Experimental algorithm",
+    101: "Private/Experimental algorithm",
+    102: "Private/Experimental algorithm",
+    103: "Private/Experimental algorithm",
+    104: "Private/Experimental algorithm",
+    105: "Private/Experimental algorithm",
+    106: "Private/Experimental algorithm",
+    107: "Private/Experimental algorithm",
+    108: "Private/Experimental algorithm",
+    109: "Private/Experimental algorithm",
+    110: "Private/Experimental algorithm"
+};
+
+/* https://github.com/gpg/gnupg/blob/master/doc/DETAILS#field-2---validity */
+export const Validities = {
+    o: 'Unknown',
+    i: 'Invalid', 
+    d: 'Disabled', 
+    r: 'Revoked',
+    e: 'Expired',
+    '-': 'Unknown',
+    q: 'Undefined',
+    n: 'Not valid',
+    m: 'Marginally valid',
+    f: 'Fully valid',
+    u: 'Ultimately valid',
+    w: 'Well known private part',
+    s: 'Special validity'
+}
+
+/* https://www.gnupg.org/documentation/manuals/gnupg/Trust-Values.html */
+export const OwnerTrust = {
+    '-': 'Unknown',
+    e: 'Expired',
+    q: 'Undefined',
+    n: 'Never trusted',
+    m: 'Marginally trusted',
+    f: 'Fully trusted',
+    u: 'Ultimately trusted',
+    r: 'Revoked',
+    '?': 'Unknown trust value',
+}
+
+export interface UnknownKey<T extends GenericKey> extends MasterKey {
     unknown: true
 }
 
@@ -21,6 +73,7 @@ async function runGpg(opts: { args: string[], ignoreError?: boolean } & GPGOptio
     args = ['--batch', ...args]
 
     try {
+        console.log('gpg', args.join(' '))
         const gpgProcess = await spawn(SettingsModule.gpgBinaryPath || 'gpg', args, { capture: [ 'stdout', 'stderr' ]})
         return gpgProcess.stdout;
     } catch (e) {
@@ -49,7 +102,13 @@ export async function loadPublicKeys(opts: GPGOptions) {
       .map(rec => normalizeKey(rec as PublicKey))
 }
 
-export function normalizeKey<T extends GenericKey>(key: T): T {
+export async function exportArmoredKey(keyid: string, opts: { secret: boolean } & GPGOptions) {
+    return await runGpg({ ...opts, args: [
+        opts.secret ? '--export-secret-keys' : '--export' , '--armor', keyid
+    ] });
+}
+
+export function normalizeKey<T extends MasterKey>(key: T): T {
     if (!key.uid) {
         key.uid = []
     } else if (!Array.isArray(key.uid)) {
@@ -63,7 +122,7 @@ export function normalizeKey<T extends GenericKey>(key: T): T {
     return key
 }
 
-export function findMatchingKey<T extends GenericKey>(needle: string, haystack: T[], type: T['type']) {
+export function findMatchingKey<T extends MasterKey>(needle: string, haystack: T[], type: T['type']) {
     return (haystack || []).find(hay => {
         if (hay.keyid === needle) {
             return true
@@ -80,13 +139,19 @@ export function findMatchingKey<T extends GenericKey>(needle: string, haystack: 
     }) || unknownKey(needle, type)
 }
 
-export function unknownKey<T extends GenericKey>(key: string, type: T['type']): UnknownKey<T> {
+export function unknownKey<T extends MasterKey>(key: string, type: T['type']): UnknownKey<T> {
     return {
       type,
       keyid: key,
       uid: [{ user_id: 'Unknown key' }] as GPGUser[],
       sub: [],
-      unknown: true
+      key_cap: '',
+      key_length: '',
+      public_key_algo: '',
+      owner_trust: '',
+      validity: '',
+      creation_date: '',
+      unknown: true,
     }
 }
 
@@ -130,7 +195,7 @@ export async function deletePublicKey(key: PublicKey, opts?: GPGOptions) {
     }); 
 }
 
-export class KeyFinder<T extends GenericKey> {
+export class KeyFinder<T extends MasterKey> {
     private cache: { [key: string]: T | UnknownKey<T> } = {}
 
     constructor(private keys: T[], private type: T['type']) { }

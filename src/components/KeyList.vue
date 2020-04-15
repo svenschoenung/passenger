@@ -2,7 +2,7 @@
   <div class="flex direction-column key-list-container">
     <q-toolbar class="q-pa-none">
       <template v-for="item in toolbar">
-        <span v-if="item === 'title'" :key="item" :class="{'disabled': disabled}">
+        <span v-if="item === 'title'" :key="item" :class="{'disabled': disabled, 'title': true}">
           {{title}}
           <q-chip dense color="primary" class="text-white q-px-sm" >{{keys.value ? keys.value.length : 0}}</q-chip>
         </span>
@@ -20,7 +20,7 @@
     <q-list bordered class="flex flex-grow key-list" v-roving-tabindex-container :disabled="disabled">
       <centered-progress v-if="keys.resolving" class="flex-grow"/>
       <centered-error v-if="keys.error" :error="keys.error" class="flex-grow"/>
-      <styled-scrollbar v-else-if="keys.success">
+      <styled-scrollbar v-else-if="keys.success" always="y">
         <q-item v-for="(key, index) in keys.value" :key="key.keyid"
           class="q-my-sm" clickable v-ripple v-roving-tabindex
           @mousedown.exact="startSelection(index, false)"
@@ -38,7 +38,6 @@
               <q-icon :name="icons.key" />
             </q-avatar>
           </q-item-section>
-
           <q-item-section :class="{ 'text-negative': key.unknown }">
             <q-item-label>{{ key.keyid }}</q-item-label>
             <q-item-label :class="{ 'text-negative': key.unknown, 'text-italic': key.unknown }"
@@ -47,6 +46,11 @@
               v-for="uid in key.uid"
               :key="uid.user_id"
             >{{uid.user_id}}</q-item-label>
+          </q-item-section>
+          <q-item-section side class="more" v-if="!key.unknown && !disabled">
+            <q-btn dense flat @click.stop="openKeyDetails(key)">
+              <q-icon :name="icons.more" />
+            </q-btn>
           </q-item-section>
         </q-item>
       </styled-scrollbar>
@@ -62,6 +66,7 @@ import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp } from 
 import { PasswordFolder } from '@/model/passwords';
 import { Resolvable } from '@/store/resolvable';
 import icons from "@/ui/icons";
+import KeyDetails from './KeyDetails.vue';
 
 export type MouseEventListener = (this: Window, ev: MouseEvent) => any 
 
@@ -182,6 +187,14 @@ export default class KeyList extends Vue {
   deleteKeys() {
     return this.keys.value!.filter(key => this.selectedKeys[key.keyid])
   }
+
+  openKeyDetails(key: GenericKey) {
+    this.$q.dialog({
+      component: KeyDetails,
+      parent: this,
+      gpgKey: key
+    })
+  }
 }
 </script>
 
@@ -197,10 +210,22 @@ export default class KeyList extends Vue {
   &.disabled .q-toolbar {
     opacity: 0.4;
   }
+
+  .title {
+    text-transform: uppercase;
+    font-weight: 500;
+  }
 }
 
 .key-list {
   position: relative;
+
+  .q-item .more {
+    display: none;
+  }
+  .q-item:hover .more {
+    display: flex;
+  }
 }
 
 body.body--light {

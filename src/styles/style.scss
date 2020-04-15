@@ -6,6 +6,10 @@ body.body--light {
     .active-elem {
         color: $primary;
         background: $bg-primary-light;
+
+        .q-tab__indicator {
+            background-color: $primary;
+        }
     }
 
     .bg-0 {
@@ -29,6 +33,10 @@ body.body--dark {
     .active-elem {
         color: #ffffff;
         background: $bg-primary-dark;
+
+        .q-tab__indicator {
+            background-color: $primary;
+        }
     }
 
     .bg-0 {
@@ -112,4 +120,9 @@ body.body--dark {
     .q-btn__wrapper {
         padding: 0px 0px;
     }
+}
+
+textarea {
+    resize: none !important;
+    @include styled-scrollbar
 }

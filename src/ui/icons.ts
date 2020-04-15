@@ -24,7 +24,10 @@ import { ionIosGitCommit } from '@quasar/extras/ionicons-v4'
 import { ionIosGitMerge } from '@quasar/extras/ionicons-v4'
 import { ionIosColorWand } from '@quasar/extras/ionicons-v4'
 import { ionIosHelpCircleOutline } from '@quasar/extras/ionicons-v4'
+import { ionIosMore } from '@quasar/extras/ionicons-v4'
+import { ionIosInformationCircleOutline } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
+import { ionMdPeople } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
 import { ionMdClipboard } from '@quasar/extras/ionicons-v4'
 import { ionEllipsisVertical } from '@/ui/ionicons-v5'
@@ -80,7 +83,11 @@ const icons = {
     generatePassword: ionIosColorWand,
     help: ionIosHelpCircleOutline,
     glasses: ionGlassesOutline,
-    trash: ionTrashOutline
+    trash: ionTrashOutline,
+    more: ionIosMore,
+    close: ionIosClose,
+    identities: ionMdPeople,
+    info: ionIosInformationCircleOutline
 }
 
 export default icons

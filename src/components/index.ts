@@ -4,7 +4,12 @@ import CenteredProgress from './CenteredProgress.vue'
 import ColorThemePicker from './ColorThemePicker.vue'
 import FolderBreadcrumbs from './FolderBreadcrumbs.vue'
 import FolderButton from './FolderButton.vue'
+import KeyCapabilities from './KeyCapabilities.vue'
+import KeyCapabilityTooltip from './KeyCapabilityTooltip.vue'
+import KeyDetails from './KeyDetails.vue'
+import KeyInfo from './KeyInfo.vue'
 import KeyList from './KeyList.vue'
+import KeyRating from './KeyRating.vue'
 import MenuBar from './MenuBar.vue'
 import NumberInput from './NumberInput.vue'
 import PasswordFieldRow from './PasswordFieldRow.vue'
@@ -30,7 +35,12 @@ Vue.component('centered-progress', CenteredProgress)
 Vue.component('color-theme-picker', ColorThemePicker)
 Vue.component('folder-breadcrumbs', FolderBreadcrumbs)
 Vue.component('folder-button', FolderButton)
+Vue.component('key-capabilities', KeyCapabilities)
+Vue.component('key-capability-tooltip', KeyCapabilityTooltip)
+Vue.component('key-details', KeyDetails)
+Vue.component('key-info', KeyInfo)
 Vue.component('key-list', KeyList)
+Vue.component('key-rating', KeyRating)
 Vue.component('menu-bar', MenuBar)
 Vue.component('number-input', NumberInput)
 Vue.component('password-field-row', PasswordFieldRow)
