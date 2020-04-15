@@ -36,6 +36,11 @@
           <q-item-section avatar v-else>
             <q-avatar color="primary" text-color="white">
               <q-icon :name="icons.key" />
+              <q-badge v-if="KEY_BADGES[key.validity]" floating
+                 :color="KEY_BADGES[key.validity].color"
+                 :text-color="KEY_BADGES[key.validity].textColor">
+                <q-icon size="xs" :name="icons[KEY_BADGES[key.validity].icon]"/>
+              </q-badge>
             </q-avatar>
           </q-item-section>
           <q-item-section :class="{ 'text-negative': key.unknown }">
@@ -70,6 +75,22 @@ import KeyDetails from './KeyDetails.vue';
 
 export type MouseEventListener = (this: Window, ev: MouseEvent) => any 
 
+const KEY_BADGES = {
+    o: { color: 'grey-4', textColor : 'black', icon: 'keyUnknown' },
+    i: { color: 'negative', textColor : 'white', icon: 'keyNegative' } ,
+    d: { color: 'negative', textColor : 'white', icon: 'keyNegative' },
+    r: { color: 'negative', textColor : 'white', icon: 'keyNegative' },
+    e: { color: 'negative', textColor : 'white', icon: 'keyNegative' },
+    '-': { color: 'grey-4', textColor : 'black', icon: 'keyUnknown' },
+    q: { color: 'grey-4', textColor : 'black', icon: 'keyUnknown' },
+    n: { color: 'negative', textColor : 'white', icon: 'keyNegative' },
+    m: { color: 'warning', textColor : 'white', icon: 'keyPositive' },
+    f: { color: 'positive', textColor : 'white', icon: 'keyPositive' },
+    u: { color: 'positive', textColor : 'white', icon: 'keyPositive' },
+    w: { color: 'warning', textColor : 'white', icon: 'keyPositive' },
+    s: { color: 'grey-4', textColor : 'black', icon: 'keyUnknown' }
+}
+
 @Component({})
 export default class KeyList extends Vue {
   @Prop() title!: string;
@@ -83,7 +104,7 @@ export default class KeyList extends Vue {
   selectedKeys: { [keyid: string]: boolean } = {};
 
   created() {
-    setNonReactiveProps(this, { icons })
+    setNonReactiveProps(this, { icons, KEY_BADGES })
     this.registerListener()
   }
 
@@ -222,6 +243,10 @@ export default class KeyList extends Vue {
 
   .q-item .more {
     display: none;
+  }
+  .q-item .q-badge {
+    padding: 0px;
+    border-radius: 50%;
   }
   .q-item:hover .more {
     display: flex;

@@ -26,6 +26,8 @@ import { ionIosColorWand } from '@quasar/extras/ionicons-v4'
 import { ionIosHelpCircleOutline } from '@quasar/extras/ionicons-v4'
 import { ionIosMore } from '@quasar/extras/ionicons-v4'
 import { ionIosInformationCircleOutline } from '@quasar/extras/ionicons-v4'
+import { ionIosHelp } from '@quasar/extras/ionicons-v4'
+import { ionIosCheckmark } from '@quasar/extras/ionicons-v4'
 import { ionMdPerson } from '@quasar/extras/ionicons-v4'
 import { ionMdPeople } from '@quasar/extras/ionicons-v4'
 import { ionMdGlobe } from '@quasar/extras/ionicons-v4'
@@ -87,7 +89,10 @@ const icons = {
     more: ionIosMore,
     close: ionIosClose,
     identities: ionMdPeople,
-    info: ionIosInformationCircleOutline
+    info: ionIosInformationCircleOutline,
+    keyNegative: ionIosClose,
+    keyPositive: ionIosCheckmark,
+    keyUnknown: ionIosHelp
 }
 
 export default icons

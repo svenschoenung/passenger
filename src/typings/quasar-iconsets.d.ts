@@ -29,6 +29,8 @@ declare module '@quasar/extras/ionicons-v4' {
     export const ionIosHelpCircleOutline: string
     export const ionIosMore: string;
     export const ionIosInformationCircleOutline: string;
+    export const ionIosHelp: string;
+    export const ionIosCheckmark: string;
     export const ionMdMore: string
     export const ionMdGlobe: string
     export const ionMdPerson: string
