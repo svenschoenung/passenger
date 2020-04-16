@@ -5,7 +5,8 @@
       <key-list class="col q-pa-md"
          title="Public keys"
          :keys="publicKeys"
-         :toolbar="['title', 'refresh', ' ', 'delete']"
+         :toolbar="['title', 'refresh', ' ', 'add', 'delete']"
+         @add="addPublicKey"
          @refresh="refreshPublicKeys"
          @delete="deletePublicKeys" />
       <key-list class="col q-pa-md"
@@ -19,8 +20,12 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import { KeysModule } from '@/store'
+import { KeysModule, SettingsModule } from '@/store'
 import { GenericKey, PublicKey } from 'gpg-promised'
+import electron from 'electron'
+import KeyAdd from '@/components/KeyAdd.vue'
+import { importArmoredKey } from '@/service/gpg'
+import { arMA } from 'date-fns/locale'
 
 @Component({})
 export default class KeysPage extends Vue {
@@ -39,6 +44,16 @@ export default class KeysPage extends Vue {
 
   refreshPrivateKeys() {
     KeysModule.loadPrivateKeys()
+  }
+
+  addPublicKey() {
+    const dialog = this.$q.dialog({
+      component: KeyAdd,
+      parent: this,
+    })
+    dialog.onOk((armoredKey: string) => {
+      KeysModule.importPublicKey(armoredKey);
+    })
   }
 
   async deletePublicKeys(keys: GenericKey[]) {

@@ -63,6 +63,7 @@ export interface UnknownKey<T extends GenericKey> extends MasterKey {
 
 export interface GPGOptions {
     homedir?: string | null,
+    stdin?: string
 }
 
 async function runGpg(opts: { args: string[], ignoreError?: boolean } & GPGOptions): Promise<string>{
@@ -73,9 +74,14 @@ async function runGpg(opts: { args: string[], ignoreError?: boolean } & GPGOptio
     args = ['--batch', ...args]
 
     try {
-        console.log('gpg', args.join(' '))
-        const gpgProcess = await spawn(SettingsModule.gpgBinaryPath || 'gpg', args, { capture: [ 'stdout', 'stderr' ]})
-        return gpgProcess.stdout;
+        const gpgProcess = spawn(SettingsModule.gpgBinaryPath || 'gpg', args, { capture: [ 'stdout', 'stderr' ]})
+        if (opts.stdin) {
+            console.log(opts.stdin)
+            gpgProcess.childProcess.stdin?.write(opts.stdin)
+            gpgProcess.childProcess.stdin?.end()
+        }
+        const gpgResult = await gpgProcess
+        return gpgResult.stdout;
     } catch (e) {
         if (opts.ignoreError) {
             return e.stdout
@@ -106,6 +112,10 @@ export async function exportArmoredKey(keyid: string, opts: { secret: boolean } 
     return await runGpg({ ...opts, args: [
         opts.secret ? '--export-secret-keys' : '--export' , '--armor', keyid
     ] });
+}
+
+export async function importArmoredKey(armoredKey: string, opts: GPGOptions) {
+    return await runGpg({ stdin: armoredKey, ...opts, args: ['--import' ] });
 }
 
 export function normalizeKey<T extends MasterKey>(key: T): T {

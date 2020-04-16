@@ -2,7 +2,7 @@ import { PublicKey, PrivateKey } from 'gpg-promised';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
 import { SettingsModule } from '@/store';
-import { loadPrivateKeys, loadPublicKeys, deletePublicKey } from '@/service/gpg';
+import { loadPrivateKeys, loadPublicKeys, deletePublicKey, importArmoredKey } from '@/service/gpg';
 import { Resolvable, unresolved, resolving, resolved, failed } from '@/store/resolvable';
 import { delay } from '@/util/dev';
 
@@ -73,5 +73,12 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
             } 
         }
         this.setPublicKeys(resolved(this.publicKeys.value.filter(key => !deleted[key.keyid])))
+    }
+
+    @Action
+    async importPublicKey(armoredKey: string) {
+        await importArmoredKey(armoredKey, { homedir: SettingsModule.gpgPath }) 
+        const publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))
+        this.setPublicKeys(resolved(publicKeys))
     }
 }

@@ -4,6 +4,7 @@ import CenteredProgress from './CenteredProgress.vue'
 import ColorThemePicker from './ColorThemePicker.vue'
 import FolderBreadcrumbs from './FolderBreadcrumbs.vue'
 import FolderButton from './FolderButton.vue'
+import KeyAdd from './KeyAdd.vue'
 import KeyCapabilities from './KeyCapabilities.vue'
 import KeyCapabilityTooltip from './KeyCapabilityTooltip.vue'
 import KeyDetails from './KeyDetails.vue'
@@ -35,6 +36,7 @@ Vue.component('centered-progress', CenteredProgress)
 Vue.component('color-theme-picker', ColorThemePicker)
 Vue.component('folder-breadcrumbs', FolderBreadcrumbs)
 Vue.component('folder-button', FolderButton)
+Vue.component('key-add', KeyAdd)
 Vue.component('key-capabilities', KeyCapabilities)
 Vue.component('key-capability-tooltip', KeyCapabilityTooltip)
 Vue.component('key-details', KeyDetails)
