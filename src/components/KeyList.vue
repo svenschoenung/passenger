@@ -12,6 +12,9 @@
         <q-btn v-else-if="item === 'add'" :key="item" @click="addKey" dense flat>
           <q-icon :name="icons.add" size="xs"/>
         </q-btn>
+        <q-btn v-else-if="item === 'import'" :key="item" @click="importKeys" dense flat>
+          <q-icon :name="icons.import" size="xs"/>
+        </q-btn>
         <q-btn v-else-if="item === 'delete'" :key="item" @click="deleteKeys" dense flat :disable="deleteDisabled">
           <q-icon :name="icons.trash" size="xs"/>
         </q-btn>
@@ -209,6 +212,9 @@ export default class KeyList extends Vue {
 
   @Emit('add')
   addKey() { }
+
+  @Emit('import')
+  importKeys() { }
 
   @Emit('delete')
   deleteKeys() {

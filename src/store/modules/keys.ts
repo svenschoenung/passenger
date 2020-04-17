@@ -2,9 +2,10 @@ import { PublicKey, PrivateKey } from 'gpg-promised';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
 import { SettingsModule } from '@/store';
-import { loadPrivateKeys, loadPublicKeys, deletePublicKey, importArmoredKey } from '@/service/gpg';
+import { loadPrivateKeys, loadPublicKeys, deletePublicKey, importArmoredKey, importKey } from '@/service/gpg';
 import { Resolvable, unresolved, resolving, resolved, failed } from '@/store/resolvable';
 import { delay } from '@/util/dev';
+import { asyncPool } from '@/util/async';
 
 export interface KeysState {
     publicKeys: Resolvable<PublicKey[]>
@@ -76,8 +77,17 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     }
 
     @Action
-    async importPublicKey(armoredKey: string) {
+    async addPublicKey(armoredKey: string) {
         await importArmoredKey(armoredKey, { homedir: SettingsModule.gpgPath }) 
+        const publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))
+        this.setPublicKeys(resolved(publicKeys))
+    }
+
+    @Action
+    async importPublicKeys(keyPaths: string[]) {
+        await asyncPool(keyPaths, 10, async keyPath => {
+            await importKey(keyPath, { homedir: SettingsModule.gpgPath }) 
+        })
         const publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))
         this.setPublicKeys(resolved(publicKeys))
     }

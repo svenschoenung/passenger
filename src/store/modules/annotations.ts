@@ -8,6 +8,7 @@ import { annotateDecryptable, annotateToBeEncryptedWithUnknownKeys, annotateInte
 import { PasswordsModule, KeysModule } from '@/store'
 import { listUsedKeys, findUnknownPublicKeys, findMatchingPublicKeys, isUnknownKey, findMatchingKey, PublicKeyFinder } from '@/service/gpg';
 import { PublicKey } from 'gpg-promised';
+import { asyncPool } from '@/util/async';
 
 export type PasswordFlags = { [relPath: string]: boolean }
 export type PasswordKeysMap = { [relPath: string]: string[] }
@@ -82,13 +83,8 @@ export default class AnnotationsVuexModule extends VuexModule implements Annotat
         if (PasswordsModule.list.value && KeysModule.publicKeys.value) {
             const usedKeys: PasswordKeysMap = {}
             const files = PasswordsModule.list.value.filter(item => !item.folder) as PasswordFile[]
-            await async.eachLimit(files, 20, async (file, cb) => {
-                try {
-                    usedKeys[file.relPath] = await listUsedKeys(file.absPath)
-                    cb()
-                } catch (e) {
-                    cb(e)
-                }
+            await asyncPool(files, 20, async file => {
+                usedKeys[file.relPath] = await listUsedKeys(file.absPath)
             })
             AnnotationsModule.setUsedKeys(usedKeys)
         }

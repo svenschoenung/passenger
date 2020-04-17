@@ -5,8 +5,9 @@
       <key-list class="col q-pa-md"
          title="Public keys"
          :keys="publicKeys"
-         :toolbar="['title', 'refresh', ' ', 'add', 'delete']"
+         :toolbar="['title', 'refresh', ' ', 'add', 'import', 'delete']"
          @add="addPublicKey"
+         @import="importPublicKeys"
          @refresh="refreshPublicKeys"
          @delete="deletePublicKeys" />
       <key-list class="col q-pa-md"
@@ -52,8 +53,22 @@ export default class KeysPage extends Vue {
       parent: this,
     })
     dialog.onOk((armoredKey: string) => {
-      KeysModule.importPublicKey(armoredKey);
+      KeysModule.addPublicKey(armoredKey);
     })
+  }
+
+  async importPublicKeys() {
+    const result = await electron.remote.dialog.showOpenDialog(
+      electron.remote.getCurrentWindow(),
+      {
+        title: 'Import keys',
+        buttonLabel: 'Import',
+        properties: ['openFile', 'multiSelections']
+      }
+    );
+    if (result && result.filePaths) {
+      KeysModule.importPublicKeys(result.filePaths)
+    }
   }
 
   async deletePublicKeys(keys: GenericKey[]) {

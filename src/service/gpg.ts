@@ -101,8 +101,10 @@ export async function loadPrivateKeys(opts: GPGOptions) {
       .map(rec => normalizeKey(rec as PrivateKey))
 }
 
-export async function loadPublicKeys(opts: GPGOptions) {
-    const output = await runGpg({ ...opts, args: ['--list-public-keys', '--with-colons', '--with-fingerprint'] });
+export async function loadPublicKeys(opts: { keys?: string[] } & GPGOptions) {
+    const output = await runGpg({ ...opts, args: [
+        '--list-public-keys', '--with-colons', '--with-fingerprint', ...(opts.keys || [])
+    ]});
     return gpg.Parser.parseColons(output)
       .filter(rec => rec.type === 'pub')
       .map(rec => normalizeKey(rec as PublicKey))
@@ -116,6 +118,10 @@ export async function exportArmoredKey(keyid: string, opts: { secret: boolean } 
 
 export async function importArmoredKey(armoredKey: string, opts: GPGOptions) {
     return await runGpg({ stdin: armoredKey, ...opts, args: ['--import' ] });
+}
+
+export async function importKey(keyPath: string, opts: GPGOptions) {
+    return await runGpg({ ...opts, args: ['--import', keyPath ] });
 }
 
 export function normalizeKey<T extends MasterKey>(key: T): T {
