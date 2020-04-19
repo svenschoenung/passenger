@@ -26,7 +26,7 @@ export interface CopyToClipboard {
 export type OverviewType = 'tree' | 'list'
 export type ItemType = 'files-and-folders' | 'files-only'
 export type PageType = 'settings' | 'repo' | 'keys' | 'passwords' | 'problems'
-export type SettingsPageType = 'repo' | 'keys' | 'ui'
+export type SettingsPageType = 'repo' | 'keys' | 'fields' | 'validation' | 'ui'
 export type ContentViewType = 'text' | 'key-value'
 
 export interface CountdownState {

@@ -31,18 +31,18 @@ export function annotateDecryptable<T extends PasswordNode>(node: T, privateKeys
     }
 }
 
-export function annotateIntendedKeys<T extends PasswordNode>(node: T, 
-    inheritedKeys: string[], result: Pick<AnnotationsState, 'intendedKeys'>) {
+export function annotateExpectedKeys<T extends PasswordNode>(node: T, 
+    inheritedKeys: string[], result: Pick<AnnotationsState, 'expectedKeys'>) {
     if (node.folder) {
         const folder = node as PasswordFolder
         const inheritsKeys = !folder.keys || folder.keys.length === 0
         const keys = inheritsKeys ? inheritedKeys : folder.keys
 
-        folder.children.forEach(child => annotateIntendedKeys(child, keys, result))
+        folder.children.forEach(child => annotateExpectedKeys(child, keys, result))
 
-        Vue.set(result.intendedKeys, folder.relPath, keys)
+        Vue.set(result.expectedKeys, folder.relPath, keys)
     } else {
-        Vue.set(result.intendedKeys, node.relPath, inheritedKeys)
+        Vue.set(result.expectedKeys, node.relPath, inheritedKeys)
     }
 }
 

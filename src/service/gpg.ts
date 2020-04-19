@@ -1,7 +1,8 @@
-import { SettingsModule } from './../store/index';
 import gpg, { GenericKey, GPGUser, PublicKey, PrivateKey, SubKey, GPGKey, MasterKey } from 'gpg-promised'
-import { ValidationResult, validateFolder } from '@/model/validation';
 import { spawn } from 'child-process-promise'
+
+import { SettingsModule } from '@/store/index';
+import { ValidationResult, validateFolder } from '@/model/validation';
 
 /* https://tools.ietf.org/html/rfc4880#section-9.1 */
 export const PublicKeyAlgo = {
@@ -226,6 +227,11 @@ export class KeyFinder<T extends MasterKey> {
     findMatchingKeyId(key: string) {
         const matchingKey = this.findMatchingKey(key);
         return matchingKey?.keyid
+    }
+
+    isUnknownKey(key: string) {
+        const matchingKey = this.findMatchingKey(key);
+        return !!(matchingKey as UnknownKey<T>).unknown
     }
 }
 

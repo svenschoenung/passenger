@@ -8,15 +8,19 @@
         </span>
         <q-btn v-else-if="item === 'refresh'" :key="item" @click="refresh" dense flat>
           <q-icon :name="icons.refresh" size="xs"/>
+          <q-tooltip :delay="1000">Refresh keys</q-tooltip>
         </q-btn>
         <q-btn v-else-if="item === 'add'" :key="item" @click="addKey" dense flat>
           <q-icon :name="icons.add" size="xs"/>
+          <q-tooltip :delay="1000">Add armored keys</q-tooltip>
         </q-btn>
         <q-btn v-else-if="item === 'import'" :key="item" @click="importKeys" dense flat>
           <q-icon :name="icons.import" size="xs"/>
+          <q-tooltip :delay="1000">Import key files</q-tooltip>
         </q-btn>
         <q-btn v-else-if="item === 'delete'" :key="item" @click="deleteKeys" dense flat :disable="deleteDisabled">
           <q-icon :name="icons.trash" size="xs"/>
+          <q-tooltip :delay="1000">Delete selected keys</q-tooltip>
         </q-btn>
         <folder-button v-else-if="item === 'ancestor'" :key="item" :folder="ancestor" icon="up"/>
         <q-space v-else-if="item === ' '" :key="item"/>

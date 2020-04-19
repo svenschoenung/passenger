@@ -1,4 +1,5 @@
 import { Module, VuexModule, Mutation } from 'vuex-module-decorators'
+import { ProblemType } from './problems'
 
 export interface SetupPayload {
   repoPath: string
@@ -39,6 +40,11 @@ export interface TimeoutSettings {
     seconds: number
 }
 
+export interface ValidationSettings {
+    enable: boolean
+    type: ProblemType
+}
+
 export interface SettingsState {
     repoPath: string | null
     gpgPath: string | null
@@ -49,6 +55,12 @@ export interface SettingsState {
     timeouts: {
         passwordInClipboard: TimeoutSettings
         passwordReveal: TimeoutSettings
+    }
+    validation: {
+        toBeEncryptedWithUnknownKeys: ValidationSettings
+        encryptedWithUnknownKeys: ValidationSettings
+        encryptedWithUnexpectedKeys: ValidationSettings
+        encryptedWithoutExpectedKeys: ValidationSettings
     }
 }
 
@@ -66,6 +78,12 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     timeouts = {
         passwordInClipboard: { enable: true, seconds: 40 },
         passwordReveal: { enable: true, seconds: 40 }
+    }
+    validation = {
+        toBeEncryptedWithUnknownKeys: { enable: true, type: 'error' } as ValidationSettings,
+        encryptedWithUnknownKeys: { enable: false, type: 'warning' } as ValidationSettings,
+        encryptedWithUnexpectedKeys: { enable: false, type: 'warning' } as ValidationSettings,
+        encryptedWithoutExpectedKeys: { enable: false, type: 'warning' } as ValidationSettings
     }
 
     @Mutation
@@ -118,5 +136,15 @@ export default class SettingsVuexModule extends VuexModule implements SettingsSt
     @Mutation
     setCustomFields(customFields: CustomField[]) {
         this.customFields = customFields
+    }
+
+    @Mutation
+    setValidationEnabled(payload: { name: keyof SettingsState['validation'], enable: boolean }) {
+        this.validation[payload.name].enable = payload.enable
+    }
+
+    @Mutation
+    setValidationType(payload: { name: keyof SettingsState['validation'], type: ProblemType }) {
+        this.validation[payload.name].type = payload.type
     }
 }

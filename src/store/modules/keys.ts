@@ -1,3 +1,4 @@
+import { Trigger } from '@/store/trigger';
 import { PublicKey, PrivateKey } from 'gpg-promised';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 
@@ -28,10 +29,14 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     }
 
     @Action
+    @Trigger({ immediate: true, whenChanged: state => state.settings.gpgPath })
     async loadPublicKeys() {
         try {
             this.loadingPublicKeys()
-            const publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))
+            let publicKeys: PublicKey[] = []
+            if (SettingsModule.gpgPath) {
+                publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))
+            }
             this.setPublicKeys(resolved(publicKeys))
         } catch (error) {
             this.setPublicKeys(failed(error))
@@ -49,10 +54,14 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
     }
 
     @Action
+    @Trigger({ immediate: true, whenChanged: state => state.settings.gpgPath })
     async loadPrivateKeys() {
-        try {
+       try {
             this.loadingPrivateKeys()
-            const privateKeys = await delay(() => loadPrivateKeys({ homedir: SettingsModule.gpgPath }))
+            let privateKeys: PrivateKey[] = []
+            if (SettingsModule.gpgPath) {
+                privateKeys = await delay(() => loadPrivateKeys({ homedir: SettingsModule.gpgPath }))
+            }
             this.setPrivateKeys(resolved(privateKeys))
         } catch (error) {
             this.setPrivateKeys(failed(error))
@@ -85,7 +94,7 @@ export default class KeysVuexModule extends VuexModule implements KeysState {
 
     @Action
     async importPublicKeys(keyPaths: string[]) {
-        await asyncPool(keyPaths, 10, async keyPath => {
+        await asyncPool(keyPaths, async keyPath => {
             await importKey(keyPath, { homedir: SettingsModule.gpgPath }) 
         })
         const publicKeys = await delay(() => loadPublicKeys({ homedir: SettingsModule.gpgPath }))

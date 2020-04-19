@@ -1,3 +1,5 @@
+import { PasswordFolder } from './../model/passwords';
+import { Resolvable } from './resolvable';
 import Vuex, { Store } from 'vuex'
 import Vue from 'vue'
 
@@ -14,7 +16,9 @@ import RepoVuexModule, { RepoState } from './modules/repo'
 import KeysVuexModule, { KeysState } from './modules/keys'
 import ProblemsVuexModule, { ProblemsState } from './modules/problems'
 import PreferencesVuexModule, { PreferencesState } from './modules/preferences'
-import SettingsVuexModule, { SettingsState } from './modules/settings'
+import SettingsVuexModule, { SettingsState, ValidationSettings } from './modules/settings'
+import { PublicKey } from 'gpg-promised';
+import { initTriggers, getModuleWithTriggers } from './trigger';
  
 Vue.use(Vuex)
 
@@ -66,15 +70,15 @@ export const store = new Store<AppState>({
   ]
 })
 
-export const UIModule = getModule(UIVuexModule, store)
-export const OperationsModule = getModule(OperationsVuexModule, store)
-export const RepoModule = getModule(RepoVuexModule, store)
-export const PasswordsModule = getModule(PasswordsVuexModule, store)
-export const AnnotationsModule = getModule(AnnotationsVuexModule, store)
-export const KeysModule = getModule(KeysVuexModule, store);
-export const ProblemsModule = getModule(ProblemsVuexModule, store);
-export const PreferencesModule = getModule(PreferencesVuexModule, store);
-export const SettingsModule = getModule(SettingsVuexModule, store);
+export const UIModule = getModuleWithTriggers(UIVuexModule, store)
+export const OperationsModule = getModuleWithTriggers(OperationsVuexModule, store)
+export const RepoModule = getModuleWithTriggers(RepoVuexModule, store)
+export const PasswordsModule = getModuleWithTriggers(PasswordsVuexModule, store)
+export const AnnotationsModule = getModuleWithTriggers(AnnotationsVuexModule, store)
+export const KeysModule = getModuleWithTriggers(KeysVuexModule, store);
+export const ProblemsModule = getModuleWithTriggers(ProblemsVuexModule, store);
+export const PreferencesModule = getModuleWithTriggers(PreferencesVuexModule, store);
+export const SettingsModule = getModuleWithTriggers(SettingsVuexModule, store);
 
 if (process.env.NODE_ENV === 'development') {
   store.subscribe((mutation: any) => {
@@ -100,21 +104,43 @@ store.watch(
   { immediate: true }
 )
 
+/*
+store.watch(
+  state => 
+    state.settings.validation.encryptedWithUnknownKeys.enable ||
+    state.settings.validation.encryptedWithUnexpectedKeys.enable ||
+    state.settings.validation.encryptedWithoutExpectedKeys.enable,
+  (needsUsedKeys, oldNeedsUsedKeys) => {
+    if (PasswordsModule.tree.value && needsUsedKeys && !oldNeedsUsedKeys) {
+      setTimeout(() => AnnotationsModule.annotateFilesWithUsedKeys(), 100)
+    }
+  },
+  { deep: true, immediate: false }
+)
+*/
+
+/*
 store.watch(
   state => state.passwords.tree,
-  (tree) => {
-    if (tree.value) {
+  tree => {
+    const needsUsedKeys =
+      SettingsModule.validation.encryptedWithUnknownKeys.enable ||
+      SettingsModule.validation.encryptedWithUnexpectedKeys.enable ||
+      SettingsModule.validation.encryptedWithoutExpectedKeys.enable;
+    if (tree.value && needsUsedKeys) {
       Vue.nextTick(() => AnnotationsModule.annotateFilesWithUsedKeys())
     }
   },
   { deep: true, immediate: false }
 )
+*/
 
+/*
 store.watch(
   state => state.passwords.tree,
   (tree) => {
     if (tree.value) {
-      Vue.nextTick(() => AnnotationsModule.annotateFilesAndFoldersWithIntendedKeys())
+      Vue.nextTick(() => AnnotationsModule.annotateFilesAndFoldersWithExpectedKeys())
     }
   },
   { deep: true, immediate: false }
@@ -131,9 +157,13 @@ store.watch(
 )
 
 store.watch(
-  state => [state.passwords.tree, state.keys.publicKeys, state.annotations.usedKeys],
-  ([tree, publicKeys, usedKeys]) => {
-    if (tree.value && publicKeys.value && usedKeys) {
+  state => [
+    state.passwords.tree, 
+    state.keys.publicKeys, 
+    state.settings.validation.toBeEncryptedWithUnknownKeys.enable
+  ] as [Resolvable<PasswordFolder>, Resolvable<PublicKey[]>, boolean],
+  ([tree, publicKeys, toBeEncryptedWithUnknownKeys]) => {
+    if (tree.value && publicKeys.value && toBeEncryptedWithUnknownKeys) {
       Vue.nextTick(() => AnnotationsModule.annotateFilesAndFoldersToBeEncryptedWithUnknownKeys());
     }
   },
@@ -141,25 +171,49 @@ store.watch(
 )
 
 store.watch(
-  state => [state.passwords.tree, state.keys.publicKeys, state.annotations.usedKeys],
-  ([tree, publicKeys, usedKeys]) => {
-    if (tree.value && publicKeys.value && usedKeys) {
-      Vue.nextTick(() => AnnotationsModule.annotateFilesEncryptedWithUnintendedKeys())
+  state => [
+    state.passwords.tree.value,
+    state.keys.publicKeys.value,
+    state.annotations.usedKeys.value,
+    state.settings.validation.encryptedWithUnknownKeys.enable
+  ],
+  ([tree, publicKeys, usedKeys, encryptedWithUnknownKeys]) => {
+    if (tree && publicKeys && usedKeys && encryptedWithUnknownKeys) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesEncryptedWithUnknownKeys());
     }
   },
   { deep: true, immediate: false }
 )
 
 store.watch(
-  state => [state.passwords.tree, state.keys.publicKeys, state.annotations.usedKeys],
-  ([tree, publicKeys, usedKeys]) => {
-    if (tree.value && publicKeys.value && usedKeys) {
-      Vue.nextTick(() => AnnotationsModule.annotateFilesEncryptedWithoutIntendedKeys())
+  state => [
+    state.passwords.tree.value,
+    state.keys.publicKeys.value,
+    state.annotations.usedKeys.value,
+    state.settings.validation.encryptedWithUnexpectedKeys.enable
+  ],
+  ([tree, publicKeys, usedKeys, encryptedWithUnexpectedKeys]) => {
+    if (tree && publicKeys && usedKeys && encryptedWithUnexpectedKeys) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesEncryptedWithUnexpectedKeys())
     }
   },
   { deep: true, immediate: false }
 )
 
+store.watch(
+  state => [
+    state.passwords.tree.value,
+    state.keys.publicKeys.value,
+    state.annotations.usedKeys.value,
+    state.settings.validation.encryptedWithoutExpectedKeys.enable
+  ],
+  ([tree, publicKeys, usedKeys, encryptedWithoutExpectedKeys]) => {
+    if (tree && publicKeys && usedKeys && encryptedWithoutExpectedKeys) {
+      Vue.nextTick(() => AnnotationsModule.annotateFilesEncryptedWithoutExpectedKeys())
+    }
+  },
+  { deep: true, immediate: false }
+)
 
 store.watch(
   state => state.settings.gpgPath,
@@ -171,6 +225,7 @@ store.watch(
   },
   { immediate: true }
 )
+*/
 
 store.watch(
   state => state.settings.repoPath,
@@ -184,3 +239,5 @@ store.watch(
   },
   { immediate: true }
 )
+
+initTriggers(store)

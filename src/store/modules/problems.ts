@@ -1,4 +1,4 @@
-import { AnnotationsModule } from './../index';
+import { AnnotationsModule, SettingsModule } from './../index';
 import { Module, VuexModule, Mutation, Action } from 'vuex-module-decorators'
 import { PasswordsModule, KeysModule, UIModule } from '@/store'
 import { PasswordNode, PasswordFolder } from '@/model/passwords'
@@ -27,26 +27,6 @@ export interface ProblemsState {
 
 @Module({ name: 'problems', namespaced: true })
 export default class ProblemsVuexModule extends VuexModule implements ProblemsState {
-
-    get toBeEncryptedWithUnknownKeysProblems(): Problem[] {
-        if (!PasswordsModule.map.value) {
-            return []
-        }
-        return Object.keys(AnnotationsModule.toBeEncryptedWithUnknownKeys)
-            .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
-            .filter(node => node && node.folder)
-            .map(folder => {
-                const unknownKeys = AnnotationsModule.toBeEncryptedWithUnknownKeys[folder.relPath]
-                  .map(k => unknownKey(k, 'pub'))
-                return {
-                    id: `toBeEncryptedWithUnknownKeys_${folder.relPath}`,
-                    type: 'error',
-                    msg: `Folder requires unknown public key${unknownKeys.length > 1 ? 's': ''} for encryption`,
-                    keys: unknownKeys,
-                    node: folder 
-                }
-            })
-    }
 
     get passwordTreeProblems(): Problem[] {
         if (PasswordsModule.tree.error) {
@@ -81,8 +61,28 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
         return keysProblems('private keys', KeysModule.privateKeys, () => KeysModule.loadPrivateKeys)
     }
 
+    get toBeEncryptedWithUnknownKeysProblems(): Problem[] {
+        if (!PasswordsModule.map.value || !SettingsModule.validation.toBeEncryptedWithUnknownKeys.enable) {
+            return []
+        }
+        return Object.keys(AnnotationsModule.toBeEncryptedWithUnknownKeys)
+            .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
+            .filter(node => node && node.folder)
+            .map(folder => {
+                const unknownKeys = AnnotationsModule.toBeEncryptedWithUnknownKeys[folder.relPath]
+                  .map(k => unknownKey(k, 'pub'))
+                return {
+                    id: `toBeEncryptedWithUnknownKeys_${folder.relPath}`,
+                    type: SettingsModule.validation.toBeEncryptedWithUnknownKeys.type,
+                    msg: `Folder requires unknown public key${unknownKeys.length > 1 ? 's': ''} for encryption`,
+                    keys: unknownKeys,
+                    node: folder 
+                }
+            })
+    }
+
     get encryptedWithUnknownKeysProblems(): Problem[] {
-        if (!PasswordsModule.map.value) {
+        if (!PasswordsModule.map.value || !SettingsModule.validation.encryptedWithUnknownKeys.enable) {
             return []
         }
         return Object.keys(AnnotationsModule.encryptedWithUnknownKeys)
@@ -93,7 +93,7 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
                   .map(k => unknownKey(k, 'pub'))
                 return {
                     id: `encrytpedWithUnknownKeys_${file.relPath}`,
-                    type: 'warning',
+                    type: SettingsModule.validation.encryptedWithUnknownKeys.type,
                     msg: `File was encrypted with unknown public key${unknownKeys.length > 1 ? 's': ''}`,
                     keys: unknownKeys,
                     node: file 
@@ -101,20 +101,20 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
             })
     }
 
-    get encryptedWithUnintendedKeysProblems(): Problem[] {
-        if (!PasswordsModule.map.value) {
+    get encryptedWithUnexpectedKeysProblems(): Problem[] {
+        if (!PasswordsModule.map.value || !SettingsModule.validation.encryptedWithUnexpectedKeys.enable) {
             return []
         }
         const keyFinder = new PublicKeyFinder(KeysModule.publicKeys.value || [])
-        return Object.keys(AnnotationsModule.encryptedWithUnintendedKeys)
+        return Object.keys(AnnotationsModule.encryptedWithUnexpectedKeys)
             .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
             .filter(node => node && !node.folder)
             .map(file => {
-                const unintendedKeys = AnnotationsModule.encryptedWithUnintendedKeys[file.relPath]
+                const unintendedKeys = AnnotationsModule.encryptedWithUnexpectedKeys[file.relPath]
                   .map(key => keyFinder.findMatchingKey(key))
                 return {
-                    id: `encryptedWithUnintendedKeys_${file.relPath}`,
-                    type: 'warning',
+                    id: `encryptedWithUnexpectedKeys_${file.relPath}`,
+                    type: SettingsModule.validation.encryptedWithUnexpectedKeys.type,
                     msg: `File was encrypted with unexpected key${unintendedKeys.length > 1 ? 's': ''}`,
                     keys: unintendedKeys,
                     node: file 
@@ -122,23 +122,22 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
             })
     }
 
-
-    get encryptedWithoutIntendedKeysProblems(): Problem[] {
-        if (!PasswordsModule.map.value) {
+    get encryptedWithoutExpectedKeysProblems(): Problem[] {
+        if (!PasswordsModule.map.value || !SettingsModule.validation.encryptedWithoutExpectedKeys.enable) {
             return []
         }
         const keyFinder = new PublicKeyFinder(KeysModule.publicKeys.value || [])
-        return Object.keys(AnnotationsModule.encryptedWithoutIntendedKeys)
+        return Object.keys(AnnotationsModule.encryptedWithoutExpectedKeys)
             .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
             .filter(node => node && !node.folder)
             .map(file => {
-                const missingIntendedKeys = AnnotationsModule.encryptedWithoutIntendedKeys[file.relPath]
+                const missingExpectedKeys = AnnotationsModule.encryptedWithoutExpectedKeys[file.relPath]
                   .map(key => keyFinder.findMatchingKey(key))
                 return {
-                    id: `encryptedWithoutIntendedKeys_${file.relPath}`,
-                    type: 'warning',
-                    msg: `File was encrypted without expected key${missingIntendedKeys.length > 1 ? 's': ''}`,
-                    keys: missingIntendedKeys,
+                    id: `encryptedWithoutExpectedKeys_${file.relPath}`,
+                    type: SettingsModule.validation.encryptedWithoutExpectedKeys.type,
+                    msg: `File was encrypted without expected key${missingExpectedKeys.length > 1 ? 's': ''}`,
+                    keys: missingExpectedKeys,
                     node: file 
                 }
             })
@@ -151,8 +150,8 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
             ...this.privateKeyProblems,
             ...this.toBeEncryptedWithUnknownKeysProblems,
             ...this.encryptedWithUnknownKeysProblems,
-            ...this.encryptedWithUnintendedKeysProblems,
-            ...this.encryptedWithoutIntendedKeysProblems
+            ...this.encryptedWithUnexpectedKeysProblems,
+            ...this.encryptedWithoutExpectedKeysProblems
         ].sort((p1, p2) => {
             if (p1.type !== p2.type) {
                 return p1.type === 'error' ? -1 : 1

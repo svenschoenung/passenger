@@ -28,6 +28,7 @@ import ProblemsCount from './ProblemsCount.vue'
 import SetupDialog from './SetupDialog.vue'
 import StatusBar from './StatusBar.vue'
 import StyledScrollbar from './StyledScrollbar.vue'
+import ValidationToggle from './ValidationToggle.vue'
 import VirtualScroll from './VirtualScroll.vue'
 import VueHeadful from 'vue-headful'
 
@@ -60,5 +61,6 @@ Vue.component('problems-count', ProblemsCount)
 Vue.component('setup-dialog', SetupDialog)
 Vue.component('status-bar', StatusBar)
 Vue.component('styled-scrollbar', StyledScrollbar)
+Vue.component('validation-toggle', ValidationToggle)
 Vue.component('virtual-scroll', VirtualScroll)
 Vue.component('vue-headful', VueHeadful)

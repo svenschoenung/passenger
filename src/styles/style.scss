@@ -126,3 +126,28 @@ textarea {
     resize: none !important;
     @include styled-scrollbar
 }
+
+.settings-btn-toggle {
+  .q-btn-group button.text-white {
+        background: $primary !important;
+  }
+}
+
+body.body--light {
+  .settings-btn-toggle {
+    .q-btn-group button {
+        background: $grey-4;
+    }
+    &:hover .q-btn-group button {
+        background: $grey-1; 
+    }
+  }
+}
+
+body.body--dark {
+  .settings-btn-toggle {
+    .q-btn-group button {
+        background: $grey-8;
+    }
+  }
+}

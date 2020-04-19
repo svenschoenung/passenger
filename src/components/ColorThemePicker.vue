@@ -1,5 +1,5 @@
 <template>
-  <q-item tag="label" @click.prevent="toggleColorTheme" class="color-theme-picker">
+  <q-item tag="label" @click.prevent="toggleColorTheme" class="settings-btn-toggle">
     <q-item-section>
         <q-item-label>Color theme</q-item-label>
     </q-item-section>
@@ -49,29 +49,4 @@ export default class ColorThemePicker extends Vue {
 
 <style lang="scss">
 @import "src/styles/style.variables.scss";
-
-.color-theme-picker {
-  .q-btn-group button.text-white {
-        background: $primary !important;
-  }
-}
-
-body.body--light {
-  .color-theme-picker {
-    .q-btn-group button {
-        background: $grey-4;
-    }
-    &:hover .q-btn-group button {
-        background: $grey-1; 
-    }
-  }
-}
-
-body.body--dark {
-  .color-theme-picker {
-    .q-btn-group button {
-        background: $grey-8;
-    }
-  }
-}
 </style>

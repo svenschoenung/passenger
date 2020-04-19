@@ -4,12 +4,12 @@
 - [x] Configure custom fields in settings
 - [ ] Watch file system for changes
 - [x] Compare gpg-id with keys used to encrypt files and issue warnings
-- [ ] Show more information about keys
+- [x] Show more information about keys
 - [ ] Sort and filter problems
 - [x] Large password reveal
 - [x] Clear revealed passwords
 - [ ] Multiple select in password overview
-- [ ] Settings for turning validaton on and off
+- [x] Settings for turning validaton on and off
 - [ ] Menu
 - [x] Splash screen
 - [ ] Setup wizard

@@ -19,13 +19,20 @@
             <q-item-label>GPG</q-item-label>
           </q-item-section>
         </q-item>
-
         <q-item clickable v-ripple v-roving-tabindex
           :active="settingsPage === 'security'"
           active-class="active-elem"
           @click="changeSettingsPage('security')">
           <q-item-section>
             <q-item-label>Security</q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item clickable v-ripple v-roving-tabindex
+          :active="settingsPage === 'validation'"
+          active-class="active-elem"
+          @click="changeSettingsPage('validation')">
+          <q-item-section>
+            <q-item-label>Validation</q-item-label>
           </q-item-section>
         </q-item>
         <q-item clickable v-ripple v-roving-tabindex
