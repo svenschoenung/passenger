@@ -5,6 +5,7 @@ import { PasswordNode, PasswordFolder } from '@/model/passwords'
 import { findMatchingPublicKeys, findUnknownPublicKeys, PublicKeyFinder, unknownKey } from '@/service/gpg'
 import { Resolvable } from '../resolvable'
 import { GPGKey, GenericKey } from 'gpg-promised'
+import { groupBy } from 'lodash';
 
 export type ProblemType = 'error' | 'warning'
 
@@ -67,7 +68,6 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
         }
         return Object.keys(AnnotationsModule.toBeEncryptedWithUnknownKeys)
             .map(relPath => PasswordsModule.map.value![relPath] as PasswordNode)
-            .filter(node => node && node.folder)
             .map(folder => {
                 const unknownKeys = AnnotationsModule.toBeEncryptedWithUnknownKeys[folder.relPath]
                   .map(k => unknownKey(k, 'pub'))
@@ -160,12 +160,31 @@ export default class ProblemsVuexModule extends VuexModule implements ProblemsSt
         })
     }
 
+
+    get errors() {
+        return this.problems.filter(problem => problem.type === 'error')
+    }
+
+    get warnings() {
+        return this.problems.filter(problem => problem.type === 'warning')
+    }
+
     get errorCount() {
-        return count(this.problems, 'error')
+        return this.errors.length
     }
 
     get warningCount() {
-        return count(this.problems, 'warning')
+        return this.warnings.length
+    }
+
+    get errorsByPath() {
+        const errorsWithPath = this.errors.filter(error => error.node)
+        return groupBy(errorsWithPath, error => error.node?.relPath)
+    }
+
+    get warningsByPath() {
+        const warningsWithPath = this.warnings.filter(warning => warning.node)
+        return groupBy(warningsWithPath, warning => warning.node?.relPath)
     }
 }
 
@@ -191,8 +210,4 @@ function keysProblems<K extends GenericKey[]>(keyType: string, keys: Resolvable<
         }]
     }
     return []
-}
-
-function count(problems: Problem[], type: ProblemType) {
-    return problems.filter(problem => problem.type === type).length
 }

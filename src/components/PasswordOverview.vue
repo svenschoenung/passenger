@@ -170,11 +170,71 @@ export default class PasswordOverview extends Vue {
     }
 }
 
+#password-list,
+#password-tree {
+    .item-icon {
+        color: $primary;
+    }
+    .key-icon {
+        color: $grey-8;
+    }
+
+    .item-not-decryptable {
+        opacity: 0.2
+    }
+    .item-not-decryptable.item-has-warnings {
+        opacity: 0.5
+    }
+    .item-not-decryptable.item-has-errors, 
+    .item-not-decryptable.item-has-errors.item-has-warnings {
+        opacity: 0.7
+    }
+
+    .item-has-warnings,
+    .item-has-warnings * {
+        color: $warning;
+    }
+    .item-has-errors,
+    .item-has-errors *,
+    .item-has-errors.item-has-warnings,
+    .item-has-errors.item-has-warnings * {
+        color: $negative;
+    }
+
+    .item-name {
+      white-space: nowrap;
+      overflow: hidden;
+    }
+}
+
 body.body--light {
   #password-overview {
     .toolbar {
         border-top: 1px solid $grey-4;
         border-bottom: 1px solid $grey-4;
+    }
+  }
+
+  #password-tree,
+  #password-list {
+    .item-selected {
+      background: $bg-primary-light;
+    }
+
+    .item-name {
+      color: $dark;
+
+      b {
+        color: $primary;
+      }
+    }
+
+    .item-not-decryptable.item-has-warnings {
+        opacity: 0.7;
+        color: darken($warning, 10%)
+    }
+    .item-not-decryptable.item-has-warnings.item-selected {
+        opacity: 1;
     }
   }
 }
@@ -184,6 +244,21 @@ body.body--dark {
     .toolbar {
         border-top: 1px solid $grey-8;
         border-bottom: 1px solid $grey-8;
+    }
+  }
+
+  #password-list,
+  #password-tree {
+    .item-selected {
+      background: $bg-primary-dark;
+    }
+
+    .item-name {
+      color: white;
+
+      b {
+        color: $primary;
+      }
     }
   }
 }

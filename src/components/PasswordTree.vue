@@ -11,8 +11,9 @@
         @mouseleave.stop.prevent
         :class="{
             'item-selected': item.relPath === selected,
-            'not-decryptable': !decryptable[item.relPath],
-            'not-encryptable': toBeEncryptedWithUnknownKeys[item.relPath]
+            'item-not-decryptable': !decryptable[item.relPath],
+            'item-has-errors': !!errorsByPath[item.relPath],
+            'item-has-warnings': !!warningsByPath[item.relPath]
         }">
         <q-item-section v-for="i in depth(item) + (item.folder && item.children.length > 0 ? 0 : 2)" :key="i" avatar class="indent">
         </q-item-section>
@@ -25,16 +26,19 @@
           </q-item-section>
         </template>
         <q-item-section avatar>
-          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="toBeEncryptedWithUnknownKeys[item.relPath] ? 'negative' : 'primary'"/>
+          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" class="item-icon"/>
         </q-item-section>
         <q-item-section class="item-name">
           <span>
           <span v-html="highlightTreeNode(item)"></span>
-          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="toBeEncryptedWithUnknownKeys[item.relPath] ? 'negative' : 'grey-8'"/>
+          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" class="key-icon"/>
           </span>
         </q-item-section>
-        <q-item-section v-if="toBeEncryptedWithUnknownKeys[item.relPath]" side>
+        <q-item-section v-if="!!errorsByPath[item.relPath]" side>
           <q-icon size="1.4em" :name="icons.error" color="negative"/>
+        </q-item-section>
+        <q-item-section v-else-if="!!warningsByPath[item.relPath]" side>
+          <q-icon size="1.4em" :name="icons.warnings" color="warning"/>
         </q-item-section>
         <q-menu dense context-menu touch-position anchor="top left" self="top left">
           <q-item dense clickable v-close-popup @click="copy(item.fullName)" v-if="item.fullName !== '/'">
@@ -63,7 +67,7 @@ import scrollIntoView from 'scroll-into-view-if-needed'
 import Fuse, { FuseResultWithMatches } from 'fuse.js'
 import path from 'path'
 
-import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule, AnnotationsModule } from "@/store";
+import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule, AnnotationsModule, ProblemsModule } from "@/store";
 import { PasswordFolder, PasswordNode, depth, traverseTree, getParents, traverseParents, getParent, SearchMatches } from '@/model/passwords';
 import { findMatchingKey } from '@/service/gpg';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
@@ -135,6 +139,15 @@ export default class PasswordTree extends Vue {
 
   get selected() {
     return UIModule.selectedPasswordPath as string;
+  }
+
+  get errorsByPath() {
+    console.log(ProblemsModule.errorsByPath)
+    return ProblemsModule.errorsByPath
+  }
+
+  get warningsByPath() {
+    return ProblemsModule.warningsByPath
   }
 
   get showItemType() {
@@ -265,58 +278,8 @@ function clipMatches(matches: SearchMatches, fullName: string): SearchMatches {
       padding-right: 5px;
     }
 
-    .not-decryptable {
-        opacity: 0.2
-    }
-
-    .item-name {
-      white-space: nowrap;
-      overflow:hidden;
-
-      .q-icon {
+    .item-name .q-icon {
         margin-left: 5px;
-      }
     }
-}
-
-
-body.body--light {
-  #password-tree {
-    .item-selected {
-      background: $bg-primary-light;
-    }
-
-    .item-name {
-      color: $dark;
-
-      b {
-        color: $primary;
-      }
-    }
-
-    .not-encryptable .item-name {
-      color: $negative;
-    }
-  }
-}
-
-body.body--dark {
-  #password-tree {
-    .item-selected {
-      background: $bg-primary-dark;
-    }
-
-    .item-name {
-      color: white;
-
-      b {
-        color: $primary;
-      }
-    }
-
-    .not-encryptable .item-name {
-      color: $negative;
-    }
-  }
 }
 </style>

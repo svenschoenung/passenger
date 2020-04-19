@@ -5,9 +5,6 @@
    :items="textFilteredList" 
    v-roving-tabindex-container>
     <template v-slot="{ item }">
-      <div :class="{
-            'item-selected': item.relPath === selected
-        }">
       <q-item dense :key="item.relPath"
         clickable v-ripple v-roving-tabindex
         @click="select(item.relPath)"
@@ -15,20 +12,24 @@
         @mouseleave.stop.prevent
         :class="{
             'item-selected': item.relPath === selected,
-            'not-decryptable': !decryptable[item.relPath],
-            'not-encryptable': toBeEncryptedWithUnknownKeys[item.relPath]
+            'item-not-decryptable': !decryptable[item.relPath],
+            'item-has-errors': !!errorsByPath[item.relPath],
+            'item-has-warnings': !!warningsByPath[item.relPath]
         }">
         <q-item-section avatar>
-          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" :color="toBeEncryptedWithUnknownKeys[item.relPath] ? 'negative' : 'primary'"/>
+          <q-icon size="xs" :name="icons[item.folder ? 'folder' : 'password']" class="item-icon"/>
         </q-item-section>
         <q-item-section avatar v-if="showItemType === 'files-and-folders'">
-          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" :color="toBeEncryptedWithUnknownKeys[item.relPath] ? 'negative' : 'grey-8'"/>
+          <q-icon v-if="item.folder && item.keys.length > 0" size="xs" :name="icons.key" class="key-icon"/>
         </q-item-section>
         <q-item-section class="item-name">
           <span v-html="highlight(item)"></span>
         </q-item-section>
-        <q-item-section  v-if="toBeEncryptedWithUnknownKeys[item.relPath]" side>
+        <q-item-section  v-if="!!errorsByPath[item.relPath]" side>
           <q-icon size="1.4em" :name="icons.error" color="negative"/>
+        </q-item-section>
+        <q-item-section  v-else-if="!!warningsByPath[item.relPath]" side>
+          <q-icon size="1.4em" :name="icons.warning" color="warning"/>
         </q-item-section>
         <q-menu dense context-menu touch-position anchor="top left" self="top left">
           <q-item dense clickable v-close-popup @click="copy(item.fullName)" v-if="item.fullName !== '/'">
@@ -39,7 +40,6 @@
           </q-item>
         </q-menu>
       </q-item>
-      </div>
     </template>
  </virtual-scroll>
 
@@ -50,7 +50,7 @@
 import { Component, Vue, Ref, Prop } from "vue-property-decorator";
 import Fuse, { FuseResultWithMatches } from 'fuse.js'
 
-import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule, AnnotationsModule } from "@/store";
+import { PasswordsModule, UIModule, KeysModule, AppState, PreferencesModule, AnnotationsModule, ProblemsModule } from "@/store";
 import { PasswordFolder, PasswordNode } from '@/model/passwords';
 import { findMatchingKey } from '@/service/gpg';
 import { setNonReactiveProps, initNonReactiveProp, removeNonReactiveProp, getNonReactiveProp } from '@/util/props';
@@ -92,6 +92,15 @@ export default class PasswordList extends Vue {
 
   get showItemType() {
     return PreferencesModule.showItemType
+  }
+
+  get errorsByPath() {
+    console.log(ProblemsModule.errorsByPath)
+    return ProblemsModule.errorsByPath
+  }
+
+  get warningsByPath() {
+    return ProblemsModule.warningsByPath
   }
 
   get menuFilteredList() {
@@ -158,55 +167,5 @@ export default class PasswordList extends Vue {
     .q-item__section--side {
       padding-right: 5px;
     }
-
-    .not-decryptable {
-        opacity: 0.2
-    }
-
-    .item-name {
-      white-space: nowrap;
-      overflow: hidden;
-    }
-}
-
-
-body.body--light {
-  #password-list {
-    .item-selected {
-      background: $bg-primary-light;
-    }
-
-    .item-name {
-      color: $dark;
-
-      b {
-        color: $primary;
-      }
-    }
-
-    .not-encryptable .item-name {
-      color: $negative;
-    }
-  }
-}
-
-body.body--dark {
-  #password-list {
-    .item-selected {
-      background: $bg-primary-dark;
-    }
-
-    .item-name {
-      color: white;
-
-      b {
-        color: $primary;
-      }
-    }
-
-    .not-encryptable .item-name {
-      color: $negative;
-    }
-  }
 }
 </style>
